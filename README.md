@@ -66,7 +66,7 @@ The workflow follows a directed acyclic pipeline running daily via Celery beat s
 graph TD;
     subgraph "Schedule & Management"
         Cron[Celery Beat Scheduler] -->|Triggers Daily| Pipeline[Daily Pipeline Task]
-    End
+    end
 
     subgraph "The AI Funnel"
         Pipeline -->|1. Find Targets| GooglePlaces[Google Places API]
@@ -78,13 +78,13 @@ graph TD;
 
         DB -->|Fetch Approved Leads| AI_Personalize[Groq AI Email Generator]
         AI_Personalize -->|Draft Personalized Email| Mailer[Email Delivery System]
-    End
+    end
 
     subgraph "Delivery & Tracking"
         Mailer -->|Send| ClientOutbox[SMTP / Brevo]
         ClientOutbox --> Webhook[Tracking Webhooks]
         Webhook -->|Open/Click Events| DB
-    End
+    end
 ```
 
 ---
