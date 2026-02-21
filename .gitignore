@@ -1,0 +1,32 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary files and logs
+tmp/
+logs/
+*.log
+
+# IDEs & OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# SQLite / Local databases (if any fallback used)
+*.sqlite3
+*.db
+
+# Automated report outputs
+LeadGen_Report_*.xlsx
+proposal*.pdf
