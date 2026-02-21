@@ -33,8 +33,21 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
         
     - name: Verify API can build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        REDIS_URL: ${{ secrets.REDIS_URL }}
+        GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        BREVO_SMTP_USER: ${{ secrets.BREVO_SMTP_USER }}
+        BREVO_SMTP_PASSWORD: ${{ secrets.BREVO_SMTP_PASSWORD }}
+        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+        REPLY_TO_EMAIL: ${{ secrets.REPLY_TO_EMAIL }}
+        IMAP_USER: ${{ secrets.IMAP_USER }}
+        IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
+        ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
       run: |
-        # This acts as a dry run to make sure imports format properly
         python -c "import app.main; print('Build successful')"
 
   # Since Render automatically pulls from GitHub upon a push to the main branch,
