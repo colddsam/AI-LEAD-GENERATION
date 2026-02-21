@@ -3,11 +3,15 @@ from celery import Celery
 from celery.schedules import crontab
 from app.config import settings
 
+redis_url = settings.REDIS_URL
+if redis_url.startswith("rediss://") and "?" not in redis_url:
+    redis_url += "?ssl_cert_reqs=CERT_NONE"
+
 # Initialize Celery app
 celery_app = Celery(
     "lead_gen_worker",
-    broker=settings.REDIS_URL,
-    backend=settings.REDIS_URL,
+    broker=redis_url,
+    backend=redis_url,
     include=["app.tasks.daily_pipeline"]
 )
 
@@ -18,8 +22,24 @@ celery_app.conf.update(
     result_serializer="json",
     timezone="Asia/Kolkata",  # Update to target user's locale
     enable_utc=True,
-    task_track_started=True,
+    task_track_started=False,  # Saves Redis writes
     task_time_limit=3600,
+    
+    # --- REDIS/UPSTASH FREE TIER OPTIMIZATIONS ---
+    # Greatly reduce aggressive polling
+    broker_transport_options={
+        'visibility_timeout': 3600,
+        'max_connections': 2,
+    },
+    redis_max_connections=2,
+    
+    # Disable unneeded background chatter (huge usage savers!)
+    worker_send_task_events=False,
+    worker_enable_remote_control=False,
+    worker_disable_rate_limits=True,
+    
+    # Turn off celery sync logs
+    worker_cancel_long_running_tasks_on_connection_loss=True
 )
 
 # Scheduled tasks via Celery Beat (alternative to APScheduler if running as worker)
