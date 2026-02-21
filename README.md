@@ -57,7 +57,7 @@ It autonomously:
 The project is built on a robust, asynchronous tech stack designed to handle high-throughput network operations:
 
 - **Backend API:** `FastAPI` + `Uvicorn` for high-performance RESTful operations.
-- **Task Queue:** `Celery` + `Redis` (supports SSL/Upstash) for background job management and scheduled cron jobs.
+- **Task Queue:** `Celery` + `Redis` (Highly optimized for Serverless free-tiers like Upstash by disabling worker events, pooling connections, and ignoring results).
 - **Database:** `PostgreSQL` via `SQLAlchemy (Async)` & `asyncpg` for non-blocking I/O.
 - **Scraping Engine:** `Playwright` & `BeautifulSoup4` for deep web crawling.
 - **AI Brain:** `Groq API` (Llama 3) for lightning-fast business qualification and personalized email generation.
@@ -121,7 +121,8 @@ graph TD;
 | **📈 Automated Reporting**     | Compiles daily outreach metrics and sends an Excel overview directly to the administrator.                                |
 | **🛡 API Key Security**        | All management endpoints are protected by `X-API-Key` headers.                                                          |
 | **🚀 CI/CD Ready**             | Fully configured GitHub Actions pipeline with secure environment variable injection.                                      |
-| **🏗 Scalable Architecture**   | Utilizes Singleton DB connection pooling, Dependency Injection, and centralized settings management for robust scaling.   |
+| **🏗 Scalable Architecture**   | Utilizes Singleton DB connection pooling, Dependency Injection (`lru_cache`), and centralized settings management.        |
+| **💸 Serverless Optimized**    | Celery worker configured for restrictive free-tiers (e.g., Upstash) by disabling events, ignoring results, and pooling.   |
 
 ---
 
@@ -142,7 +143,7 @@ Copy the `.env.example` to `.env` and fill in the specifics:
 cp .env.example .env
 ```
 
-Ensure you have set `DATABASE_URL`, `REDIS_URL` (use `rediss://` for Upstash/SSL), `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, and `IMAP_SERVER` credentials.
+Ensure you have set `DATABASE_URL`, `REDIS_URL` (use `rediss://` for Upstash/SSL; the system automatically appends `?ssl_cert_reqs=CERT_NONE`), `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, and `IMAP_SERVER` credentials.
 
 ### 3. Local Installation (Recommended for Development)
 

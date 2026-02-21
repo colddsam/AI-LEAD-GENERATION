@@ -12,7 +12,6 @@ if redis_url.startswith("rediss://") and "?" not in redis_url:
 celery_app = Celery(
     "lead_gen_worker",
     broker=redis_url,
-    backend=redis_url,
     include=["app.tasks.daily_pipeline"]
 )
 
@@ -25,14 +24,18 @@ celery_app.conf.update(
     enable_utc=True,
     task_track_started=False,  # Saves Redis writes
     task_time_limit=3600,
+    task_ignore_result=True,   # Do not save return values to Redis (saves 50% of writes)
     
     # --- REDIS/UPSTASH FREE TIER OPTIMIZATIONS ---
-    # Greatly reduce aggressive polling
+    # Greatly reduce aggressive polling and connections
     broker_transport_options={
         'visibility_timeout': 3600,
         'max_connections': 2,
     },
     redis_max_connections=2,
+    broker_pool_limit=1,
+    worker_prefetch_multiplier=1,
+    beat_max_loop_interval=300, # Celery Beat sleeps for 5 minutes between schedule checks
     
     # Disable unneeded background chatter (huge usage savers!)
     worker_send_task_events=False,

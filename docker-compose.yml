@@ -14,7 +14,7 @@ services:
   worker:
     build: .
     env_file: .env
-    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=2
+    command: celery -A app.tasks.celery_app worker --loglevel=info --pool=solo --without-gossip --without-mingle --without-heartbeat
     restart: unless-stopped
     depends_on:
       - redis
