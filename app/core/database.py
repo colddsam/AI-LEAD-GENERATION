@@ -6,12 +6,18 @@ from app.config import settings
 
 # Create the async SQLAlchemy engine
 # pool_size=10 is used as Supabase free tier limits connections
+engine_args = {
+    "echo": False,
+    "future": True,
+}
+
+if not settings.DATABASE_URL.startswith("sqlite"):
+    engine_args["pool_size"] = 10
+    engine_args["max_overflow"] = 20
+
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=False,
-    pool_size=10,
-    max_overflow=20,
-    future=True,
+    **engine_args
 )
 
 # Create an async session maker

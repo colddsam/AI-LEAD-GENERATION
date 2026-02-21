@@ -16,7 +16,7 @@ class EmailEvent(Base):
     event_type = Column(String(50), nullable=False, index=True) # open | click | reply | bounce | unsubscribe
     
     url_clicked = Column(Text, nullable=True)
-    ip_address = Column(INET, nullable=True)
+    ip_address = Column(String(45), nullable=True)
     user_agent = Column(Text, nullable=True)
 
     occurred_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)

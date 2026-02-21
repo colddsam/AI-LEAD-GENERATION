@@ -15,7 +15,7 @@ class TargetLocation(Base):
     country = Column(String(100), default="India")
     lat = Column(Float, nullable=True)
     lng = Column(Float, nullable=True)
-    categories = Column(ARRAY(String))
+    categories = Column(JSON)
     radius_meters = Column(Integer, default=5000)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

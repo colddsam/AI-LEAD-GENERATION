@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, Date, ARRAY, ForeignKey, Text
+from sqlalchemy import Column, String, Integer, DateTime, Boolean, Date, ARRAY, ForeignKey, Text, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -40,7 +40,7 @@ class EmailOutreach(Base):
 
     ai_generated = Column(Boolean, default=True)
     has_attachment = Column(Boolean, default=False)
-    attachment_names = Column(ARRAY(String), nullable=True)
+    attachment_names = Column(JSON, nullable=True)
 
     status = Column(String(50), default="queued")  # queued -> sent -> delivered -> bounced -> failed
 

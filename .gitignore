@@ -30,3 +30,7 @@ Thumbs.db
 # Automated report outputs
 LeadGen_Report_*.xlsx
 proposal*.pdf
+
+# Testing Caches
+.pytest_cache/
+pytest_output.txt
