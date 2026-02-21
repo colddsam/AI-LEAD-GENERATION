@@ -1,5 +1,6 @@
 import httpx
 from typing import List, Dict, Any, Optional
+from loguru import logger
 from app.config import get_settings
 
 
@@ -39,5 +40,5 @@ class GooglePlacesClient:
                 data = response.json()
                 return data.get("places", [])
             except Exception as e:
-                print(f"Error fetching places from Google API: {e}")
+                logger.exception(f"Error fetching places from Google API for {query}")
                 return []

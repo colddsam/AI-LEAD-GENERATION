@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=AI%20Lead%20Generation%20System&fontSize=50&animation=fadeIn" width="100%" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=AI%20Lead%20Generation%20System&fontSize=50&animation=twinkling" width="100%" />
 
-<h3>Automated. Intelligent. Scalable.</h3>
+  <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=00A393&center=true&vCenter=true&width=600&lines=Automated.+Intelligent.+Scalable.;Discover.+Qualify.+Outreach.;24%2F7+AI+Sales+Representative" alt="Typing SVG" /></a>
 
 <p>An end-to-end local business discovery, qualification, and personalized outreach pipeline powered by AI.</p>
 
@@ -49,6 +49,10 @@ It autonomously:
 ---
 
 ## 🚀 Project Overview
+
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=python,fastapi,postgres,redis,docker,githubactions" alt="Tech Stack" />
+</div>
 
 The project is built on a robust, asynchronous tech stack designed to handle high-throughput network operations:
 
@@ -116,6 +120,8 @@ graph TD;
 | **📊 Open/Click Tracking**     | Injects tracking pixels and link wrappers that listen for engagement via FastAPI webhook endpoints.                       |
 | **📈 Automated Reporting**     | Compiles daily outreach metrics and sends an Excel overview directly to the administrator.                                |
 | **🛡 API Key Security**        | All management endpoints are protected by `X-API-Key` headers.                                                          |
+| **🚀 CI/CD Ready**             | Fully configured GitHub Actions pipeline with secure environment variable injection.                                      |
+| **🏗 Scalable Architecture**   | Utilizes Singleton DB connection pooling, Dependency Injection, and centralized settings management for robust scaling.   |
 
 ---
 

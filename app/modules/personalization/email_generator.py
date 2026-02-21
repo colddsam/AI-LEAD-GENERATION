@@ -1,10 +1,10 @@
 import os
 from jinja2 import Environment, FileSystemLoader
 from typing import Dict, Any
+from loguru import logger
 
 def get_template_env() -> Environment:
     """Returns a Jinja2 Environment for rendering email templates."""
-    # Ensure templates directory exists
     template_dir = os.path.join(os.path.dirname(__file__), "templates")
     os.makedirs(template_dir, exist_ok=True)
     return Environment(loader=FileSystemLoader(template_dir))
@@ -13,13 +13,13 @@ def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_tok
     """
     Renders the final HTML email body using Jinja2, injecting the tracking pixel and AI content.
     """
-    env = get_template_env()
-    
-    # Create a simple default template if it doesn't exist
-    template_file = os.path.join(env.loader.searchpath[0], "email_html.j2")
-    if not os.path.exists(template_file):
-        with open(template_file, "w") as f:
-            f.write("""
+    try:
+        env = get_template_env()
+        
+        template_file = os.path.join(env.loader.searchpath[0], "email_html.j2")
+        if not os.path.exists(template_file):
+            with open(template_file, "w") as f:
+                f.write("""
 <html>
 <head>
     <style>
@@ -42,13 +42,17 @@ def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_tok
 </body>
 </html>
 """)
-            
-    template = env.get_template("email_html.j2")
-    
-    html_content = template.render(
-        business_name=lead_data.get("business_name", "Valued Business"),
-        ai_body_html=ai_body_html,
-        tracking_token=tracking_token,
-        app_url=app_url
-    )
-    return html_content
+                
+        template = env.get_template("email_html.j2")
+        
+        html_content = template.render(
+            business_name=lead_data.get("business_name", "Valued Business"),
+            ai_body_html=ai_body_html,
+            tracking_token=tracking_token,
+            app_url=app_url
+        )
+        return html_content
+    except Exception as e:
+        logger.exception("Failed to render email with Jinja2 template")
+        # Fallback raw HTML
+        return f"<html><body>{ai_body_html}<br><br><p>Best regards</p></body></html>"

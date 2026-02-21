@@ -1,4 +1,5 @@
 import json
+from loguru import logger
 from groq import AsyncGroq
 from app.config import get_settings
 settings = get_settings()
@@ -54,9 +55,51 @@ Return ONLY a valid JSON object in the following format:
             result = chat_completion.choices[0].message.content
             return json.loads(result)
         except Exception as e:
-            print(f"Error calling Groq API: {e}")
+            logger.exception("Error calling Groq API for personalization")
             return {
                 "subject": f"Enhance {lead_data.get('business_name')} Digital Presence",
                 "body_html": "<p>Hi,</p><p>We help businesses like yours build a strong digital presence.</p><p>Let's chat?</p>",
                 "benefits": ["Increased visibility", "Better customer engagement", "More sales"]
             }
+
+    async def generate_daily_targets(self, exclude_cities: list, exclude_categories: list) -> dict:
+        """
+        Dynamically generates 2 diverse Indian cities and 2 business categories 
+        to target for the day, maximizing variety and avoiding recent items.
+        Returns a JSON object containing the targets array because Groq JSON mode requires an object.
+        """
+        prompt = f"""
+You are an expert sales strategist targeting local businesses in India.
+Generate 2 random mid-tier or tier-2 cities in India and 2 specific local business categories 
+that would benefit from having a modern website and digital presence. 
+
+AVOID these cities (recently used): {exclude_cities}
+AVOID these categories (recently used): {exclude_categories}
+
+Good category examples: Dentists, Bakeries, Salons, Boutique Hotels, Fitness Trainers, Gyms, Pet Clinics, Accounting Firms, Law Firms, Wedding Planners, Real Estate Agencies. 
+
+Return ONLY a JSON object with a key "targets" containing exactly 2 objects with "city" and "category".
+Example format:
+{{
+  "targets": [
+    {{"city": "Nagpur", "category": "Pet Clinics"}},
+    {{"city": "Jaipur", "category": "Wedding Planners"}}
+  ]
+}}
+"""
+        try:
+            logger.info("Calling Groq to generate dynamic daily targets")
+            chat_completion = await self.client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model=self.model,
+                response_format={"type": "json_object"},
+                temperature=0.8,
+            )
+            data = json.loads(chat_completion.choices[0].message.content)
+            return data.get("targets", [])
+        except Exception as e:
+            logger.exception("Error generating daily targets with Groq")
+            return [
+                {"city": "Pune", "category": "Gyms"},
+                {"city": "Ahmedabad", "category": "Cafes"}
+            ]

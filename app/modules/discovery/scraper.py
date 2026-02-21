@@ -2,6 +2,7 @@ import httpx
 from bs4 import BeautifulSoup
 import re
 from typing import Optional, List
+from loguru import logger
 
 async def scrape_contact_email(url: str) -> Optional[str]:
     """
@@ -30,5 +31,6 @@ async def scrape_contact_email(url: str) -> Optional[str]:
                 
             return valid_emails[0] if valid_emails else None
             
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Failed to scrape email for {url}")
         return None

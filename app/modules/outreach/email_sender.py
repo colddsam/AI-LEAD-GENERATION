@@ -1,3 +1,4 @@
+from loguru import logger
 import aiosmtplib
 from email.message import EmailMessage
 import os
@@ -38,5 +39,5 @@ async def send_email(to_email: str, subject: str, html_content: str, attachment_
         )
         return True
     except Exception as e:
-        print(f"Failed to send email to {to_email}: {e}")
+        logger.exception(f"Failed to send email to {to_email}")
         return False

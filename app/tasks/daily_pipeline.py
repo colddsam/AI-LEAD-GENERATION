@@ -1,6 +1,6 @@
 import asyncio
 from loguru import logger
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import uuid
 import base64
 import os
@@ -8,7 +8,7 @@ from celery import shared_task
 
 from sqlalchemy import select, func, update
 from app.core.database import get_session_maker
-from app.models.lead import Lead, TargetLocation
+from app.models.lead import Lead, TargetLocation, SearchHistory
 from app.models.campaign import Campaign, EmailOutreach
 from app.models.email_event import EmailEvent
 from app.models.daily_report import DailyReport
@@ -38,52 +38,87 @@ def run_async(coro):
 
 
 async def _do_discovery():
-    """Fetches places from Google API and saves new valid leads."""
-    logger.info("Starting Discovery")
+    """Dynamically generates 2 targets, fetches places, strictly deduplicates, and saves leads."""
+    logger.info("Starting Dynamic Discovery")
     discovered_count = 0
     client = GooglePlacesClient()
+    groq_client = GroqClient()
+    seen_place_ids = set()
     
     async with get_session_maker()() as db:
-        stmt = select(TargetLocation).where(TargetLocation.is_active == True)
-        result = await db.execute(stmt)
-        locations = result.scalars().all()
+        # 1. Get recent searches (last 60 days) to prevent repetition
+        sixty_days_ago = datetime.utcnow() - timedelta(days=60)
+        hist_stmt = select(SearchHistory).where(SearchHistory.created_at >= sixty_days_ago)
+        hist_res = await db.execute(hist_stmt)
+        recent_searches = hist_res.scalars().all()
         
-        for loc in locations:
-            for category in loc.categories:
-                places = await client.search_places(loc.city, category, loc.radius_meters)
-                for place in places:
-                    # Check if exists
-                    check_stmt = select(Lead).where(Lead.place_id == place["id"])
-                    check_result = await db.execute(check_stmt)
-                    if check_result.scalars().first():
+        exclude_cities = list(set([h.city for h in recent_searches]))
+        exclude_categories = list(set([h.category for h in recent_searches]))
+        
+        # 2. Ask Groq for 2 fresh targets
+        targets = await groq_client.generate_daily_targets(exclude_cities, exclude_categories)
+        logger.info(f"Generated targets for today: {targets}")
+        
+        for target in targets:
+            city = target.get("city")
+            category = target.get("category")
+            if not city or not category:
+                continue
+                
+            # Log to history
+            sh = SearchHistory(city=city, category=category)
+            db.add(sh)
+            
+            # Fetch places
+            places = await client.search_places(city, category, 5000)
+            for place in places:
+                place_id = place["id"]
+                if place_id in seen_place_ids:
+                    continue
+                
+                # Check DB for existing place_id (Same Business)
+                check_stmt = select(Lead).where(Lead.place_id == place_id)
+                check_result = await db.execute(check_stmt)
+                if check_result.scalars().first():
+                    seen_place_ids.add(place_id)
+                    continue
+                    
+                seen_place_ids.add(place_id)
+                
+                # Try to scrape email if website is found
+                website_url = place.get("websiteUri")
+                email = None
+                if website_url:
+                    email = await scrape_contact_email(website_url)
+                    
+                # Strict Email Deduplication: Do not add if email already exists in DB (Same Client)
+                if email:
+                    email_check_stmt = select(Lead).where(Lead.email == email)
+                    email_check_result = await db.execute(email_check_stmt)
+                    if email_check_result.scalars().first():
+                        logger.info(f"Skipping {place.get('displayName', {}).get('text')}: Email {email} already in use.")
                         continue
                     
-                    # Try to scrape email if website is found
-                    website_url = place.get("websiteUri")
-                    email = None
-                    if website_url:
-                        email = await scrape_contact_email(website_url)
-                        
-                    lead = Lead(
-                        place_id=place["id"],
-                        business_name=place.get("displayName", {}).get("text", "Unknown"),
-                        category=category,
-                        address=place.get("formattedAddress"),
-                        city=loc.city,
-                        phone=place.get("nationalPhoneNumber"),
-                        website_url=website_url,
-                        google_maps_url=place.get("googleMapsUri"),
-                        rating=place.get("rating"),
-                        review_count=place.get("userRatingCount"),
-                        email=email,
-                        status="discovered"
-                    )
-                    db.add(lead)
-                    discovered_count += 1
+                lead = Lead(
+                    place_id=place["id"],
+                    business_name=place.get("displayName", {}).get("text", "Unknown"),
+                    category=category,
+                    address=place.get("formattedAddress"),
+                    city=city,
+                    phone=place.get("nationalPhoneNumber"),
+                    website_url=website_url,
+                    google_maps_url=place.get("googleMapsUri"),
+                    rating=place.get("rating"),
+                    review_count=place.get("userRatingCount"),
+                    email=email,
+                    status="discovered"
+                )
+                db.add(lead)
+                discovered_count += 1
         
         if discovered_count > 0:
             await db.commit()
-            await send_telegram_alert(f"🔍 Discovery found {discovered_count} new local businesses!")
+            await send_telegram_alert(f"🔍 Discovery found {discovered_count} new local businesses (Targets: {targets})")
 
 
 async def _do_qualification():
@@ -178,8 +213,8 @@ async def _do_personalization():
                 body_html=html_body,
                 tracking_token=tracking_token,
                 ai_generated=True,
-                has_attachment=True,
-                attachment_names=[pdf_path],
+                has_attachment=bool(pdf_path),
+                attachment_names=[pdf_path] if pdf_path else [],
                 status="queued"
             )
             db.add(outreach)

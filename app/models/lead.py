@@ -20,6 +20,15 @@ class TargetLocation(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+class SearchHistory(Base):
+    """Tracks what city/category combinations have been searched to avoid repeats within 2 months."""
+    __tablename__ = "search_history"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    city = Column(String(100), nullable=False, index=True)
+    category = Column(String(100), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+
 class Lead(Base):
     __tablename__ = "leads"
 

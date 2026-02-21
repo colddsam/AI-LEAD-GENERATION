@@ -1,6 +1,7 @@
 import httpx
 import dns.resolver
 from typing import Tuple
+from loguru import logger
 
 async def dns_resolves(domain: str) -> bool:
     """Check if the given domain resolves to any A or CNAME record."""
@@ -20,7 +21,10 @@ async def dns_resolves(domain: str) -> bool:
         # Try finding A records
         resolver.resolve(domain, 'A')
         return True
-    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.LifetimeTimeout, Exception):
+    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.LifetimeTimeout):
+        return False
+    except Exception as e:
+        logger.debug(f"DNS Resolution failed for {domain}: {e}")
         return False
 
 async def website_responds(url: str) -> bool:
@@ -35,7 +39,8 @@ async def website_responds(url: str) -> bool:
         async with httpx.AsyncClient(verify=False) as client:
             response = await client.get(url, timeout=5.0, follow_redirects=True)
             return response.status_code < 400
-    except Exception:
+    except Exception as e:
+        logger.debug(f"HTTP Check failed for {url}")
         return False
 
 async def check_website(url: str) -> Tuple[bool, bool, str]:

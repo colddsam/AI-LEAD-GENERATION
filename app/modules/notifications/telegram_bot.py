@@ -16,8 +16,7 @@ async def send_telegram_alert(message: str) -> bool:
     url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": settings.TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "HTML"
+        "text": message
     }
     
     try:
