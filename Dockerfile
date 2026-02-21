@@ -3,12 +3,13 @@ FROM python:3.11-slim-bookworm
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PORT=8000 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies for WeasyPrint and other packages
+# Install system dependencies for WeasyPrint, Playwright, and general build
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libcairo2 \
@@ -20,21 +21,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
+# Create a non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && \
+    mkdir -p /ms-playwright && \
+    chown -R appuser:appuser /app /ms-playwright
+
+# Copy requirements file first (for caching)
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies and Playwright
+# We run playwright install as root so it can install any missing --with-deps (debian packages),
+# then we transfer ownership of the downloaded browser artifacts to appuser.
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Install Playwright and its dependencies
-RUN playwright install chromium --with-deps
+    pip install --no-cache-dir -r requirements.txt && \
+    playwright install chromium --with-deps && \
+    chown -R appuser:appuser /ms-playwright
 
 # Copy the rest of the application code
-COPY . .
+COPY --chown=appuser:appuser . .
+
+# Switch to the non-root user
+USER appuser
 
 # Expose the application port
 EXPOSE $PORT
 
-# Start the uvicorn server
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Start the uvicorn server with proxy headers enabled for reverse-proxy (e.g. Render/Nginx)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]
