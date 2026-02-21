@@ -34,3 +34,10 @@ proposal*.pdf
 # Testing Caches
 .pytest_cache/
 pytest_output.txt
+
+test.py
+
+# Celery local states
+celerybeat-schedule
+celerybeat-schedule.*
+celerybeat.pid
