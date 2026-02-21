@@ -1,17 +1,37 @@
+"""
+Email template rendering module.
+Utilizes the Jinja2 templating engine to dynamically generate HTML payloads
+for outbound communications, injecting tracking pixels and dynamic content.
+"""
 import os
 from jinja2 import Environment, FileSystemLoader
 from typing import Dict, Any
 from loguru import logger
 
 def get_template_env() -> Environment:
-    """Returns a Jinja2 Environment for rendering email templates."""
+    """
+    Initializes and returns a Jinja2 Environment configured for the localized template directory.
+    
+    Returns:
+        Environment: The configured Jinja2 templating environment.
+    """
     template_dir = os.path.join(os.path.dirname(__file__), "templates")
     os.makedirs(template_dir, exist_ok=True)
     return Environment(loader=FileSystemLoader(template_dir))
 
 def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_token: str, app_url: str) -> str:
     """
-    Renders the final HTML email body using Jinja2, injecting the tracking pixel and AI content.
+    Renders the final HTML email body payload, merging static template structures
+    with dynamic LLM-generated content and unique tracking pixels.
+    
+    Args:
+        lead_data (Dict[str, Any]): Dictionary containing foundational lead attributes.
+        ai_body_html (str): The pre-generated HTML body content from the LLM.
+        tracking_token (str): The uniquely generated token for tracking engagement metrics.
+        app_url (str): The base URL of the application to facilitate pixel tracking.
+        
+    Returns:
+        str: The fully rendered HTML document string.
     """
     try:
         env = get_template_env()
@@ -36,7 +56,6 @@ def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_tok
             <p>Sent with care to {{ business_name }}.</p>
             <p>If you prefer not to receive these emails, please reply with 'unsubscribe'.</p>
         </div>
-        <!-- Tracking Pixel -->
         <img src="{{ app_url }}/api/v1/track/open/{{ tracking_token }}" width="1" height="1" style="display:none;" />
     </div>
 </body>
@@ -54,5 +73,4 @@ def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_tok
         return html_content
     except Exception as e:
         logger.exception("Failed to render email with Jinja2 template")
-        # Fallback raw HTML
         return f"<html><body>{ai_body_html}<br><br><p>Best regards</p></body></html>"

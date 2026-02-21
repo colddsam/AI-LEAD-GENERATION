@@ -1,29 +1,33 @@
+"""
+Application configuration module.
+Defines the core settings, environment variables, and caching mechanisms
+required for the operation of the AI Lead Generation System.
+"""
 import os
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # Application
+    """
+    Application settings model managing all configuration parameters
+    extracted from environment variables or default definitions.
+    """
     APP_ENV: str = "development"
     APP_SECRET_KEY: str = "secret"
     API_KEY: str = "admin-secret-key"
     APP_URL: str = "http://localhost:8000"
 
-    # Database
     DATABASE_URL: str
     SUPABASE_URL: str
     SUPABASE_ANON_KEY: str
 
-    # Redis (Upstash)
     REDIS_URL: str
 
-    # APIs
     GOOGLE_PLACES_API_KEY: str
     GROQ_API_KEY: str
     GROQ_MODEL: str = "llama-3.1-8b-instant"
 
-    # Email (Brevo)
     BREVO_SMTP_HOST: str = "smtp-relay.brevo.com"
     BREVO_SMTP_PORT: int = 587
     BREVO_SMTP_USER: str
@@ -32,19 +36,15 @@ class Settings(BaseSettings):
     FROM_NAME: str = "Lead Generation"
     REPLY_TO_EMAIL: str
 
-    # Email Tracking (IMAP)
     IMAP_HOST: str = "imap.gmail.com"
     IMAP_USER: str
     IMAP_PASSWORD: str
 
-    # Notifications
     ADMIN_EMAIL: str
     TELEGRAM_BOT_TOKEN: str = ""
     TELEGRAM_CHAT_ID: str = ""
     WHATSAPP_NUMBER: str = ""
     CALLMEBOT_API_KEY: str = ""
-
-    # Scheduler times
     DISCOVERY_HOUR: int = 6
     QUALIFICATION_HOUR: int = 7
     PERSONALIZATION_HOUR: int = 8
@@ -59,7 +59,14 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-
 @lru_cache
 def get_settings() -> Settings:
+    """
+    Instantiates and returns the application settings.
+    Utilizes lru_cache to ensure specific settings validation and extraction
+    is executed only once per process lifecycle.
+
+    Returns:
+        Settings: The validated application settings.
+    """
     return Settings()

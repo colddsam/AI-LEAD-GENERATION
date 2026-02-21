@@ -1,3 +1,8 @@
+"""
+Large Language Model (LLM) integration module.
+Facilitates asynchronous communication with the Groq API to drive dynamic 
+discovery targeting and individualized content generation.
+"""
 import json
 from loguru import logger
 from groq import AsyncGroq
@@ -5,13 +10,24 @@ from app.config import get_settings
 settings = get_settings()
 
 class GroqClient:
+    """
+    Client for interfacing with the Groq LLM API.
+    Manages authentication, model selection, and standardized prompt construction.
+    """
     def __init__(self):
         self.client = AsyncGroq(api_key=settings.GROQ_API_KEY)
         self.model = settings.GROQ_MODEL
 
     async def generate_email_content(self, lead_data: dict) -> dict:
         """
-        Calls Groq API to generate email subject, body, and benefits based on the lead data.
+        Invokes the LLM to generate highly personalized outreach email content and 
+        prospective benefits tailored strictly to the provided lead context.
+        
+        Args:
+            lead_data (dict): Dictionary comprising the target business's public profile and web footprint.
+            
+        Returns:
+            dict: Structured JSON encapsulating the suggested subject line, HTML body, and specific benefits.
         """
         prompt = f"""
 You are a professional business development writer. Write a short, warm outreach email for:
@@ -64,9 +80,15 @@ Return ONLY a valid JSON object in the following format:
 
     async def generate_daily_targets(self, exclude_cities: list, exclude_categories: list) -> dict:
         """
-        Dynamically generates 2 diverse Indian cities and 2 business categories 
-        to target for the day, maximizing variety and avoiding recent items.
-        Returns a JSON object containing the targets array because Groq JSON mode requires an object.
+        Invokes the LLM to strategically determine novel geographic and categorical targets
+        for daily discovery operations, explicitly bypassing recently utilized combinations.
+        
+        Args:
+            exclude_cities (list): A list of geographic locations to omit from selection.
+            exclude_categories (list): A list of business archetypes to omit from selection.
+            
+        Returns:
+            dict: Structured JSON payload containing an array of derived target combinations.
         """
         prompt = f"""
 You are an expert sales strategist targeting local businesses in India.

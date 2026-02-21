@@ -1,3 +1,8 @@
+"""
+Administrator reporting summary dispatch module.
+Constructs and dispatches HTML-formatted email reports with encapsulated
+statistical metrics and attached analytical documents.
+"""
 from datetime import date
 from app.config import get_settings
 settings = get_settings()
@@ -5,7 +10,15 @@ from app.modules.outreach.email_sender import send_email
 
 async def send_daily_report_email(report_data: dict, excel_filepath: str, output_date: date) -> bool:
     """
-    Sends the generated daily report to the administrator.
+    Dispatches the aggregated daily statistical report to the configured administrative recipient.
+    
+    Args:
+        report_data (dict): Dictionary comprising the daily quantitative metrics.
+        excel_filepath (str): Absolute or relative path to the generated Excel artifact.
+        output_date (date): The contextual date associated with the report.
+        
+    Returns:
+        bool: True if the dispatch was successfully processed, False otherwise.
     """
     if not settings.ADMIN_EMAIL:
         return False
@@ -30,7 +43,6 @@ async def send_daily_report_email(report_data: dict, excel_filepath: str, output
     </html>
     """
     
-    # We use the same email sender module built for outreach, but direct it to ADMIN
     return await send_email(
         to_email=settings.ADMIN_EMAIL,
         subject=subject,

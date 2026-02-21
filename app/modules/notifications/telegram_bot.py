@@ -1,3 +1,8 @@
+"""
+Telegram Bot notification module.
+Facilitates system-wide alerting capabilities by interfacing with the 
+Telegram Bot API for administrative tracking.
+"""
 import httpx
 from app.config import get_settings
 settings = get_settings()
@@ -7,7 +12,13 @@ logger = logging.getLogger(__name__)
 
 async def send_telegram_alert(message: str) -> bool:
     """
-    Sends a message to the configured Telegram chat using the Bot API.
+    Transmits an arbitrary textual payload to the securely configured Telegram administrative channel.
+    
+    Args:
+        message (str): The structured alert message to dispatch.
+        
+    Returns:
+        bool: True if the dispatch was successfully processed, False otherwise.
     """
     if not settings.TELEGRAM_BOT_TOKEN or not settings.TELEGRAM_CHAT_ID:
         logger.warning("Telegram credentials not set. Alert skipped.")

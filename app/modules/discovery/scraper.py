@@ -1,3 +1,8 @@
+"""
+Web scraping and data extraction module.
+Utilizes asynchronous HTTP requests and regular expressions to extract
+contact information from targeted business domains.
+"""
 import httpx
 from bs4 import BeautifulSoup
 import re
@@ -6,7 +11,14 @@ from loguru import logger
 
 async def scrape_contact_email(url: str) -> Optional[str]:
     """
-    Attempts to scrape a website to find generic email addresses.
+    Executes a direct HTTP GET request to the provided URL and analyzes the raw DOM
+    for valid email address patterns, deliberately filtering common false positives.
+    
+    Args:
+        url (str): The target website URL.
+        
+    Returns:
+        Optional[str]: The primary extracted email address if found and validated, otherwise None.
     """
     if not url.startswith("http"):
         url = "http://" + url
@@ -17,11 +29,9 @@ async def scrape_contact_email(url: str) -> Optional[str]:
             if response.status_code != 200:
                 return None
             
-            # Use regex to find email patterns
             email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
             emails = re.findall(email_pattern, response.text)
             
-            # Filter out common false positives like example@sentry.io or png/jpg
             valid_emails = []
             for e in emails:
                 e_lower = e.lower()

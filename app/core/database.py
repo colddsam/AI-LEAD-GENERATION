@@ -1,3 +1,8 @@
+"""
+Database connection and session management module.
+Provides singleton-based asynchronous connection pooling and session makers
+for efficient interaction with the PostgreSQL database instance.
+"""
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from functools import lru_cache
@@ -11,6 +16,14 @@ _async_session_maker = None
 
 
 def get_engine():
+    """
+    Initializes and retrieves the global, asynchronous SQLAlchemy engine.
+    Establishes connection pool settings optimized for production environments
+    based on the configured connection string.
+
+    Returns:
+        sqlalchemy.ext.asyncio.AsyncEngine: The configured asynchronous database engine.
+    """
     global _engine
 
     if _engine is None:
@@ -34,6 +47,13 @@ def get_engine():
 
 
 def get_session_maker():
+    """
+    Initializes and retrieves the global asynchronous session maker factory.
+    Pre-binds the session factory to the global asynchronous engine.
+
+    Returns:
+        sqlalchemy.ext.asyncio.async_sessionmaker: The bound session factory.
+    """
     global _async_session_maker
 
     if _async_session_maker is None:
@@ -48,6 +68,13 @@ def get_session_maker():
 
 
 async def get_db():
+    """
+    Asynchronous generator dependency to acquire and release isolated database sessions.
+    Intended for context-managed usage within independent service transactions or API endpoints.
+
+    Yields:
+        AsyncSession: An active SQLAlchemy asynchronous session.
+    """
     async_session = get_session_maker()
     async with async_session() as session:
         try:

@@ -1,3 +1,8 @@
+"""
+Campaign and outreach database models module.
+Defines the SQLAlchemy schemas for tracking top-level outreach campaigns 
+and their associated individualized email dispatch tasks.
+"""
 import uuid
 from sqlalchemy import Column, String, Integer, DateTime, Boolean, Date, ARRAY, ForeignKey, Text, JSON
 from sqlalchemy.dialects.postgresql import UUID
@@ -6,12 +11,16 @@ from sqlalchemy.sql import func
 from app.models import Base
 
 class Campaign(Base):
+    """
+    Core model representing an overarching lead generation and outreach campaign.
+    Aggregates statistical metrics and binds associated email dispatch entities.
+    """
     __tablename__ = "campaigns"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
     campaign_date = Column(Date, nullable=False)
-    status = Column(String(50), default="pending")  # pending -> running -> completed -> failed
+    status = Column(String(50), default="pending")
 
     total_leads = Column(Integer, default=0)
     emails_sent = Column(Integer, default=0)
@@ -27,6 +36,10 @@ class Campaign(Base):
 
 
 class EmailOutreach(Base):
+    """
+    Model representing a singular, individualized email communication queued or dispatched
+    to a specific lead within a campaign context. Tracks delivery status and engagement metadata.
+    """
     __tablename__ = "email_outreach"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -42,7 +55,7 @@ class EmailOutreach(Base):
     has_attachment = Column(Boolean, default=False)
     attachment_names = Column(JSON, nullable=True)
 
-    status = Column(String(50), default="queued")  # queued -> sent -> delivered -> bounced -> failed
+    status = Column(String(50), default="queued")
 
     sent_at = Column(DateTime(timezone=True), nullable=True)
     delivered_at = Column(DateTime(timezone=True), nullable=True)
@@ -50,7 +63,6 @@ class EmailOutreach(Base):
     brevo_message_id = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Relationships
     lead = relationship("Lead", back_populates="outreach")
     campaign = relationship("Campaign", back_populates="outreach")
     events = relationship("EmailEvent", back_populates="outreach", cascade="all, delete-orphan")

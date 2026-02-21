@@ -1,3 +1,8 @@
+"""
+Daily lead generation pipeline execution module.
+Contains the Celery-managed tasks and orchestrates discovery, qualification,
+personalization, outreach, tracking, and reporting workflows.
+"""
 import asyncio
 from loguru import logger
 from datetime import date, datetime, timedelta
@@ -28,7 +33,17 @@ from app.modules.reporting.excel_builder import generate_daily_report_excel
 from app.modules.reporting.email_reporter import send_daily_report_email
 
 def run_async(coro):
-    """Utility to run async functions blockingly inside Celery tasks."""
+    """
+    Executes an asynchronous coroutine synchronously.
+    Facilitates the execution of async database and network operations
+    within synchronous Celery task workers.
+    
+    Args:
+        coro: The asynchronous coroutine to execute.
+        
+    Returns:
+        The result of the executed coroutine.
+    """
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -38,7 +53,12 @@ def run_async(coro):
 
 
 async def _do_discovery():
-    """Dynamically generates 2 targets, fetches places, strictly deduplicates, and saves leads."""
+    """
+    Executes the discovery phase of the lead generation pipeline.
+    Identifies target geographic areas, interfaces with the Google Places API
+    to discover prospective leads, validates redundancy against historical records,
+    and inserts verified new leads into the database.
+    """
     logger.info("Starting Dynamic Discovery")
     discovered_count = 0
     client = GooglePlacesClient()
@@ -118,11 +138,15 @@ async def _do_discovery():
         
         if discovered_count > 0:
             await db.commit()
-            await send_telegram_alert(f"🔍 Discovery found {discovered_count} new local businesses (Targets: {targets})")
+            await send_telegram_alert(f"Discovery phase completed. Identified {discovered_count} new prospective businesses (Targets: {targets})")
 
 
 async def _do_qualification():
-    """Scores discovered leads and filters those that need digital presence."""
+    """
+    Executes the qualification phase of the lead generation pipeline.
+    Analyzes the digital footprint of newly discovered leads using LLM evaluation
+    to compute a targeted qualification score and store validation metrics.
+    """
     logger.info("Starting Qualification")
     qualified_count = 0
     
@@ -146,17 +170,30 @@ async def _do_qualification():
         if leads:
             await db.commit()
             if qualified_count > 0:
-                await send_telegram_alert(f"🎯 Qualified {qualified_count} hot leads ready for outreach!")
+                await send_telegram_alert(f"Qualification phase completed. Approved {qualified_count} leads for personalized outreach sequence.")
 
 
 def _generate_tracking_token(lead_id, campaign_id):
-    """Generates unique base64 tracking token"""
+    """
+    Generates a secure, URL-safe base64 token for tracking email engagement metrics.
+    
+    Args:
+        lead_id (int): Identifier of the target lead.
+        campaign_id (int): Identifier of the active campaign.
+        
+    Returns:
+        str: Evaluated tracking token.
+    """
     raw_token = f"{lead_id}_{campaign_id}"
     return base64.urlsafe_b64encode(raw_token.encode()).decode('utf-8')
 
 
 async def _do_personalization():
-    """Generates personalized AI emails and PDFs for qualified leads."""
+    """
+    Executes the personalization phase of the lead generation pipeline.
+    Integrates with LLM providers to construct tailored proposal content and
+    dynamic PDF attachments per qualified lead. Queues customized emails for delivery.
+    """
     logger.info("Starting Personalization")
     pers_count = 0
     groq_client = GroqClient()
@@ -226,11 +263,15 @@ async def _do_personalization():
         if leads:
             await db.commit()
             if pers_count > 0:
-                await send_telegram_alert(f"🤖 AI Personalized {pers_count} proposals. Ready to send!")
+                await send_telegram_alert(f"Personalization phase completed. Queued {pers_count} customized proposals for automated dispatch.")
 
 
 async def _do_outreach():
-    """Dispatches all queued emails."""
+    """
+    Executes the outreach phase of the lead generation pipeline.
+    Dispatches constructed emails sequentially via configured SMTP relays
+    and progresses the state of associated lead profiles across the system.
+    """
     logger.info("Starting Outreach Dispatch")
     sent_count = 0
     
@@ -274,11 +315,15 @@ async def _do_outreach():
         if queued_emails:
             await db.commit()
             if sent_count > 0:
-                await send_telegram_alert(f"✉️ Outreach Complete: Sent {sent_count} emails.")
+                await send_telegram_alert(f"Outreach phase completed. Successfully dispatched {sent_count} communications.")
 
 
 async def _do_reply_polling():
-    """Polls IMAP for direct replies."""
+    """
+    Executes ongoing monitoring of the designated reply inbox via IMAP.
+    Matches incoming communications with recorded lead profiles and updates
+    their status to trigger necessary follow-up protocols.
+    """
     logger.info("Polling for replies")
     replies = await fetch_recent_replies(since_minutes=30)
     
@@ -292,12 +337,16 @@ async def _do_reply_polling():
             if lead and lead.status != "replied":
                 lead.status = "replied"
                 lead.first_replied_at = datetime.utcnow()
-                await send_telegram_alert(f"🚨 REPLY RECEIVED!\nBusiness: {lead.business_name}\nEmail: {lead.email}\nSubject: {subject}")
+                await send_telegram_alert(f"Reply Detected.\nLead: {lead.business_name}\nEmail: {lead.email}\nSubject Reference: {subject}")
                 await db.commit()
 
 
 async def _do_daily_report():
-    """Generates and sends the daily Excel report."""
+    """
+    Executes the final analytical reporting phase of the daily pipeline.
+    Aggregates performance metrics, generates analytical documents (Excel),
+    and dispatches summary reports to administrative stakeholders.
+    """
     logger.info("Generating Daily Report")
     today = date.today()
     
@@ -365,7 +414,7 @@ def run_discovery_task():
         run_async(_do_discovery())
     except Exception as e:
         logger.error(f"Discovery Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Discovery): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Discovery): {e}"))
 
 @shared_task(name="app.tasks.daily_pipeline.run_qualification_task")
 def run_qualification_task():
@@ -374,7 +423,7 @@ def run_qualification_task():
         run_async(_do_qualification())
     except Exception as e:
         logger.error(f"Qualification Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Qualification): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Qualification): {e}"))
 
 @shared_task(name="app.tasks.daily_pipeline.run_personalization_task")
 def run_personalization_task():
@@ -383,7 +432,7 @@ def run_personalization_task():
         run_async(_do_personalization())
     except Exception as e:
         logger.error(f"Personalization Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Personalization): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Personalization): {e}"))
 
 @shared_task(name="app.tasks.daily_pipeline.run_outreach_send_task")
 def run_outreach_send_task():
@@ -392,7 +441,7 @@ def run_outreach_send_task():
         run_async(_do_outreach())
     except Exception as e:
         logger.error(f"Outreach Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Outreach): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Outreach): {e}"))
 
 @shared_task(name="app.tasks.daily_pipeline.run_reply_polling_task")
 def run_reply_polling_task():
@@ -401,7 +450,7 @@ def run_reply_polling_task():
         run_async(_do_reply_polling())
     except Exception as e:
         logger.error(f"Reply Polling Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Reply Polling): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Reply Polling): {e}"))
 
 @shared_task(name="app.tasks.daily_pipeline.run_daily_report_task")
 def run_daily_report_task():
@@ -410,11 +459,14 @@ def run_daily_report_task():
         run_async(_do_daily_report())
     except Exception as e:
         logger.error(f"Daily Report Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Daily Report): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Daily Report): {e}"))
 
 @shared_task(name="app.tasks.daily_pipeline.run_manual_full_pipeline")
 def run_manual_full_pipeline():
-    """Manually run all steps sequentially (for testing)"""
+    """
+    Facilitates manual triggering of the complete pipeline synchronously.
+    Intended for administrative testing and override execution.
+    """
     logger.info("Running full manual pipeline...")
     try:
         run_async(_do_discovery())
@@ -424,4 +476,4 @@ def run_manual_full_pipeline():
         run_async(_do_daily_report())
     except Exception as e:
         logger.error(f"Manual Pipeline Failed: {e}")
-        run_async(send_telegram_alert(f"❌ Pipeline Error (Manual Run): {e}"))
+        run_async(send_telegram_alert(f"Pipeline Error (Manual Run): {e}"))

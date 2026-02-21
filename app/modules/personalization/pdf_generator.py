@@ -1,3 +1,8 @@
+"""
+PDF Document generation module.
+Utilizes ReportLab to dynamically synthesize customized proposal documents 
+incorporating LLM-generated insights for individual leads.
+"""
 import os
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -8,8 +13,16 @@ from loguru import logger
 
 def generate_proposal_pdf(business_name: str, category: str, benefits: List[str], output_filename: str = "proposal.pdf") -> str:
     """
-    Generates a personalized PDF proposal for a lead.
-    Returns the file path or None if failed.
+    Synthesizes a tailored PDF proposal outlining digital strategy improvements based on the extracted business context.
+    
+    Args:
+        business_name (str): The legal or trading name of the target business.
+        category (str): The operational archetype of the target business.
+        benefits (List[str]): Structurally generated value propositions supplied by the LLM.
+        output_filename (str, optional): The designated filename for the resulting PDF. Defaults to "proposal.pdf".
+        
+    Returns:
+        str: The absolute or relative file path to the generated document upon success, or None upon failure.
     """
     try:
         os.makedirs("tmp", exist_ok=True)

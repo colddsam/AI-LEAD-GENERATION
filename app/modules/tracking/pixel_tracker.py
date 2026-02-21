@@ -1,3 +1,8 @@
+"""
+Email engagement tracking module.
+Provides services to process and record interaction events (opens, clicks)
+associated with dispatched outreach campaigns.
+"""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from fastapi import Request
@@ -11,15 +16,27 @@ from app.models.lead import Lead
 logger = logging.getLogger(__name__)
 
 class TrackingService:
+    """
+    Service class responsible for handling inbound engagement tracking requests.
+    Updates corresponding lead and outreach entities based on interaction metrics.
+    """
     @staticmethod
     async def log_event(db: AsyncSession, token: str, event_type: str, request: Request, url_clicked: str = None) -> Lead:
         """
-        Logs an email event (open, click) using the tracking token.
-        Updates the lead and outreach status accordingly.
-        Returns the associated Lead object.
+        Records a discrete interaction event against a specific outreach transmission.
+        Updates the progressive state of the associated lead profile.
+        
+        Args:
+            db (AsyncSession): The active asynchronous database session.
+            token (str): The unique base64 tracking token extracted from the request.
+            event_type (str): The classification of the event (e.g., 'open', 'click').
+            request (Request): The raw FastAPI request object containing client metadata.
+            url_clicked (str, optional): The specific target URL if the event was a click.
+            
+        Returns:
+            Lead: The fully updated Lead entity associated with the event, or None if validation fails.
         """
         try:
-            # 1. Find the outreach record
             stmt = select(EmailOutreach).where(EmailOutreach.tracking_token == token)
             result = await db.execute(stmt)
             outreach = result.scalars().first()
@@ -27,7 +44,6 @@ class TrackingService:
             if not outreach:
                 return None
                 
-            # 2. Find the lead
             lead_stmt = select(Lead).where(Lead.id == outreach.lead_id)
             lead_result = await db.execute(lead_stmt)
             lead = lead_result.scalars().first()
@@ -35,7 +51,6 @@ class TrackingService:
             if not lead:
                 return None
                 
-            # 3. Create Event
             client_ip = request.client.host if request.client else None
             user_agent = request.headers.get("user-agent", "")
             
@@ -50,7 +65,6 @@ class TrackingService:
             )
             db.add(event)
             
-            # 4. Update Lead & Outreach Status
             if event_type == "open":
                 if lead.status == "email_sent":
                     lead.status = "opened"

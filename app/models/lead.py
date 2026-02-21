@@ -1,3 +1,8 @@
+"""
+Core lead and geographic targeting database models module.
+Defines the SQLAlchemy schemas orchestrating discovered local businesses,
+search constraints, and the complete progression footprint of a prospective lead.
+"""
 from datetime import datetime
 import uuid
 from sqlalchemy import Column, String, Integer, Float, Boolean, JSON, DateTime, ARRAY, ForeignKey
@@ -7,6 +12,10 @@ from sqlalchemy.sql import func
 from app.models import Base
 
 class TargetLocation(Base):
+    """
+    Model designating geographic bounds and category criteria mapped for 
+    automated discovery queries via external APIs.
+    """
     __tablename__ = "target_locations"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -21,7 +30,10 @@ class TargetLocation(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class SearchHistory(Base):
-    """Tracks what city/category combinations have been searched to avoid repeats within 2 months."""
+    """
+    Model archiving executed discovery parameters to strictly implement
+    deduplication logic and prevent redundant external API queries within cooling periods.
+    """
     __tablename__ = "search_history"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -30,6 +42,11 @@ class SearchHistory(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 
 class Lead(Base):
+    """
+    Primary model representing a discovered local business prospect. 
+    Encapsulates public profile properties, calculated qualification metrics,
+    and progressive lifecycle timestamps scaling throughout the generation pipeline.
+    """
     __tablename__ = "leads"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -45,16 +62,13 @@ class Lead(Base):
     rating = Column(Float, nullable=True)
     review_count = Column(Integer, nullable=True)
 
-    # Qualification
     qualification_score = Column(Integer, default=0)
     has_website = Column(Boolean, default=False)
     has_social_media = Column(Boolean, default=False)
     web_presence_notes = Column(String, nullable=True)
 
-    # Lifecycle Status
     status = Column(String(50), default="discovered", index=True)
 
-    # Timestamps
     discovered_at = Column(DateTime(timezone=True), default=func.now(), index=True)
     qualified_at = Column(DateTime(timezone=True), nullable=True)
     email_sent_at = Column(DateTime(timezone=True), nullable=True)
@@ -62,12 +76,10 @@ class Lead(Base):
     first_clicked_at = Column(DateTime(timezone=True), nullable=True)
     first_replied_at = Column(DateTime(timezone=True), nullable=True)
 
-    # Metadata
     raw_places_data = Column(JSON, nullable=True)
     notes = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
-    # Relationships
     outreach = relationship("EmailOutreach", back_populates="lead", cascade="all, delete-orphan")
     events = relationship("EmailEvent", back_populates="lead", cascade="all, delete-orphan")

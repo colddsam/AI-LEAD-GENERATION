@@ -1,11 +1,22 @@
+"""
+Social media presence verification module.
+Analyzes target domain Document Object Models (DOM) to identify configured 
+social media properties (e.g., Facebook, Instagram) indicative of digital activity.
+"""
 import httpx
 from bs4 import BeautifulSoup
 from typing import Tuple
 
 async def check_social_media(url: str) -> Tuple[bool, str]:
     """
-    Checks if the website contains links to an active Facebook or Instagram page.
-    Returns (has_socials, notes).
+    Executes an asynchronous HTTP GET request and parses the target DOM
+    to ascertain the existence of external links to validated social media platforms.
+    
+    Args:
+        url (str): The primary domain URL to examine.
+        
+    Returns:
+        Tuple[bool, str]: A boolean indicating presence of specific social links and associated diagnostic notes.
     """
     if not url:
         return False, "No website to check."

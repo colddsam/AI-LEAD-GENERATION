@@ -224,6 +224,21 @@ pytest -v tests/
 
 ---
 
+## 🔮 Future Roadmap (v2.0)
+
+We are actively planning the next major iteration of the system (V2). Our upcoming goals focus on transforming the platform from a single-channel tool into a fully autonomous, self-learning outreach machine. Key objectives include:
+
+- **Multi-Channel Sequences:** Expanding outreach beyond email to include coordinated, multi-touchpoint sequences (e.g., WhatsApp, SMS, Telegram).
+- **Enhanced Lead Discovery:** Integrating multiple new discovery sources to organically find more niche leads, paired with intelligent deduplication logic.
+- **Smart AI Inbox & Auto-Replies:** Building an engine to automatically read received replies, classify their intent, and draft context-aware responses.
+- **Dynamic Follow-Up Engine:** Replacing single-shot emails with intelligent, multi-step campaigns that auto-pause upon lead engagement.
+- **Deep Lead Enrichment:** Gathering comprehensive background data from social channels and wider web presence before outreach to maximize personalization.
+- **Self-Improving Analytics:** Implementing automated A/B testing and regular AI-driven reviews to continuously optimize messaging styles and conversion rates.
+
+*(Note: Technical implementation models and architectural choices for these upcoming changes are managed internally).*
+
+---
+
 ## 📜 License
 
 This project is **PROPRIETARY AND CONFIDENTIAL**. 

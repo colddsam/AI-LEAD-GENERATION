@@ -1,3 +1,8 @@
+"""
+Excel report generation module.
+Utilizes the openpyxl library to systematically assemble quantitative metrics
+and lead status details into a formatted administrative spreadsheet artifact.
+"""
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from datetime import date
@@ -6,11 +11,19 @@ from typing import List, Dict, Any
 
 def generate_daily_report_excel(report_data: Dict[str, Any], leads: List[Dict[str, Any]], output_date: date) -> str:
     """
-    Generates an Excel daily summary report based on metrics and lead list.
+    Compiles daily performance metrics and individual lead properties into 
+    a multi-sheet formatted Excel workbook.
+    
+    Args:
+        report_data (Dict[str, Any]): Dictionary containing foundational daily metrics.
+        leads (List[Dict[str, Any]]): Structurally formatted collection of recent lead data.
+        output_date (date): The contextual date associated with the report.
+        
+    Returns:
+        str: Expected file path to the synchronously generated Excel document.
     """
     wb = openpyxl.Workbook()
     
-    # 1. Summary Sheet
     ws1 = wb.active
     ws1.title = "Daily Summary"
     
@@ -31,7 +44,6 @@ def generate_daily_report_excel(report_data: Dict[str, Any], leads: List[Dict[st
     
     ws1.column_dimensions['A'].width = 25
     
-    # 2. Leads Sheet
     ws2 = wb.create_sheet("Lead Details")
     headers = ["Business", "Category", "Location", "Email Sent", "Opened", "Clicked", "Replied", "Status", "Phone", "Google Maps"]
     ws2.append(headers)
@@ -57,7 +69,6 @@ def generate_daily_report_excel(report_data: Dict[str, Any], leads: List[Dict[st
     for col in ws2.columns:
         ws2.column_dimensions[col[0].column_letter].width = 20
         
-    # Save the Excel file
     os.makedirs("tmp", exist_ok=True)
     filename = f"LeadGen_Report_{output_date.strftime('%Y-%m-%d')}.xlsx"
     filepath = os.path.join("tmp", filename)

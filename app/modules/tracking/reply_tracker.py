@@ -1,3 +1,8 @@
+"""
+Inbound reply tracking module.
+Establishes secure IMAP connections to monitor configured mailboxes for
+direct responses from generated leads.
+"""
 import imaplib
 import email
 from email.header import decode_header
@@ -10,8 +15,14 @@ logger = logging.getLogger(__name__)
 
 async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str]]:
     """
-    Connects to the IMAP server and checks for recent replies.
-    Returns a list of tuples containing (sender_email, subject).
+    Connects to the designated IMAP server to retrieve recent, unseen email communications.
+    Parses the sender and subject headers for subsequent processing and lead matching.
+    
+    Args:
+        since_minutes (int, optional): The time window in minutes to bound the search. Defaults to 30.
+        
+    Returns:
+        List[Tuple[str, str]]: A list of tuples containing the extracted sender email and subject string.
     """
     if not settings.IMAP_USER or not settings.IMAP_PASSWORD:
         logger.warning("IMAP credentials not set, skipping reply polling.")
@@ -22,7 +33,6 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str]]
         mail.login(settings.IMAP_USER, settings.IMAP_PASSWORD)
         mail.select("inbox")
         
-        # Search for unseen emails (or could use UNSEEN or SINCE)
         status, messages = mail.search(None, "UNSEEN")
         if status != "OK":
             mail.logout()
@@ -31,8 +41,7 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str]]
         email_ids = messages[0].split()
         results = []
         
-        for e_id in email_ids[-20:]:  # Process max 20 latest unseen to prevent timeouts
-            # Fetch the email
+        for e_id in email_ids[-20:]:
             status, msg_data = mail.fetch(e_id, "(RFC822)")
             if status != "OK":
                 continue
@@ -41,13 +50,11 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str]]
                 if isinstance(response_part, tuple):
                     msg = email.message_from_bytes(response_part[1])
                     
-                    # Decrypt subject
                     subject, encoding = decode_header(msg["Subject"])[0]
                     if isinstance(subject, bytes):
                         subject = subject.decode(encoding if encoding else "utf-8")
                         
                     sender = msg.get("From")
-                    # Extract pure email from 'Name <email@domain.com>'
                     if "<" in sender and ">" in sender:
                         sender = sender.split("<")[1].split(">")[0]
                         

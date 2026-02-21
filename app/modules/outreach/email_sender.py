@@ -1,3 +1,8 @@
+"""
+Asynchronous email dispatch module.
+Leverages SMTP protocols to securely transmit HTML-formatted outreach 
+communications and associated attachments to prospective leads.
+"""
 from loguru import logger
 import aiosmtplib
 from email.message import EmailMessage
@@ -7,7 +12,17 @@ settings = get_settings()
 
 async def send_email(to_email: str, subject: str, html_content: str, attachment_paths: list[str] = None) -> bool:
     """
-    Sends an email asynchronously via Brevo SMTP using aiosmtplib.
+    Transmits an asynchronous email utilizing the configured SMTP relay service.
+    Constructs a multi-part MIME message embedding HTML content and optional PDF attachments.
+    
+    Args:
+        to_email (str): The recipient's email address.
+        subject (str): The subject line of the email.
+        html_content (str): The primary HTML body of the email.
+        attachment_paths (list[str], optional): Absolute paths to files intended for attachment.
+        
+    Returns:
+        bool: True if the SMTP transmission was acknowledged as successful, False otherwise.
     """
     message = EmailMessage()
     message["From"] = f"{settings.FROM_NAME} <{settings.FROM_EMAIL}>"
