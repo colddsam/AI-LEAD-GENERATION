@@ -2,7 +2,8 @@ import imaplib
 import email
 from email.header import decode_header
 from typing import List, Tuple
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 import logging
 
 logger = logging.getLogger(__name__)

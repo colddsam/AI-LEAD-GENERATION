@@ -1,7 +1,8 @@
 import os
 from celery import Celery
 from celery.schedules import crontab
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 
 redis_url = settings.REDIS_URL
 if redis_url.startswith("rediss://") and "?" not in redis_url:

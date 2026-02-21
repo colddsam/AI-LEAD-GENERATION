@@ -1,6 +1,7 @@
 import json
 from groq import AsyncGroq
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 
 class GroqClient:
     def __init__(self):

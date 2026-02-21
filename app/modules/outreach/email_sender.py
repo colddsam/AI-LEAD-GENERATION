@@ -1,7 +1,8 @@
 import aiosmtplib
 from email.message import EmailMessage
 import os
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 
 async def send_email(to_email: str, subject: str, html_content: str, attachment_paths: list[str] = None) -> bool:
     """

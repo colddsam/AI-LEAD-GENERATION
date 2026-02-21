@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 from app.models import Base
 from app.models.lead import Lead, TargetLocation
 from app.models.campaign import Campaign, EmailOutreach

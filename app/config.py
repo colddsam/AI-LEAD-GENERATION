@@ -1,5 +1,7 @@
 import os
+from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     # Application
@@ -57,4 +59,7 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-settings = Settings()
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()

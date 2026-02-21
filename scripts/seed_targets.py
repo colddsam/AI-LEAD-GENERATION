@@ -5,7 +5,7 @@ import sys
 # Add parent dir to path so we can import app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.core.database import AsyncSessionLocal
+from app.core.database import get_session_maker
 import app.models
 from app.models.lead import TargetLocation
 
@@ -28,7 +28,7 @@ async def seed_locations():
         }
     ]
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         for loc_data in locations:
             loc = TargetLocation(**loc_data)
             db.add(loc)

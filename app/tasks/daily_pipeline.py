@@ -7,12 +7,13 @@ import os
 from celery import shared_task
 
 from sqlalchemy import select, func, update
-from app.core.database import AsyncSessionLocal
+from app.core.database import get_session_maker
 from app.models.lead import Lead, TargetLocation
 from app.models.campaign import Campaign, EmailOutreach
 from app.models.email_event import EmailEvent
 from app.models.daily_report import DailyReport
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 
 from app.modules.notifications.telegram_bot import send_telegram_alert
 from app.modules.discovery.google_places import GooglePlacesClient
@@ -42,7 +43,7 @@ async def _do_discovery():
     discovered_count = 0
     client = GooglePlacesClient()
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         stmt = select(TargetLocation).where(TargetLocation.is_active == True)
         result = await db.execute(stmt)
         locations = result.scalars().all()
@@ -90,7 +91,7 @@ async def _do_qualification():
     logger.info("Starting Qualification")
     qualified_count = 0
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         stmt = select(Lead).where(Lead.status == "discovered")
         result = await db.execute(stmt)
         leads = result.scalars().all()
@@ -125,7 +126,7 @@ async def _do_personalization():
     pers_count = 0
     groq_client = GroqClient()
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         # Check active campaign or create new
         today = date.today()
         camp_stmt = select(Campaign).where(Campaign.campaign_date == today).limit(1)
@@ -198,7 +199,7 @@ async def _do_outreach():
     logger.info("Starting Outreach Dispatch")
     sent_count = 0
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         stmt = select(EmailOutreach).where(EmailOutreach.status == "queued")
         result = await db.execute(stmt)
         queued_emails = result.scalars().all()
@@ -246,7 +247,7 @@ async def _do_reply_polling():
     logger.info("Polling for replies")
     replies = await fetch_recent_replies(since_minutes=30)
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         for sender_email, subject in replies:
             # Find matching lead
             stmt = select(Lead).where(Lead.email == sender_email).order_by(Lead.created_at.desc()).limit(1)
@@ -265,7 +266,7 @@ async def _do_daily_report():
     logger.info("Generating Daily Report")
     today = date.today()
     
-    async with AsyncSessionLocal() as db:
+    async with get_session_maker()() as db:
         camp_stmt = select(Campaign).where(Campaign.campaign_date == today).limit(1)
         camp_res = await db.execute(camp_stmt)
         campaign = camp_res.scalars().first()

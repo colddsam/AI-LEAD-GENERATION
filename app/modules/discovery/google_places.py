@@ -1,11 +1,13 @@
 import httpx
 from typing import List, Dict, Any, Optional
-from app.config import settings
+from app.config import get_settings
+
 
 class GooglePlacesClient:
     BASE_URL = "https://places.googleapis.com/v1/places:searchText"
 
     def __init__(self):
+        settings = get_settings()
         self.api_key = settings.GOOGLE_PLACES_API_KEY
         self.headers = {
             "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 from datetime import date
-from app.config import settings
+from app.config import get_settings
+settings = get_settings()
 from app.modules.outreach.email_sender import send_email
 
 async def send_daily_report_email(report_data: dict, excel_filepath: str, output_date: date) -> bool:
