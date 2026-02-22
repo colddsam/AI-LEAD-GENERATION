@@ -8,6 +8,9 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from reportlab.graphics.shapes import Drawing, Rect, String
+from reportlab.graphics.charts.barcharts import VerticalBarChart
+from reportlab.lib import colors
 from typing import List
 from loguru import logger
 
@@ -50,6 +53,45 @@ def generate_proposal_pdf(business_name: str, category: str, benefits: List[str]
             Story.append(Spacer(1, 6))
             
         Story.append(Spacer(1, 24))
+        
+        # --- Add Visual Chart ---
+        drawing = Drawing(400, 200)
+        
+        data = [
+            (30, 80),   # Current metrics (e.g., Visibility, Engagement)
+            (75, 120)   # Projected metrics
+        ]
+        
+        bc = VerticalBarChart()
+        bc.x = 50
+        bc.y = 50
+        bc.height = 125
+        bc.width = 300
+        bc.data = data
+        bc.strokeColor = colors.white
+        bc.valueAxis.valueMin = 0
+        bc.valueAxis.valueMax = 150
+        bc.valueAxis.valueStep = 30
+        
+        bc.categoryAxis.labels.boxAnchor = 'ne'
+        bc.categoryAxis.labels.dx = 8
+        bc.categoryAxis.labels.dy = -2
+        bc.categoryAxis.categoryNames = ['Visibility', 'Engagement']
+        
+        # Custom colors for Current vs Projected
+        bc.bars[0].fillColor = colors.HexColor('#94a3b8') # Slate for Current
+        bc.bars[1].fillColor = colors.HexColor('#3498db') # Brand Blue for Projected
+
+        drawing.add(bc)
+        
+        # Add Chart Title via String Shape
+        title_str = String(200, 185, 'Projected Growth vs Current State', fontSize=12, textAnchor='middle')
+        drawing.add(title_str)
+        
+        Story.append(drawing)
+        Story.append(Spacer(1, 24))
+        # --- End Visual Chart ---
+
         Story.append(Paragraph("Let's talk about building a platform tailored to your needs.", styles['Normal']))
         
         doc.build(Story)
