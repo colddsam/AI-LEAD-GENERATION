@@ -1,8 +1,13 @@
+import os
 import pytest
 import pytest_asyncio
+
+# MUST SET BEFORE IMPORTING APP OR SETTINGS
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test.db"
+
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.core.database import get_db
+from app.core import database
 from app.models import Base
 from app.models.lead import Lead, TargetLocation
 from app.models.campaign import Campaign
@@ -26,6 +31,12 @@ TestingSessionLocal = async_sessionmaker(
 
 @pytest_asyncio.fixture(scope="function")
 async def db_session():
+    # Hijack the base database module globals for direct function calls
+    old_engine = database._engine
+    old_session_maker = database._async_session_maker
+    database._engine = test_engine
+    database._async_session_maker = TestingSessionLocal
+    
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
         
@@ -34,6 +45,10 @@ async def db_session():
     
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+        
+    # Restore
+    database._engine = old_engine
+    database._async_session_maker = old_session_maker
 
 @pytest.fixture(scope="function")
 def override_get_db(db_session):
@@ -43,7 +58,7 @@ def override_get_db(db_session):
 
 @pytest_asyncio.fixture(scope="function")
 async def client(override_get_db):
-    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[database.get_db] = override_get_db
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac

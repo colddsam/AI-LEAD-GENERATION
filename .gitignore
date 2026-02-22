@@ -43,3 +43,8 @@ celerybeat-schedule.*
 celerybeat.pid
 
 docs/
+
+# Temporary run outputs
+alembic_error.txt
+alembic_err.txt
+git_status.txt

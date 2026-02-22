@@ -10,10 +10,15 @@ asyncpg==0.30.0
 alembic==1.13.3
 
 # Task Queue
-celery==5.4.0
-redis==5.2.0
+# ============================================================
+# 🔴 CELERY + REDIS — PRESERVED, NOT INSTALLED BY DEFAULT
+# Uncomment these when reactivating the Celery approach.
+# ============================================================
+# celery==5.4.0
+# redis==5.2.0
 
 # Scheduler
+# ✅ ACTIVE — Scheduler (replaces Celery Beat)
 apscheduler==3.10.4
 
 # HTTP & Scraping

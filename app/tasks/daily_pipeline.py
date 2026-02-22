@@ -9,7 +9,6 @@ from datetime import date, datetime, timedelta
 import uuid
 import base64
 import os
-from celery import shared_task
 
 from sqlalchemy import select, func, update
 from app.core.database import get_session_maker
@@ -32,27 +31,7 @@ from app.modules.tracking.reply_tracker import fetch_recent_replies
 from app.modules.reporting.excel_builder import generate_daily_report_excel
 from app.modules.reporting.email_reporter import send_daily_report_email
 
-def run_async(coro):
-    """
-    Executes an asynchronous coroutine synchronously.
-    Facilitates the execution of async database and network operations
-    within synchronous Celery task workers.
-    
-    Args:
-        coro: The asynchronous coroutine to execute.
-        
-    Returns:
-        The result of the executed coroutine.
-    """
-    try:
-        loop = asyncio.get_event_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    return loop.run_until_complete(coro)
-
-
-async def _do_discovery():
+async def run_discovery_stage():
     """
     Executes the discovery phase of the lead generation pipeline.
     Identifies target geographic areas, interfaces with the Google Places API
@@ -141,7 +120,7 @@ async def _do_discovery():
             await send_telegram_alert(f"Discovery phase completed. Identified {discovered_count} new prospective businesses (Targets: {targets})")
 
 
-async def _do_qualification():
+async def run_qualification_stage():
     """
     Executes the qualification phase of the lead generation pipeline.
     Analyzes the digital footprint of newly discovered leads using LLM evaluation
@@ -188,7 +167,7 @@ def _generate_tracking_token(lead_id, campaign_id):
     return base64.urlsafe_b64encode(raw_token.encode()).decode('utf-8')
 
 
-async def _do_personalization():
+async def run_personalization_stage():
     """
     Executes the personalization phase of the lead generation pipeline.
     Integrates with LLM providers to construct tailored proposal content and
@@ -266,7 +245,7 @@ async def _do_personalization():
                 await send_telegram_alert(f"Personalization phase completed. Queued {pers_count} customized proposals for automated dispatch.")
 
 
-async def _do_outreach():
+async def run_outreach_stage():
     """
     Executes the outreach phase of the lead generation pipeline.
     Dispatches constructed emails sequentially via configured SMTP relays
@@ -318,7 +297,7 @@ async def _do_outreach():
                 await send_telegram_alert(f"Outreach phase completed. Successfully dispatched {sent_count} communications.")
 
 
-async def _do_reply_polling():
+async def poll_replies():
     """
     Executes ongoing monitoring of the designated reply inbox via IMAP.
     Matches incoming communications with recorded lead profiles and updates
@@ -341,7 +320,7 @@ async def _do_reply_polling():
                 await db.commit()
 
 
-async def _do_daily_report():
+async def generate_daily_report():
     """
     Executes the final analytical reporting phase of the daily pipeline.
     Aggregates performance metrics, generates analytical documents (Excel),
@@ -405,75 +384,36 @@ async def _do_daily_report():
         await send_daily_report_email(report_data, excel_path, today)
         await db.commit()
 
-# Celery Shared Tasks Wrapper
-
-@shared_task(name="app.tasks.daily_pipeline.run_discovery_task")
-def run_discovery_task():
-    logger.info("Executing Discovery Task via Celery")
-    try:
-        run_async(_do_discovery())
-    except Exception as e:
-        logger.error(f"Discovery Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Discovery): {e}"))
-
-@shared_task(name="app.tasks.daily_pipeline.run_qualification_task")
-def run_qualification_task():
-    logger.info("Executing Qualification Task via Celery")
-    try:
-        run_async(_do_qualification())
-    except Exception as e:
-        logger.error(f"Qualification Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Qualification): {e}"))
-
-@shared_task(name="app.tasks.daily_pipeline.run_personalization_task")
-def run_personalization_task():
-    logger.info("Executing Personalization Task via Celery")
-    try:
-        run_async(_do_personalization())
-    except Exception as e:
-        logger.error(f"Personalization Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Personalization): {e}"))
-
-@shared_task(name="app.tasks.daily_pipeline.run_outreach_send_task")
-def run_outreach_send_task():
-    logger.info("Executing Outreach Task via Celery")
-    try:
-        run_async(_do_outreach())
-    except Exception as e:
-        logger.error(f"Outreach Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Outreach): {e}"))
-
-@shared_task(name="app.tasks.daily_pipeline.run_reply_polling_task")
-def run_reply_polling_task():
-    logger.info("Executing Reply Polling Task via Celery")
-    try:
-        run_async(_do_reply_polling())
-    except Exception as e:
-        logger.error(f"Reply Polling Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Reply Polling): {e}"))
-
-@shared_task(name="app.tasks.daily_pipeline.run_daily_report_task")
-def run_daily_report_task():
-    logger.info("Executing Daily Report Task via Celery")
-    try:
-        run_async(_do_daily_report())
-    except Exception as e:
-        logger.error(f"Daily Report Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Daily Report): {e}"))
-
-@shared_task(name="app.tasks.daily_pipeline.run_manual_full_pipeline")
-def run_manual_full_pipeline():
-    """
-    Facilitates manual triggering of the complete pipeline synchronously.
-    Intended for administrative testing and override execution.
-    """
-    logger.info("Running full manual pipeline...")
-    try:
-        run_async(_do_discovery())
-        run_async(_do_qualification())
-        run_async(_do_personalization())
-        run_async(_do_outreach())
-        run_async(_do_daily_report())
-    except Exception as e:
-        logger.error(f"Manual Pipeline Failed: {e}")
-        run_async(send_telegram_alert(f"Pipeline Error (Manual Run): {e}"))
+# ============================================================
+# 🔴 CELERY APPROACH — PRESERVED FOR FUTURE SCALE
+# Replace the async def functions above with these decorators
+# when reactivating Celery:
+#
+# from app.tasks.celery_app import celery_app
+#
+# @celery_app.task(name="app.tasks.daily_pipeline.run_discovery_task")
+# def run_discovery_task():
+#     logger.info("Executing Discovery Task via Celery")
+#     try:
+#         run_async(run_discovery_stage())
+#     except Exception as e:
+#         logger.error(f"Discovery Failed: {e}")
+#         run_async(send_telegram_alert(f"Pipeline Error (Discovery): {e}"))
+#
+# @celery_app.task(name="app.tasks.daily_pipeline.run_qualification_task")
+# def run_qualification_task():
+#     ... (repeat pattern for each stage below)
+#
+# @celery_app.task(name="app.tasks.daily_pipeline.run_manual_full_pipeline")
+# def run_manual_full_pipeline():
+#     logger.info("Running full manual pipeline...")
+#     try:
+#         run_async(run_discovery_stage())
+#         run_async(run_qualification_stage())
+#         run_async(run_personalization_stage())
+#         run_async(run_outreach_stage())
+#         run_async(generate_daily_report())
+#     except Exception as e:
+#         logger.error(f"Manual Pipeline Failed: {e}")
+#         run_async(send_telegram_alert(f"Pipeline Error (Manual Run): {e}"))
+# ============================================================

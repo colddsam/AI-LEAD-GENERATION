@@ -2,14 +2,37 @@
 Entry point for the AI Lead Generation System API.
 Configures the FastAPI application, security dependencies, and core routers.
 """
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Security, HTTPException, status, Depends
 from fastapi.security.api_key import APIKeyHeader
 from app.config import get_settings
+from app.core.scheduler import scheduler, setup_scheduler
+from loguru import logger
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ── Startup ──────────────────────────────────────────────
+    logger.info("Starting Lead Gen Automation API")
+    setup_scheduler()
+
+    # ============================================================
+    # 🔴 CELERY APPROACH — PRESERVED FOR FUTURE SCALE
+    # If reactivating Celery, remove setup_scheduler() above
+    # and start worker + beat as separate Docker services instead.
+    # The FastAPI app itself does NOT need to know about Celery.
+    # ============================================================
+
+    yield
+
+    # ── Shutdown ─────────────────────────────────────────────
+    scheduler.shutdown(wait=False)
+    logger.info("Scheduler stopped, app shutting down")
 
 app = FastAPI(
     title="AI Lead Generation System",
     description="Automated system to discover, qualify, and outreach to local businesses.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)

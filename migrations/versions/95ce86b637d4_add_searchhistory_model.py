@@ -37,11 +37,13 @@ def upgrade() -> None:
     op.alter_column('email_outreach', 'attachment_names',
                existing_type=postgresql.ARRAY(sa.VARCHAR()),
                type_=sa.JSON(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using="array_to_json(attachment_names)")
     op.alter_column('target_locations', 'categories',
                existing_type=postgresql.ARRAY(sa.VARCHAR()),
                type_=sa.JSON(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using="array_to_json(categories)")
     # ### end Alembic commands ###
 
 
