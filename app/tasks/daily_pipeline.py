@@ -347,16 +347,28 @@ async def generate_daily_report():
         }
         
         # Save to DB report
-        db_report = DailyReport(
-            report_date=today,
-            total_leads_discovered=report_data["leads_discovered"],
-            total_qualified_leads=report_data["leads_qualified"],
-            emails_sent=report_data["emails_sent"],
-            emails_opened=report_data["emails_opened"],
-            links_clicked=report_data["links_clicked"],
-            replies_received=report_data["replies_received"]
-        )
-        db.add(db_report)
+        report_stmt = select(DailyReport).where(DailyReport.report_date == today)
+        report_res = await db.execute(report_stmt)
+        db_report = report_res.scalars().first()
+        
+        if db_report:
+            db_report.leads_discovered = report_data["leads_discovered"]
+            db_report.leads_qualified = report_data["leads_qualified"]
+            db_report.emails_sent = report_data["emails_sent"]
+            db_report.emails_opened = report_data["emails_opened"]
+            db_report.links_clicked = report_data["links_clicked"]
+            db_report.replies_received = report_data["replies_received"]
+        else:
+            db_report = DailyReport(
+                report_date=today,
+                leads_discovered=report_data["leads_discovered"],
+                leads_qualified=report_data["leads_qualified"],
+                emails_sent=report_data["emails_sent"],
+                emails_opened=report_data["emails_opened"],
+                links_clicked=report_data["links_clicked"],
+                replies_received=report_data["replies_received"]
+            )
+            db.add(db_report)
         
         # Get active leads for excel
         leads_stmt = select(Lead).where(
