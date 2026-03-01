@@ -143,7 +143,7 @@ Copy the `.env.example` to `.env` and fill in the specifics:
 cp .env.example .env
 ```
 
-Ensure you have set `DATABASE_URL`, `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, and `IMAP_SERVER` credentials.
+Ensure you have set `DATABASE_URL`, `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, `IMAP_SERVER` credentials, and `CRON_JOB_API_KEY` (if utilizing the automated free-tier external trigger).
 
 ### 3. Local Installation (Recommended for Development)
 
@@ -175,6 +175,11 @@ docker-compose up -d --build
 ```
 
 This will spin up the FastAPI app and (optionally) the PostgreSQL container. All background tasks run seamlessly inside the API process.
+
+### External Cron-Job Setup (For Serverless Free Tiers)
+
+If deploying to a platform that puts the server to sleep (e.g., Render Free Tier), this repository includes an automated GitHub Action (`.github/workflows/setup_cronjob.yml`) that links your deployment to [cron-job.org](https://cron-job.org).
+Simply provide your `CRON_JOB_API_KEY` and `APP_URL` as GitHub Secrets/Variables, and a system keep-alive will be automatically configured upon deployment.
 
 ---
 
