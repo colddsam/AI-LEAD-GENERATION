@@ -8,6 +8,15 @@ from datetime import date, datetime, timedelta
 import uuid
 import base64
 import os
+from dotenv import dotenv_values
+
+def is_pipeline_active() -> bool:
+    """
+    Dynamically evaluates the .env configuration to determine if pipeline execution is permitted.
+    Supports pausing execution without requiring a server reboot.
+    """
+    env_vars = dotenv_values(".env")
+    return env_vars.get("PRODUCTION_STATUS", "RUN").upper() == "RUN"
 
 from sqlalchemy import select, func, update
 from app.core.database import get_session_maker
@@ -36,6 +45,11 @@ async def run_discovery_stage():
     Discovers prospective leads via Google Places API and inserts verified new leads.
     """
     logger.info("Starting Dynamic Discovery")
+    
+    if not is_pipeline_active():
+        logger.warning("🚨 PRODUCTION_STATUS is HOLD. Skipping discovery stage.")
+        return
+        
     discovered_count = 0
     client = GooglePlacesClient()
     groq_client = GroqClient()
@@ -125,6 +139,11 @@ async def run_qualification_stage():
     Analyzes digital footprints of new leads to compute qualification scores.
     """
     logger.info("Starting Qualification")
+    
+    if not is_pipeline_active():
+        logger.warning("🚨 PRODUCTION_STATUS is HOLD. Skipping qualification stage.")
+        return
+        
     qualified_count = 0
     
     async with get_session_maker()() as db:
@@ -164,6 +183,11 @@ async def run_personalization_stage():
     Constructs tailored proposal content and PDFs, then queues emails.
     """
     logger.info("Starting Personalization")
+    
+    if not is_pipeline_active():
+        logger.warning("🚨 PRODUCTION_STATUS is HOLD. Skipping personalization stage.")
+        return
+        
     pers_count = 0
     groq_client = GroqClient()
     
@@ -241,6 +265,11 @@ async def run_outreach_stage():
     Dispatches queued emails sequentially.
     """
     logger.info("Starting Outreach Dispatch")
+    
+    if not is_pipeline_active():
+        logger.warning("🚨 PRODUCTION_STATUS is HOLD. Skipping outreach stage.")
+        return
+        
     sent_count = 0
     
     async with get_session_maker()() as db:
@@ -304,6 +333,11 @@ async def poll_replies():
     Monitors the reply inbox via IMAP and updates lead status on replies.
     """
     logger.info("Polling for replies")
+    
+    if not is_pipeline_active():
+        logger.warning("🚨 PRODUCTION_STATUS is HOLD. Skipping reply polling.")
+        return
+        
     replies = await fetch_recent_replies(since_minutes=30)
     
     async with get_session_maker()() as db:
@@ -347,6 +381,11 @@ async def generate_daily_report():
     Generates the daily analytical report and dispatches it to admins.
     """
     logger.info("Generating Daily Report")
+    
+    if not is_pipeline_active():
+        logger.warning("🚨 PRODUCTION_STATUS is HOLD. Skipping daily report generation.")
+        return
+        
     today = date.today()
     
     async with get_session_maker()() as db:

@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     APP_SECRET_KEY: str = "secret"
     API_KEY: str = "admin-secret-key"
     APP_URL: str = "http://localhost:8000"
+    PRODUCTION_STATUS: str = "RUN"  # Supports "RUN" or "HOLD"
 
     DATABASE_URL: str
     SUPABASE_URL: str

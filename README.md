@@ -123,6 +123,7 @@ graph TD;
 | **🚀 CI/CD Ready**             | Fully configured GitHub Actions pipeline with secure environment variable injection.                                      |
 | **🏗 Scalable Architecture**   | Utilizes Singleton DB connection pooling, Dependency Injection (`lru_cache`), and centralized settings management.        |
 | **💸 Serverless Optimized**    | In-process APScheduler execution optimized for restrictive free-tiers (e.g., Render) by minimizing external connections and processes. |
+| **⏸ Dynamic Pipeline Control** | Edit the `.env` `PRODUCTION_STATUS` to instantly `HOLD` or `RUN` operations without requiring a full server restart. |
 | **🏢 Enterprise-Grade Code**   | Fully documented, strictly typed codebase featuring professional Python docstrings, structured logging, and robust entity schemas. |
 
 ---
@@ -143,7 +144,8 @@ Copy the `.env.example` to `.env` and fill in the specifics:
 cp .env.example .env
 ```
 
-Ensure you have set `DATABASE_URL`, `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, `IMAP_SERVER` credentials, and `CRON_JOB_API_KEY` (if utilizing the automated free-tier external trigger).
+Ensure you have set `DATABASE_URL`, `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, `IMAP_SERVER` credentials, and `CRON_JOB_API_KEY` (if utilizing the automated free-tier external trigger). 
+You may also set `PRODUCTION_STATUS=HOLD` to safely pause all automated daily operations.
 
 ### 3. Local Installation (Recommended for Development)
 
