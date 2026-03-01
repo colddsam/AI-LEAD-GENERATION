@@ -31,7 +31,7 @@ scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 def setup_scheduler():
     """
     Register all pipeline stages as cron jobs.
-    APScheduler runs inside the FastAPI process — no broker, no worker needed.
+    APScheduler runs in the FastAPI process — no external broker required.
     """
 
     # Import here to avoid circular imports

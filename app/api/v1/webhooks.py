@@ -1,7 +1,6 @@
 """
 External webhook listener execution module.
-Exposes dedicated POST endpoints for third-party service providers (e.g., SMTP gateways)
-to asynchronously push asynchronous delivery and engagement telemetry.
+Exposes POST endpoints for telemetry from third-party services like SMTP gateways.
 """
 from fastapi import APIRouter, Request, Depends, BackgroundTasks
 import logging
@@ -16,19 +15,8 @@ router = APIRouter()
 @router.post("/webhooks/brevo")
 async def brevo_webhook(request: Request, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     """
-    Ingests and parses payload data delivered by the Brevo SMTP gateway webhook service.
-    Translates asynchronous 'delivered' and 'bounced' states to local database entities.
-    
-    Security Note: Production implementations require validation of the `X-Mailin-Custom` 
-    header or origin IP whitelists to prevent unauthorized spoofing.
-    
-    Args:
-        request (Request): Unparsed client request to be consumed as JSON.
-        background_tasks (BackgroundTasks): Utility for deferring execution.
-        db (AsyncSession): The injected database session dependency.
-        
-    Returns:
-        dict: Standardized success or failure acknowledgment.
+    Parses payload data from the Brevo SMTP gateway webhook.
+    Translates 'delivered' and 'bounced' states to local database entities.
     """
     
     try:

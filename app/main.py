@@ -7,12 +7,14 @@ from fastapi import FastAPI, Security, HTTPException, status, Depends
 from fastapi.security.api_key import APIKeyHeader
 from app.config import get_settings
 from app.core.scheduler import scheduler, setup_scheduler
+from app.core.database import verify_tables_exist
 from loguru import logger
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # ── Startup ──────────────────────────────────────────────
     logger.info("Starting Lead Gen Automation API")
+    await verify_tables_exist()
     setup_scheduler()
 
     # ============================================================

@@ -1,6 +1,6 @@
 """
 Google Places API integration module.
-Provides an asynchronous client to facilitate geographic discovery of prospective leads.
+Client to facilitate geographic discovery of prospective leads.
 """
 import httpx
 from typing import List, Dict, Any, Optional
@@ -11,7 +11,7 @@ from app.config import get_settings
 class GooglePlacesClient:
     """
     Client for interfacing with the Google Places API.
-    Handles configuration, required headers, and execution of text-based place searches.
+    Handles text-based place searches.
     """
     BASE_URL = "https://places.googleapis.com/v1/places:searchText"
 
@@ -26,15 +26,7 @@ class GooglePlacesClient:
 
     async def search_places(self, location: str, category: str, radius: int = 5000) -> List[Dict[str, Any]]:
         """
-        Executes an asynchronous query against the Google Places API to discover locations.
-        
-        Args:
-            location (str): The target geographic area (e.g., city name).
-            category (str): The target business archetype.
-            radius (int, optional): The search radius limit. Defaults to 5000.
-            
-        Returns:
-            List[Dict[str, Any]]: A list of dictionaries representing discovered places with fields extracted based on the FieldMask.
+        Executes an asynchronous query against the Google Places API.
         """
         query = f"{category} in {location}"
         

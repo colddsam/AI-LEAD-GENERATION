@@ -1,7 +1,6 @@
 """
-Campaign and outreach database models module.
-Defines the SQLAlchemy schemas for tracking top-level outreach campaigns 
-and their associated individualized email dispatch tasks.
+Campaign and outreach database models.
+Defines schemas for tracking campaigns and associated email dispatches.
 """
 import uuid
 from sqlalchemy import Column, String, Integer, DateTime, Boolean, Date, ARRAY, ForeignKey, Text, JSON
@@ -12,8 +11,8 @@ from app.models import Base
 
 class Campaign(Base):
     """
-    Core model representing an overarching lead generation and outreach campaign.
-    Aggregates statistical metrics and binds associated email dispatch entities.
+    Core model representing an outreach campaign.
+    Aggregates statistical metrics and binds email dispatches.
     """
     __tablename__ = "campaigns"
 
@@ -37,8 +36,8 @@ class Campaign(Base):
 
 class EmailOutreach(Base):
     """
-    Model representing a singular, individualized email communication queued or dispatched
-    to a specific lead within a campaign context. Tracks delivery status and engagement metadata.
+    Model representing an individualized email queued or dispatched to a lead.
+    Tracks delivery status and engagement metadata.
     """
     __tablename__ = "email_outreach"
 

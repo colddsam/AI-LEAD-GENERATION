@@ -1,7 +1,6 @@
 """
 Main API router aggregation module.
-Consolidates discrete API sub-routers (e.g., tracking, webhooks) into a singular 
-application-level routing construct for FastAPI initialization.
+Consolidates API sub-routers into a single app routing construct.
 """
 from fastapi import APIRouter
 from app.api.v1 import tracking, webhooks

@@ -1,38 +1,22 @@
 """
-Core lead and geographic targeting database models module.
-Defines the SQLAlchemy schemas orchestrating discovered local businesses,
-search constraints, and the complete progression footprint of a prospective lead.
+Core lead and geographic targeting database models.
+Defines schemas for discovered local businesses, search constraints,
+and the lead lifecycle footprint.
 """
 from datetime import datetime
 import uuid
-from sqlalchemy import Column, String, Integer, Float, Boolean, JSON, DateTime, ARRAY, ForeignKey
+from sqlalchemy import Column, String, Integer, Float, Boolean, JSON, DateTime, ARRAY, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.models import Base
 
-class TargetLocation(Base):
-    """
-    Model designating geographic bounds and category criteria mapped for 
-    automated discovery queries via external APIs.
-    """
-    __tablename__ = "target_locations"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    city = Column(String(100), nullable=False)
-    state = Column(String(100), nullable=True)
-    country = Column(String(100), default="India")
-    lat = Column(Float, nullable=True)
-    lng = Column(Float, nullable=True)
-    categories = Column(JSON)
-    radius_meters = Column(Integer, default=5000)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class SearchHistory(Base):
     """
-    Model archiving executed discovery parameters to strictly implement
-    deduplication logic and prevent redundant external API queries within cooling periods.
+    Archives discovery parameters to enforce deduplication
+    and prevent redundant API queries within cooling periods.
     """
     __tablename__ = "search_history"
 
@@ -43,9 +27,8 @@ class SearchHistory(Base):
 
 class Lead(Base):
     """
-    Primary model representing a discovered local business prospect. 
-    Encapsulates public profile properties, calculated qualification metrics,
-    and progressive lifecycle timestamps scaling throughout the generation pipeline.
+    Primary model for a discovered local business prospect.
+    Tracks profile properties, qualification metrics, and lifecycle timestamps.
     """
     __tablename__ = "leads"
 
@@ -72,12 +55,12 @@ class Lead(Base):
     discovered_at = Column(DateTime(timezone=True), default=func.now(), index=True)
     qualified_at = Column(DateTime(timezone=True), nullable=True)
     email_sent_at = Column(DateTime(timezone=True), nullable=True)
-    first_opened_at = Column(DateTime(timezone=True), nullable=True)
-    first_clicked_at = Column(DateTime(timezone=True), nullable=True)
+    first_opened_at = Column(DateTime(timezone=True), nullable=True, comment="Timestamp of first email open.")
+    first_clicked_at = Column(DateTime(timezone=True), nullable=True, comment="Timestamp of first link click.")
     first_replied_at = Column(DateTime(timezone=True), nullable=True)
 
-    raw_places_data = Column(JSON, nullable=True)
-    notes = Column(String, nullable=True)
+    raw_places_data = Column(JSON, nullable=True, comment="Raw external API payload for discovery fallback.")
+    notes = Column(Text, nullable=True, comment="Custom context or remarks about the lead.")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     

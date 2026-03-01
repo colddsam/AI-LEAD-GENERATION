@@ -1,7 +1,6 @@
 """
-Email engagement event database model module.
-Defines the SQLAlchemy schema for tracking discrete lead interactions 
-such as email opens and link clicks tied to specific outreach efforts.
+Email engagement event database model.
+Defines the schema for tracking email click and open events.
 """
 import uuid
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text
@@ -12,8 +11,7 @@ from app.models import Base
 
 class EmailEvent(Base):
     """
-    Model representing a granular engagement event triggered by a prospective lead,
-    facilitating analytics on campaign performance and individual lead readiness.
+    Model for tracking granular engagement events like email opens and clicks.
     """
     __tablename__ = "email_events"
 

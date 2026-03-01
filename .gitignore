@@ -48,3 +48,6 @@ docs/
 alembic_error.txt
 alembic_err.txt
 git_status.txt
+
+frontend/
+stitch_design.html

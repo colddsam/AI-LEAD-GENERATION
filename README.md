@@ -8,7 +8,7 @@
 <p>
     <img src="https://img.shields.io/badge/Python-3.11+-blue.svg" alt="Python Version" />
     <img src="https://img.shields.io/badge/FastAPI-0.100+-00a393.svg" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/Celery-Distributed_Task_Queue-37814A.svg" alt="Celery" />
+    <img src="https://img.shields.io/badge/APScheduler-In--Process_Jobs-37814A.svg" alt="APScheduler" />
     <img src="https://img.shields.io/badge/PostgreSQL-Database-336791.svg" alt="PostgreSQL" />
     <img src="https://img.shields.io/badge/Status-Production_Ready-success.svg" alt="Status" />
   </p>
@@ -57,7 +57,7 @@ It autonomously:
 The project is built on a robust, asynchronous tech stack designed to handle high-throughput network operations:
 
 - **Backend API:** `FastAPI` + `Uvicorn` for high-performance RESTful operations.
-- **Task Queue:** `Celery` + `Redis` (Highly optimized for Serverless free-tiers like Upstash by disabling worker events, pooling connections, and ignoring results).
+- **Task Scheduling:** `APScheduler` for lightweight, in-process asynchronous task execution (Optimized for free-tiers).
 - **Database:** `PostgreSQL` via `SQLAlchemy (Async)` & `asyncpg` for non-blocking I/O.
 - **Scraping Engine:** `Playwright` & `BeautifulSoup4` for deep web crawling.
 - **AI Brain:** `Groq API` (Llama 3) for lightning-fast business qualification and personalized email generation.
@@ -68,12 +68,12 @@ The project is built on a robust, asynchronous tech stack designed to handle hig
 
 ## 🏗 System Architecture
 
-The workflow follows a directed acyclic pipeline running daily via Celery beat schedulers.
+The workflow follows a directed acyclic pipeline running daily via `APScheduler`.
 
 ```mermaid
 graph TD;
     subgraph "Schedule & Management"
-        Cron[Celery Beat Scheduler] -->|Triggers Daily| Pipeline[Daily Pipeline Task]
+        Cron[APScheduler] -->|Triggers Daily| Pipeline[Daily Pipeline Task]
         Pipeline -.->|Real-time System Alerts| Telegram[Telegram Bot]
     end
 
@@ -122,7 +122,7 @@ graph TD;
 | **🛡 API Key Security**        | All management endpoints are protected by `X-API-Key` headers.                                                          |
 | **🚀 CI/CD Ready**             | Fully configured GitHub Actions pipeline with secure environment variable injection.                                      |
 | **🏗 Scalable Architecture**   | Utilizes Singleton DB connection pooling, Dependency Injection (`lru_cache`), and centralized settings management.        |
-| **💸 Serverless Optimized**    | Celery worker configured for restrictive free-tiers (e.g., Upstash) by disabling events, ignoring results, and pooling.   |
+| **💸 Serverless Optimized**    | In-process APScheduler execution optimized for restrictive free-tiers (e.g., Render) by minimizing external connections and processes. |
 | **🏢 Enterprise-Grade Code**   | Fully documented, strictly typed codebase featuring professional Python docstrings, structured logging, and robust entity schemas. |
 
 ---
@@ -133,7 +133,6 @@ graph TD;
 
 - Python 3.11+
 - PostgreSQL 15+ (Local or Cloud e.g., Supabase)
-- Redis Server (Local or Cloud e.g., Upstash)
 - API Keys for Google Places, Groq, and an SMTP Provider (Brevo/Sendinblue).
 
 ### 2. Environment Variables
@@ -144,7 +143,7 @@ Copy the `.env.example` to `.env` and fill in the specifics:
 cp .env.example .env
 ```
 
-Ensure you have set `DATABASE_URL`, `REDIS_URL` (use `rediss://` for Upstash/SSL; the system automatically appends `?ssl_cert_reqs=CERT_NONE`), `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, and `IMAP_SERVER` credentials.
+Ensure you have set `DATABASE_URL`, `GROQ_API_KEY`, SMTP credentials, Telegram `TELEGRAM_BOT_TOKEN`, and `IMAP_SERVER` credentials.
 
 ### 3. Local Installation (Recommended for Development)
 
@@ -175,33 +174,19 @@ If you prefer an isolated containerized environment, ensure Docker is installed 
 docker-compose up -d --build
 ```
 
-This will spin up the FastAPI app, Celery worker, Celery beat, and (optionally) Redis and PostgreSQL containers.
+This will spin up the FastAPI app and (optionally) the PostgreSQL container. All background tasks run seamlessly inside the API process.
 
 ---
 
 ## 🏃 Running the System
 
-If running locally without Docker, you will need to start the processes in separate terminal windows.
-
-**1. Start the FastAPI Server:**
+Start the FastAPI Server, which automatically instantiates the APScheduler for background operations:
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 > *API Documentation is available at: [http://localhost:8000/docs](http://localhost:8000/docs)*
-
-**2. Start the Celery Worker (In a new terminal windows):**
-
-```bash
-celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
-```
-
-**3. Start the Celery Beat Scheduler (In a new terminal window):**
-
-```bash
-celery -A app.tasks.celery_app beat --loglevel=info
-```
 
 ---
 
@@ -220,7 +205,7 @@ pytest -v tests/
 
 - ✅ Database Schema & ORM capabilities (w/ SQLite compatibility logic for `postgresql.ARRAY`).
 - ✅ Discovery Module (Mocks Google API & DOM Scrapers).
-- ✅ Celery Task Pipeline validation.
+- ✅ Asynchronous Task Pipeline validation.
 - ✅ System integration & Error handling cases.
 
 ---

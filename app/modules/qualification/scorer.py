@@ -1,7 +1,6 @@
 """
 Lead qualification and scoring module.
-Evaluates discovered leads based on digital footprint heuristics to determine 
-viability for personalized outreach sequences.
+Evaluates discovered leads based on digital footprint heuristics.
 """
 from app.models.lead import Lead
 from app.modules.qualification.website_checker import check_website
@@ -9,14 +8,8 @@ from app.modules.qualification.social_checker import check_social_media
 
 async def qualify_lead(lead: Lead) -> tuple[bool, int, str]:
     """
-    Computes a comprehensive qualification score for a given lead by analyzing 
-    website availability, social media presence, and public rating metrics.
-    
-    Args:
-        lead (Lead): The instantiated Lead model to evaluate.
-        
-    Returns:
-        tuple[bool, int, str]: A boolean indicating qualification status, the derived score, and consolidated evaluator notes.
+    Computes a qualification score for a given lead by analyzing
+    website availability, social media presence, and public rating.
     """
     score = 0
     notes = []

@@ -10,10 +10,12 @@ from typing import List, Tuple
 from app.config import get_settings
 settings = get_settings()
 import logging
+from datetime import datetime
+import email.utils
 
 logger = logging.getLogger(__name__)
 
-async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str]]:
+async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str, datetime]]:
     """
     Connects to the designated IMAP server to retrieve recent, unseen email communications.
     Parses the sender and subject headers for subsequent processing and lead matching.
@@ -54,11 +56,21 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str]]
                     if isinstance(subject, bytes):
                         subject = subject.decode(encoding if encoding else "utf-8")
                         
-                    sender = msg.get("From")
+                    sender = msg.get("From", "")
+                    if not sender:
+                        continue
+                        
                     if "<" in sender and ">" in sender:
                         sender = sender.split("<")[1].split(">")[0]
                         
-                    results.append((sender.lower().strip(), subject))
+                    date_str = msg.get("Date")
+                    try:
+                        reply_time = email.utils.parsedate_to_datetime(date_str).replace(tzinfo=None)
+                    except:
+                        reply_time = datetime.utcnow()
+                        
+                    if sender:
+                        results.append((sender.lower().strip(), subject, reply_time))
         
         mail.logout()
         return results

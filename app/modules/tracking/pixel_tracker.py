@@ -10,7 +10,7 @@ import logging
 from datetime import datetime
 
 from app.models.email_event import EmailEvent
-from app.models.campaign import EmailOutreach
+from app.models.campaign import EmailOutreach, Campaign
 from app.models.lead import Lead
 
 logger = logging.getLogger(__name__)
@@ -65,18 +65,44 @@ class TrackingService:
             )
             db.add(event)
             
+            # Fetch Campaign to increment stats properly
+            campaign_stmt = select(Campaign).where(Campaign.id == outreach.campaign_id)
+            campaign_res = await db.execute(campaign_stmt)
+            campaign = campaign_res.scalars().first()
+
             if event_type == "open":
-                if lead.status == "email_sent":
-                    lead.status = "opened"
+                if not lead.first_opened_at:
                     lead.first_opened_at = datetime.utcnow()
-                if outreach.status == "sent":
-                    outreach.status = "delivered"
+                    if campaign:
+                        campaign.emails_opened += 1
+                
+                if lead.status in ["email_sent", "queued_for_send", "delivered"]:
+                    lead.status = "opened"
+                
+                if not outreach.delivered_at:
                     outreach.delivered_at = datetime.utcnow()
+                
+                # Cascade status upward to outreach level
+                if outreach.status in ["sent", "queued", "delivered"]:
+                    outreach.status = "opened"
             
             elif event_type == "click":
-                if lead.status in ["email_sent", "opened"]:
-                    lead.status = "clicked"
+                if not lead.first_clicked_at:
                     lead.first_clicked_at = datetime.utcnow()
+                    if campaign:
+                        campaign.links_clicked += 1
+                        
+                if not lead.first_opened_at:
+                    lead.first_opened_at = datetime.utcnow()
+                    if campaign:
+                        campaign.emails_opened += 1
+                    
+                if lead.status in ["email_sent", "opened", "queued_for_send", "delivered"]:
+                    lead.status = "clicked"
+                    
+                # Cascade status upward to outreach level
+                if outreach.status in ["sent", "queued", "delivered", "opened"]:
+                    outreach.status = "clicked"
                     
             await db.commit()
             return lead

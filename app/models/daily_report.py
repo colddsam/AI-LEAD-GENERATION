@@ -1,7 +1,6 @@
 """
-Daily reporting database model module.
-Defines the SQLAlchemy schema for aggregating and persisting system-wide
-performance metrics executed during a standard daily cycle.
+Daily reporting database model.
+Defines the schema for daily performance metrics aggregation.
 """
 import uuid
 from sqlalchemy import Column, String, Integer, Date, DateTime
@@ -11,8 +10,7 @@ from app.models import Base
 
 class DailyReport(Base):
     """
-    Model consolidating metrics across discovery, qualification, and outreach
-    activities to facilitate administrative reporting and trend analysis.
+    Consolidates daily metrics for discovery, qualification, and outreach.
     """
     __tablename__ = "daily_reports"
 

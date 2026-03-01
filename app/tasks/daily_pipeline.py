@@ -1,7 +1,6 @@
 """
 Daily lead generation pipeline execution module.
-Contains the Celery-managed tasks and orchestrates discovery, qualification,
-personalization, outreach, tracking, and reporting workflows.
+Orchestrates discovery, qualification, personalization, outreach, and reporting workflows.
 """
 import asyncio
 from loguru import logger
@@ -12,7 +11,7 @@ import os
 
 from sqlalchemy import select, func, update
 from app.core.database import get_session_maker
-from app.models.lead import Lead, TargetLocation, SearchHistory
+from app.models.lead import Lead, SearchHistory
 from app.models.campaign import Campaign, EmailOutreach
 from app.models.email_event import EmailEvent
 from app.models.daily_report import DailyReport
@@ -34,9 +33,7 @@ from app.modules.reporting.email_reporter import send_daily_report_email
 async def run_discovery_stage():
     """
     Executes the discovery phase of the lead generation pipeline.
-    Identifies target geographic areas, interfaces with the Google Places API
-    to discover prospective leads, validates redundancy against historical records,
-    and inserts verified new leads into the database.
+    Discovers prospective leads via Google Places API and inserts verified new leads.
     """
     logger.info("Starting Dynamic Discovery")
     discovered_count = 0
@@ -110,7 +107,9 @@ async def run_discovery_stage():
                     rating=place.get("rating"),
                     review_count=place.get("userRatingCount"),
                     email=email,
-                    status="discovered"
+                    status="discovered",
+                    raw_places_data=place,
+                    notes=""
                 )
                 db.add(lead)
                 discovered_count += 1
@@ -123,8 +122,7 @@ async def run_discovery_stage():
 async def run_qualification_stage():
     """
     Executes the qualification phase of the lead generation pipeline.
-    Analyzes the digital footprint of newly discovered leads using LLM evaluation
-    to compute a targeted qualification score and store validation metrics.
+    Analyzes digital footprints of new leads to compute qualification scores.
     """
     logger.info("Starting Qualification")
     qualified_count = 0
@@ -154,14 +152,7 @@ async def run_qualification_stage():
 
 def _generate_tracking_token(lead_id, campaign_id):
     """
-    Generates a secure, URL-safe base64 token for tracking email engagement metrics.
-    
-    Args:
-        lead_id (int): Identifier of the target lead.
-        campaign_id (int): Identifier of the active campaign.
-        
-    Returns:
-        str: Evaluated tracking token.
+    Generates a secure, URL-safe base64 token for tracking email engagement.
     """
     raw_token = f"{lead_id}_{campaign_id}"
     return base64.urlsafe_b64encode(raw_token.encode()).decode('utf-8')
@@ -170,8 +161,7 @@ def _generate_tracking_token(lead_id, campaign_id):
 async def run_personalization_stage():
     """
     Executes the personalization phase of the lead generation pipeline.
-    Integrates with LLM providers to construct tailored proposal content and
-    dynamic PDF attachments per qualified lead. Queues customized emails for delivery.
+    Constructs tailored proposal content and PDFs, then queues emails.
     """
     logger.info("Starting Personalization")
     pers_count = 0
@@ -248,8 +238,7 @@ async def run_personalization_stage():
 async def run_outreach_stage():
     """
     Executes the outreach phase of the lead generation pipeline.
-    Dispatches constructed emails sequentially via configured SMTP relays
-    and progresses the state of associated lead profiles across the system.
+    Dispatches queued emails sequentially.
     """
     logger.info("Starting Outreach Dispatch")
     sent_count = 0
@@ -281,6 +270,19 @@ async def run_outreach_stage():
                     lead.status = "email_sent"
                     lead.email_sent_at = datetime.utcnow()
                     
+                # Update Campaign
+                c_stmt = select(Campaign).where(Campaign.id == email_task.campaign_id)
+                c_res = await db.execute(c_stmt)
+                campaign = c_res.scalars().first()
+                if campaign:
+                    campaign.emails_sent += 1
+                    if campaign.status == "pending":
+                        campaign.status = "active"
+                        campaign.started_at = datetime.utcnow()
+                
+                # Commit immediately per successful email to prevent batch rollback
+                await db.commit()
+                    
                 # Clean up PDF if needed
                 for att in attachments:
                     if os.path.exists(att):
@@ -299,32 +301,50 @@ async def run_outreach_stage():
 
 async def poll_replies():
     """
-    Executes ongoing monitoring of the designated reply inbox via IMAP.
-    Matches incoming communications with recorded lead profiles and updates
-    their status to trigger necessary follow-up protocols.
+    Monitors the reply inbox via IMAP and updates lead status on replies.
     """
     logger.info("Polling for replies")
     replies = await fetch_recent_replies(since_minutes=30)
     
     async with get_session_maker()() as db:
-        for sender_email, subject in replies:
+        for sender_email, subject, reply_time in replies:
+            if not sender_email:
+                continue
+                
             # Find matching lead
             stmt = select(Lead).where(Lead.email == sender_email).order_by(Lead.created_at.desc()).limit(1)
             res = await db.execute(stmt)
             lead = res.scalars().first()
             
             if lead and lead.status != "replied":
-                lead.status = "replied"
-                lead.first_replied_at = datetime.utcnow()
-                await send_telegram_alert(f"Reply Detected.\nLead: {lead.business_name}\nEmail: {lead.email}\nSubject Reference: {subject}")
-                await db.commit()
+                try:
+                    lead.status = "replied"
+                    lead.first_replied_at = reply_time
+                    
+                    # Update associate Campaign metric
+                    outreach_stmt = select(EmailOutreach).where(EmailOutreach.lead_id == lead.id).order_by(EmailOutreach.created_at.desc()).limit(1)
+                    outreach_res = await db.execute(outreach_stmt)
+                    outreach = outreach_res.scalars().first()
+                    if outreach:
+                        if outreach.status != "replied":
+                            outreach.status = "replied"
+                            
+                        camp_stmt = select(Campaign).where(Campaign.id == outreach.campaign_id)
+                        camp_res = await db.execute(camp_stmt)
+                        campaign = camp_res.scalars().first()
+                        if campaign:
+                            campaign.replies_received += 1
+                    
+                    await db.commit()
+                    await send_telegram_alert(f"Reply Detected.\nLead: {lead.business_name}\nEmail: {lead.email}\nSubject Reference: {subject}")
+                except Exception as e:
+                    await db.rollback()
+                    logger.error(f"Error processing reply sync for {sender_email}: {e}")
 
 
 async def generate_daily_report():
     """
-    Executes the final analytical reporting phase of the daily pipeline.
-    Aggregates performance metrics, generates analytical documents (Excel),
-    and dispatches summary reports to administrative stakeholders.
+    Generates the daily analytical report and dispatches it to admins.
     """
     logger.info("Generating Daily Report")
     today = date.today()
