@@ -217,7 +217,7 @@
                     <p>We've attached a detailed PDF outlining specific strategies that can help elevate your brand in the local market.</p>
 
                     <div class="btn-container">
-                        <a href="mailto:{{ reply_email }}?subject=Let's discuss strategy for {{ business_name }}" class="btn">Let's Connect</a>
+                        <a href="{{ app_url }}/api/v1/track/click/{{ tracking_token }}?url={{ ('mailto:' ~ reply_email ~ '?subject=Let\'s discuss strategy for ' ~ business_name) | urlencode }}" class="btn">Let's Connect</a>
                     </div>
                     
                     <p>Best regards,<br><strong>Your Growth Partner</strong></p>
@@ -228,7 +228,7 @@
             <tr>
                 <td class="footer">
                     <p>Prepared securely and autonomously for <strong>{{ business_name }}</strong></p>
-                    <p>Not interested in scaling right now? <a href="mailto:{{ reply_email }}?subject=Unsubscribe">Unsubscribe</a></p>
+                    <p>Not interested in scaling right now? <a href="{{ app_url }}/api/v1/track/click/{{ tracking_token }}?url={{ ('mailto:' ~ reply_email ~ '?subject=Unsubscribe') | urlencode }}">Unsubscribe</a></p>
                     <img src="{{ app_url }}/api/v1/track/open/{{ tracking_token }}" width="1" height="1" style="display:none;" />
                 </td>
             </tr>
