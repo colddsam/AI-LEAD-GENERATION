@@ -30,6 +30,8 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown(wait=False)
     logger.info("Scheduler stopped, app shutting down")
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(
     title="AI Lead Generation System",
     description="Automated system to discover, qualify, and outreach to local businesses.",
@@ -37,8 +39,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust in strict production to specific dashboard domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
 
 def get_current_settings():
     """
@@ -79,17 +88,30 @@ async def get_api_key(
 async def health_check(settings = Depends(get_current_settings)):
     """
     System health check endpoint to verify API availability and environment configuration.
-
-    Args:
-        settings (Settings): The application settings dependency.
-
-    Returns:
-        dict: A dictionary containing the system status, version, and environment context.
     """
+    from app.tasks.daily_pipeline import is_pipeline_active
+    from app.models.daily_report import DailyReport
+    from sqlalchemy import select
+    from app.core.database import get_session_maker
+
+    last_status = "unknown"
+    try:
+        async with get_session_maker()() as db:
+            stmt = select(DailyReport).order_by(DailyReport.report_date.desc()).limit(1)
+            res = await db.execute(stmt)
+            latest = res.scalars().first()
+            if latest:
+                last_status = latest.pipeline_status
+    except Exception as e:
+        logger.error(f"Error fetching pipeline status: {e}")
+
     return {
         "status": "healthy",
         "version": app.version,
-        "environment": settings.APP_ENV
+        "environment": settings.APP_ENV,
+        "last_pipeline_status": last_status,
+        "scheduler_running": scheduler.running,
+        "production_status": is_pipeline_active()
     }
 
 

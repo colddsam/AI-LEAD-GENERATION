@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     REPORT_HOUR: int = 23
     REPORT_MINUTE: int = 30
     EMAIL_SEND_INTERVAL_SECONDS: int = 360
+    
+    BOOKING_LINK: str = ""
+    SENDER_ADDRESS: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -71,3 +74,27 @@ def get_settings() -> Settings:
         Settings: The validated application settings.
     """
     return Settings()
+
+def set_env_variable(key: str, value: str):
+    """
+    Updates or inserts a given key-value pair in the .env file.
+    """
+    env_file = ".env"
+    if not os.path.exists(env_file):
+        with open(env_file, "w") as f:
+            f.write(f"{key}={value}\n")
+        return
+
+    with open(env_file, "r") as f:
+        lines = f.readlines()
+
+    key_found = False
+    with open(env_file, "w") as f:
+        for line in lines:
+            if line.startswith(f"{key}="):
+                f.write(f"{key}={value}\n")
+                key_found = True
+            else:
+                f.write(line)
+        if not key_found:
+            f.write(f"{key}={value}\n")

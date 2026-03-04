@@ -91,6 +91,14 @@ class TrackingService:
                     lead.first_clicked_at = datetime.utcnow()
                     if campaign:
                         campaign.links_clicked += 1
+                    
+                    # Fire WhatsApp alert on first click
+                    from app.modules.notifications.whatsapp_bot import send_whatsapp_alert
+                    import asyncio
+                    asyncio.create_task(send_whatsapp_alert(f"HOT LEAD ALERT 🔥\n{lead.business_name} just clicked your proposal link!"))
+                    
+                    from app.modules.outreach.followup_engine import cancel_followup_sequence
+                    await cancel_followup_sequence(lead.id, db)
                         
                 if not lead.first_opened_at:
                     lead.first_opened_at = datetime.utcnow()

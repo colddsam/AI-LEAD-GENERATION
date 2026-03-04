@@ -29,11 +29,15 @@ def get_engine():
         engine_args = {
             "echo": False,
             "future": True,
+            "pool_pre_ping": True,
+            "pool_recycle": 1800,
         }
 
         if not settings.DATABASE_URL.startswith("sqlite"):
             engine_args["pool_size"] = 10
             engine_args["max_overflow"] = 20
+            # Required for Supabase PgBouncer (Transaction Pooler)
+            engine_args["connect_args"] = {"prepared_statement_cache_size": 0}
 
         _engine = create_async_engine(
             settings.DATABASE_URL,

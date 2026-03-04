@@ -3,13 +3,14 @@
 
   <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=00A393&center=true&vCenter=true&width=600&lines=Automated.+Intelligent.+Scalable.;Discover.+Qualify.+Outreach.;24%2F7+AI+Sales+Representative" alt="Typing SVG" /></a>
 
-<p>An end-to-end local business discovery, qualification, and personalized outreach pipeline powered by AI.</p>
+<p>An end-to-end local business discovery, deep-enrichment, qualification, and multi-touchpoint AI outreach pipeline.</p>
 
 <p>
     <img src="https://img.shields.io/badge/Python-3.11+-blue.svg" alt="Python Version" />
     <img src="https://img.shields.io/badge/FastAPI-0.100+-00a393.svg" alt="FastAPI" />
     <img src="https://img.shields.io/badge/APScheduler-In--Process_Jobs-37814A.svg" alt="APScheduler" />
     <img src="https://img.shields.io/badge/PostgreSQL-Database-336791.svg" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Version-v2.0_Autonomous-8A2BE2.svg" alt="Version 2" />
     <img src="https://img.shields.io/badge/Status-Production_Ready-success.svg" alt="Status" />
   </p>
 </div>
@@ -111,21 +112,20 @@ graph TD;
 
 | Feature                              | Description                                                                                                               |
 | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
-| **🔍 Multi-Radius Discovery**  | Uses Google Places API to search for specific niches (e.g., "roofers in Austin") within a calculated geographical radius. |
-| **🧠 Deep AI Qualification**   | Scrapes the business's website and feeds the text to Groq LLM to answer:*Does this business need our services?*         |
-| **🌐 Social Media Extraction** | Autonomously detects and associates social media footprints (LinkedIn, Instagram, Facebook, etc.) with lead profiles for deep enrichment. |
-| **✍️ Hyper-Personalization** | Generates completely unique subject lines and email bodies referencing the prospect's specific website services.          |
-| **📄 Dynamic PDF Proposals**   | Auto-generates customized business proposals for each qualified lead and attaches them to outreach emails.                |
-| **🔔 Telegram Alerting**       | Real-time notifications for discovered leads, pipeline errors, and direct replies.                                        |
-| **📬 Reply Polling**           | Periodically checks an IMAP inbox to automatically track direct email replies from prospects.                             |
-| **📊 Open/Click Tracking**     | Injects tracking pixels and link wrappers that listen for engagement via FastAPI webhook endpoints.                       |
-| **📈 Automated Reporting**     | Compiles daily outreach metrics and sends an Excel overview directly to the administrator.                                |
+| **🔍 Multi-Radius Discovery**  | Uses Google Places API to search for specific niches within calculated geographical radii. |
+| **🧠 Deep AI Qualification**   | Extracts structured website signals (old copyright years, mobile responsiveness) and leverages Groq LLM to answer: *Does this business need our services?* |
+| **🌐 Social & Competitor Intel**| Autonomously detects social media footprints and performs local competitor benchmarking to find unique sales angles. |
+| **✍️ Hyper-Personalization** | Generates completely unique email bodies referencing the prospect's specific services, location, and competitor gaps.          |
+| **📄 Dynamic PDF Proposals**   | Auto-generates customized, visually polished business proposals (via ReportLab) and attaches them to outreach emails.          |
+| **🔁 Autonomous Follow-Ups**   | Intelligent, tri-stage multi-touchpoint sequence that automatically pauses upon prospect engagement (clicks or replies). |
+| **🤖 Smart AI Inbox**          | Reads incoming replies, categorizes intent (e.g., *interested*, *pricing_inquiry*), and automatically drafts context-aware responses. |
+| **📈 Self-Improving Prompts**  | Analyzes weekly campaign metrics (open/reply rates) and dynamically leverages LLM feedback loops to rewrite underperforming outreach prompts. |
+| **🔔 WhatsApp & Telegram Alerts** | Real-time notifications for discovered leads, pipeline errors, and high-intent prospect engagements (e.g., hot replies).       |
+| **📊 ROI & Excel Reporting**   | Compiles daily and weekly outreach metrics and sends an Excel overview directly to the administrator.                                |
 | **🛡 API Key Security**        | All management endpoints are protected by `X-API-Key` headers.                                                          |
-| **🚀 CI/CD Ready**             | Fully configured GitHub Actions pipeline with secure environment variable injection.                                      |
-| **🏗 Scalable Architecture**   | Utilizes Singleton DB connection pooling, Dependency Injection (`lru_cache`), and centralized settings management.        |
-| **💸 Serverless Optimized**    | In-process APScheduler execution optimized for restrictive free-tiers (e.g., Render) by minimizing external connections and processes. |
-| **⏸ Dynamic Pipeline Control** | Edit the `.env` `PRODUCTION_STATUS` to instantly `HOLD` or `RUN` operations without requiring a full server restart. |
-| **🏢 Enterprise-Grade Code**   | Fully documented, strictly typed codebase featuring professional Python docstrings, structured logging, and robust entity schemas. |
+| **💸 Serverless Optimized**    | In-process APScheduler execution optimized for restrictive free-tiers (e.g., Render) by minimizing external connections. |
+| **⏸ Dynamic Pipeline Control**| Edit `.env` to instantly `HOLD` or `RUN` operations without requiring a full server deployment manually tracking configurations. |
+| **🏢 Enterprise-Grade Code**   | Fully documented, strictly typed codebase featuring professional Python docstrings, dependency injection (`lru_cache`), and comprehensive testing. |
 
 ---
 
@@ -228,16 +228,14 @@ pytest -v tests/
 
 ---
 
-## 🔮 Future Roadmap (v2.0)
+## 🔮 Future Roadmap (v3.0)
 
-We are actively planning the next major iteration of the system (V2). Our upcoming goals focus on transforming the platform from a single-channel tool into a fully autonomous, self-learning outreach machine. Key objectives include:
+With the successful deployment of **v2.0**, the platform now possesses autonomous follow-ups, reply classification, deep enrichment, and self-improving prompt analytics. 
+Our upcoming v3.0 goals focus on expanding beyond email:
 
-- **Multi-Channel Sequences:** Expanding outreach beyond email to include coordinated, multi-touchpoint sequences (e.g., WhatsApp, SMS, Telegram).
-- **Enhanced Lead Discovery:** Integrating multiple new discovery sources to organically find more niche leads, paired with intelligent deduplication logic.
-- **Smart AI Inbox & Auto-Replies:** Building an engine to automatically read received replies, classify their intent, and draft context-aware responses.
-- **Dynamic Follow-Up Engine:** Replacing single-shot emails with intelligent, multi-step campaigns that auto-pause upon lead engagement.
-- **Deep Lead Enrichment:** Gathering comprehensive background data from social channels and wider web presence before outreach to maximize personalization.
-- **Self-Improving Analytics:** Implementing automated A/B testing and regular AI-driven reviews to continuously optimize messaging styles and conversion rates.
+- **Multi-Omnichannel Sequences:** Coordinated outreach traversing SMS, direct LinkedIn messaging, and automated voicemail drops.
+- **Continuous CRM Sync:** Bi-directional sync integrations with Salesforce and HubSpot to pass qualified leads instantaneously to closing teams.
+- **Voice AI Handoff:** Integration with voice agents to trigger immediate outbound calls the moment a prospect hits a tracking landing page.
 
 *(Note: Technical implementation models and architectural choices for these upcoming changes are managed internally).*
 

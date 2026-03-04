@@ -1,238 +1,378 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Presentation</title>
-    <style>
-        /* Modern Reset and Base */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            color: #2c3e50;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Digital Growth Proposal for {{ business_name }}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml><o:OfficeDocumentSettings>
+      <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings></xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body, table, td, p, a, li, blockquote {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { border: 0; outline: none; text-decoration: none;
+          -ms-interpolation-mode: bicubic; }
+    body { margin: 0; padding: 0; width: 100% !important;
+           background-color: #0f172a; }
 
-        /* Centered Container */
-        .wrapper {
-            width: 100%;
-            table-layout: fixed;
-            background-color: #f4f7f6;
-            padding-top: 40px;
-            padding-bottom: 40px;
-        }
-        
-        .main {
-            background-color: #ffffff;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 650px;
-            border-spacing: 0;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #2b3a42;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            overflow: hidden;
-            animation: fadeIn 0.8s ease-out;
-        }
+    /* ── Typography ────────────────────────────────────────── */
+    body, .email-body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                   'Helvetica Neue', Arial, sans-serif;
+    }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* ── Outer wrapper ─────────────────────────────────────── */
+    .outer-wrapper {
+      width: 100%;
+      background-color: #0f172a;
+      padding: 32px 16px;
+    }
 
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4); }
-            50% { transform: scale(1.02); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4); }
-        }
+    /* ── Card ──────────────────────────────────────────────── */
+    .email-card {
+      max-width: 620px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
 
-        /* Header Area */
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            padding: 40px 30px;
-            text-align: center;
-        }
+    /* ── Header ────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1d4ed8 100%);
+      padding: 0;
+      position: relative;
+    }
+    .header-inner {
+      padding: 40px 40px 36px;
+      position: relative;
+      z-index: 1;
+    }
+    .header-overline {
+      display: inline-block;
+      background: rgba(59,130,246,0.18);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: #93c5fd;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 30px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0 0 8px;
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+    .header h1 span {
+      color: #60a5fa;
+    }
+    .header-sub {
+      color: #94a3b8;
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.5;
+    }
 
-        .header svg {
-            width: 60px;
-            height: 60px;
-            fill: #ffffff;
-            margin-bottom: 15px;
-        }
+    /* Decorative accent bar at bottom of header */
+    .header-accent {
+      height: 4px;
+      background: linear-gradient(to right, #3b82f6, #06b6d4, #10b981);
+    }
 
-        .header h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
-        /* Body Content area */
-        .content {
-            padding: 40px 35px;
-            font-size: 16px;
-            line-height: 1.8;
-            color: #4a5568;
-        }
+    /* ── Stat strip ────────────────────────────────────────── */
+    .stat-strip {
+      background-color: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 20px 40px;
+      display: flex; /* fallback via table in mso */
+    }
+    .stat-strip table { width: 100%; border-collapse: collapse; }
+    .stat-cell {
+      text-align: center;
+      padding: 0 8px;
+      border-right: 1px solid #e2e8f0;
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-value {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e40af;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
 
-        .content a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-        }
+    /* ── Body ──────────────────────────────────────────────── */
+    .body-content {
+      padding: 36px 40px 28px;
+    }
+    .greeting {
+      font-size: 16px;
+      color: #475569;
+      margin: 0 0 24px;
+      line-height: 1.6;
+    }
+    .greeting strong {
+      color: #0f172a;
+    }
 
-        .content h2 {
-            color: #2c3e50;
-            font-size: 20px;
-            margin-top: 0;
-        }
+    /* AI content block */
+    .ai-block {
+      background: #f8fafc;
+      border-left: 3px solid #3b82f6;
+      border-radius: 0 10px 10px 0;
+      padding: 20px 24px;
+      margin: 0 0 28px;
+      font-size: 15px;
+      line-height: 1.75;
+      color: #374151;
+    }
+    .ai-block p { margin: 0 0 12px; }
+    .ai-block p:last-child { margin: 0; }
 
-        /* Interactive Dynamic Content blocks from LLM */
-        .ai-wrapper {
-            background-color: #f8fafc;
-            border-left: 4px solid #3498db;
-            padding: 20px 25px;
-            margin: 25px 0;
-            border-radius: 0 8px 8px 0;
-        }
+    /* ── Attachment callout ─────────────────────────────────── */
+    .attachment-row {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 0 0 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .attachment-row table { width: 100%; border-collapse: collapse; }
+    .att-icon-cell { width: 40px; vertical-align: middle; }
+    .att-icon {
+      width: 40px;
+      height: 40px;
+      background: #3b82f6;
+      border-radius: 8px;
+      text-align: center;
+      line-height: 40px;
+      font-size: 18px;
+    }
+    .att-text-cell { vertical-align: middle; padding-left: 14px; }
+    .att-title {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 2px;
+    }
+    .att-sub {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+    }
 
-        /* SVG Data Visualizations inline */
-        .graph-container {
-            text-align: center;
-            margin: 35px 0;
-        }
+    /* ── CTA button ────────────────────────────────────────── */
+    .cta-wrap {
+      text-align: center;
+      margin: 28px 0 24px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+      color: #ffffff !important;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      padding: 16px 44px;
+      border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(29,78,216,0.35);
+    }
+    .cta-note {
+      font-size: 12px;
+      color: #94a3b8;
+      text-align: center;
+      margin: 10px 0 0;
+    }
 
-        .graph-label {
-            font-size: 13px;
-            text-transform: uppercase;
-            color: #7f8c8d;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            display: block;
-        }
+    /* ── Divider ───────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 28px 0;
+    }
 
-        /* Call To Action Button */
-        .btn-container {
-            text-align: center;
-            margin: 40px 0 20px;
-        }
+    /* ── Sign-off ──────────────────────────────────────────── */
+    .signoff {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.7;
+      margin: 0;
+    }
+    .signoff strong {
+      display: block;
+      font-size: 15px;
+      color: #0f172a;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .signoff em {
+      font-style: normal;
+      color: #3b82f6;
+      font-size: 13px;
+    }
 
-        .btn {
-            background: linear-gradient(to right, #3498db, #2980b9);
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 15px 35px;
-            border-radius: 30px;
-            font-weight: bold;
-            display: inline-block;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-            animation: pulse 3s infinite ease-in-out;
-            transition: all 0.3s ease;
-        }
+    /* ── Footer ────────────────────────────────────────────── */
+    .footer {
+      background-color: #0f172a;
+      padding: 24px 40px;
+      text-align: center;
+    }
+    .footer p {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.6;
+    }
+    .footer a {
+      color: #475569;
+      text-decoration: underline;
+    }
+    .footer .brand {
+      font-size: 11px;
+      color: #334155;
+      margin-top: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
 
-        /* Footer */
-        .footer {
-            background-color: #f8fafc;
-            padding: 30px;
-            text-align: center;
-            font-size: 13px;
-            color: #94a3b8;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .footer p {
-            margin: 5px 0;
-        }
-
-        .footer a {
-            color: #94a3b8;
-            text-decoration: underline;
-        }
-
-        @media screen and (max-width: 600px) {
-            .header { padding: 30px 20px; }
-            .content { padding: 30px 20px; }
-            .main { border-radius: 0; box-shadow: none; }
-        }
-    </style>
+    /* ── Mobile ────────────────────────────────────────────── */
+    @media only screen and (max-width: 600px) {
+      .outer-wrapper  { padding: 0 !important; }
+      .email-card     { border-radius: 0 !important; }
+      .header-inner   { padding: 28px 24px 24px !important; }
+      .header h1      { font-size: 21px !important; }
+      .body-content   { padding: 24px 20px 20px !important; }
+      .footer         { padding: 20px 24px !important; }
+      .stat-strip     { padding: 16px 20px !important; }
+      .stat-value     { font-size: 18px !important; }
+    }
+  </style>
 </head>
 <body>
-    <center class="wrapper">
-        <table class="main" width="100%">
-            <!-- Header -->
-            <tr>
-                <td class="header">
-                    <!-- Brand / Growth SVG Icon -->
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-                    </svg>
-                    <h1>Strategy Proposal for {{ business_name }}</h1>
-                </td>
-            </tr>
-            
-            <!-- Body Content -->
-            <tr>
-                <td class="content">
-                    <p>Hi there,</p>
-                    
-                    <div class="ai-wrapper">
-                        {{ ai_body_html | safe }}
-                    </div>
+<div class="outer-wrapper">
+  <div class="email-card">
 
-                    <!-- Inline SVG Chart Representation -->
-                    <div class="graph-container">
-                        <span class="graph-label">Digital Presence Potential Growth</span>
-                        <!-- Using inline styling for cross-client support in email SVGs -->
-                        <svg width="300" height="150" viewBox="0 0 300 150">
-                            <!-- Axis -->
-                            <line x1="30" y1="130" x2="280" y2="130" stroke="#cbd5e1" stroke-width="2"/>
-                            <line x1="30" y1="20" x2="30" y2="130" stroke="#cbd5e1" stroke-width="2"/>
-                            
-                            <!-- Current (Left Bar) -->
-                            <rect x="70" y="80" width="50" height="50" fill="#94a3b8" rx="4">
-                              <animate attributeName="height" from="0" to="50" dur="1s" fill="freeze" />
-                              <animate attributeName="y" from="130" to="80" dur="1s" fill="freeze" />
-                            </rect>
-                            <text x="95" y="145" font-size="12" fill="#64748b" text-anchor="middle" font-family="Arial, sans-serif">Current</text>
-                            
-                            <!-- Future (Right Bar) -->
-                            <rect x="170" y="30" width="50" height="100" fill="#3498db" rx="4">
-                              <animate attributeName="height" from="0" to="100" dur="1.5s" fill="freeze" />
-                              <animate attributeName="y" from="130" to="30" dur="1.5s" fill="freeze" />
-                            </rect>
-                            <text x="195" y="145" font-size="12" fill="#64748b" text-anchor="middle" font-family="Arial, sans-serif">Projected</text>
+    <!-- ══ HEADER ══════════════════════════════════════════════ -->
+    <div class="header">
+      <div class="header-inner">
+        <div class="header-overline">Digital Growth Proposal</div>
+        <h1>A strategy built for<br><span>{{ business_name }}</span></h1>
+        <p class="header-sub">
+          We found a real opportunity to grow your business online —<br>
+          here's what we put together for you.
+        </p>
+      </div>
+      <div class="header-accent"></div>
+    </div>
 
-                            <!-- Growth line connecting tops -->
-                            <polyline points="95,75 195,20" fill="none" stroke="#2c3e50" stroke-width="2" stroke-dasharray="5,5">
-                                <animate attributeName="stroke-dashoffset" from="150" to="0" dur="2s" fill="freeze" />
-                            </polyline>
-                        </svg>
-                    </div>
-                    
-                    <p>We've attached a detailed PDF outlining specific strategies that can help elevate your brand in the local market.</p>
+    <!-- ══ STATS STRIP ════════════════════════════════════════ -->
+    <div class="stat-strip">
+      <table>
+        <tr>
+          <td class="stat-cell">
+            <span class="stat-value">97%</span>
+            <span class="stat-label">Search online first</span>
+          </td>
+          <td class="stat-cell">
+            <span class="stat-value">3.5×</span>
+            <span class="stat-label">More calls with website</span>
+          </td>
+          <td class="stat-cell">
+            <span class="stat-value">46%</span>
+            <span class="stat-label">Searches are local</span>
+          </td>
+        </tr>
+      </table>
+    </div>
 
-                    <div class="btn-container">
-                        <a href="{{ app_url }}/api/v1/track/click/{{ tracking_token }}?url={{ ('mailto:' ~ reply_email ~ '?subject=Let\'s discuss strategy for ' ~ business_name) | urlencode }}" class="btn">Let's Connect</a>
-                    </div>
-                    
-                    <p>Best regards,<br><strong>Your Growth Partner</strong></p>
-                </td>
-            </tr>
+    <!-- ══ BODY ═══════════════════════════════════════════════ -->
+    <div class="body-content">
 
-            <!-- Footer -->
-            <tr>
-                <td class="footer">
-                    <p>Prepared securely and autonomously for <strong>{{ business_name }}</strong></p>
-                    <p>Not interested in scaling right now? <a href="{{ app_url }}/api/v1/track/click/{{ tracking_token }}?url={{ ('mailto:' ~ reply_email ~ '?subject=Unsubscribe') | urlencode }}">Unsubscribe</a></p>
-                    <img src="{{ app_url }}/api/v1/track/open/{{ tracking_token }}" width="1" height="1" style="display:none;" />
-                </td>
-            </tr>
+      <p class="greeting">Hi, I came across <strong>{{ business_name }}</strong> and wanted to reach out personally.</p>
+
+      <!-- AI-generated paragraphs -->
+      <div class="ai-block">
+        {{ ai_body_html | safe }}
+      </div>
+
+      <!-- Attachment callout -->
+      <div class="attachment-row">
+        <table>
+          <tr>
+            <td class="att-icon-cell">
+              <div class="att-icon">📎</div>
+            </td>
+            <td class="att-text-cell">
+              <span class="att-title">Attached: Your Custom Proposal + ROI Workbook</span>
+              <span class="att-sub">PDF strategy doc &amp; interactive Excel ROI calculator — personalised for {{ business_name }}</span>
+            </td>
+          </tr>
         </table>
-    </center>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-wrap">
+        <a href="{{ app_url }}/api/v1/track/click/{{ tracking_token }}?url={{ ('mailto:' ~ reply_email ~ '?subject=Let\'s discuss ' ~ business_name) | urlencode }}"
+           class="cta-btn">
+          Book a Free 20-Min Strategy Call →
+        </a>
+        <p class="cta-note">No cost. No commitment. Just a conversation.</p>
+      </div>
+
+      <hr class="divider" />
+
+      <p class="signoff">
+        Warm regards,
+        <strong>Your Growth Partner</strong>
+        <em>LocalLeadPro · Helping local businesses grow online</em>
+      </p>
+
+    </div>
+
+    <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+    <div class="footer">
+      <p>This proposal was prepared exclusively for <strong style="color:#64748b;">{{ business_name }}</strong>.</p>
+      <p>Not the right time? <a href="{{ app_url }}/api/v1/unsubscribe/{{ tracking_token }}">Unsubscribe</a> and we won't contact you again.</p>
+      <p class="brand">LocalLeadPro &nbsp;·&nbsp; Automated with care</p>
+    </div>
+
+    <!-- Tracking pixel (1×1, hidden) -->
+    <img src="{{ app_url }}/api/v1/track/open/{{ tracking_token }}"
+         width="1" height="1"
+         style="display:none;border:0;outline:none;" alt="" />
+
+  </div>
+</div>
 </body>
 </html>

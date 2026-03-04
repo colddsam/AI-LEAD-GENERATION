@@ -82,12 +82,30 @@ def setup_scheduler():
         replace_existing=True,
     )
 
+    from app.modules.outreach.followup_engine import run_followup_dispatch
+    scheduler.add_job(
+        run_followup_dispatch,
+        CronTrigger(hour=10, minute=0),  # 10 AM daily, after outreach
+        id="followup_dispatch",
+        replace_existing=True,
+        misfire_grace_time=600,
+    )
+
     scheduler.add_job(
         generate_daily_report,
         CronTrigger(hour=settings.REPORT_HOUR, minute=settings.REPORT_MINUTE),
         id="daily_report",
         replace_existing=True,
         misfire_grace_time=600,
+    )
+    
+    from app.modules.analytics.performance_analyzer import run_weekly_optimization
+    scheduler.add_job(
+        run_weekly_optimization,
+        CronTrigger(day_of_week="sun", hour=11, minute=0),
+        id="weekly_optimization",
+        replace_existing=True,
+        misfire_grace_time=3600,
     )
 
     scheduler.start()

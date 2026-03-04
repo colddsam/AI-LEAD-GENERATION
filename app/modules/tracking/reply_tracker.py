@@ -69,8 +69,23 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str, 
                     except:
                         reply_time = datetime.utcnow()
                         
+                    body = ""
+                    if msg.is_multipart():
+                        for part in msg.walk():
+                            if part.get_content_type() == "text/plain":
+                                try:
+                                    body = part.get_payload(decode=True).decode()
+                                    break
+                                except:
+                                    pass
+                    else:
+                        try:
+                            body = msg.get_payload(decode=True).decode()
+                        except:
+                            pass
+                            
                     if sender:
-                        results.append((sender.lower().strip(), subject, reply_time))
+                        results.append((sender.lower().strip(), subject, reply_time, body))
         
         mail.logout()
         return results
