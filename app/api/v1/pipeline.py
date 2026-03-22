@@ -1,5 +1,17 @@
+"""
+AI Lead Generation System - Pipeline Orchestration API
+
+This module provides the administrative interface for controlling the autonomous
+lead generation pipeline. It enables manual overrides, runtime status tracking,
+and global system flow control.
+
+Key Features:
+1. Manual Triggering: Allows on-demand execution of specific pipeline stages.
+2. Global Kill-Switch: Features 'hold' and 'resume' functionality via environment mutation.
+3. Scheduler Transparency: Provides visibility into APScheduler's active job pool.
+4. Dynamic Configuration: Enables patching of cron-based schedules without service restarts.
+"""
 from fastapi import APIRouter, Depends, HTTPException, Body
-from app.main import get_api_key
 import asyncio
 from datetime import datetime
 from pydantic import BaseModel
@@ -17,7 +29,9 @@ from app.tasks.daily_pipeline import (
 from app.modules.analytics.performance_analyzer import run_weekly_optimization
 from app.core.scheduler import scheduler
 
-router = APIRouter(dependencies=[Depends(get_api_key)])
+from app.api.deps import get_current_user
+
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 class TriggerRequest(BaseModel):
     stage: str
@@ -48,15 +62,15 @@ async def trigger_pipeline(request: TriggerRequest = Body(...)):
         "qualification": [run_qualification_stage],
         "personalization": [run_personalization_stage],
         "outreach": [run_outreach_stage],
-        "report": [generate_daily_report],
-        "optimization": [run_weekly_optimization]
+        "daily_report": [generate_daily_report],
+        "weekly_optimization": [run_weekly_optimization]
     }
     
     if request.stage not in valid_stages:
         raise HTTPException(status_code=400, detail="Invalid stage specified")
         
     for stage_func in valid_stages[request.stage]:
-        asyncio.create_task(stage_func())
+        asyncio.create_task(stage_func(manual=True))
         
     return {
         "status": "triggered",
@@ -82,7 +96,7 @@ async def pipeline_status():
     last_run = None
     if latest_report:
         last_run = {
-            "stage": "discovery", # we don't track exact current stage per day easily unless we add states tracking, but overall pipeline status is tracked
+            "stage": "discovery",
             "status": latest_report.pipeline_status,
             "at": latest_report.pipeline_ended_at.isoformat() if latest_report.pipeline_ended_at else (
                   latest_report.pipeline_started_at.isoformat() if latest_report.pipeline_started_at else None)
@@ -105,28 +119,48 @@ async def pipeline_status():
 @router.post("/pipeline/hold")
 async def hold_pipeline():
     """
-    Writes PRODUCTION_STATUS=HOLD to .env file to pause pipeline execution safely.
+    Sets PRODUCTION_STATUS=HOLD at runtime as a global pipeline kill-switch.
+
+    Updates os.environ for immediate in-process effect and pauses all
+    APScheduler jobs instantly. The .env file is also updated as a
+    best-effort persistence mechanism for local development.
     """
     try:
         from app.config import set_env_variable
         set_env_variable("PRODUCTION_STATUS", "HOLD")
+
+        for job in scheduler.get_jobs():
+            if job.id != "scheduler_sync":
+                scheduler.pause_job(job.id)
+
+        logger.info("🚨 Pipeline HELD — all jobs paused immediately via API.")
         return {"status": "held"}
     except Exception as e:
         logger.error(f"Failed to hold pipeline: {e}")
-        raise HTTPException(status_code=500, detail="Failed to parse .env file")
+        raise HTTPException(status_code=500, detail="Failed to hold pipeline")
 
 @router.post("/pipeline/resume")
 async def resume_pipeline():
     """
-    Writes PRODUCTION_STATUS=RUN to .env file to resume pipeline execution.
+    Sets PRODUCTION_STATUS=RUN at runtime to resume pipeline execution.
+
+    Updates os.environ for immediate in-process effect and resumes all
+    APScheduler jobs that are configured as RUN in jobs_config.json.
     """
     try:
         from app.config import set_env_variable
+        from app.core.job_manager import job_manager
         set_env_variable("PRODUCTION_STATUS", "RUN")
+
+        for job in scheduler.get_jobs():
+            if job.id != "scheduler_sync" and job_manager.is_job_active(job.id):
+                scheduler.resume_job(job.id)
+
+        logger.info("✅ Pipeline RESUMED — active jobs resumed immediately via API.")
         return {"status": "running"}
     except Exception as e:
         logger.error(f"Failed to resume pipeline: {e}")
-        raise HTTPException(status_code=500, detail="Failed to parse .env file")
+        raise HTTPException(status_code=500, detail="Failed to resume pipeline")
 
 
 from app.core.job_manager import job_manager
@@ -162,22 +196,17 @@ async def update_jobs_config(config_updates: dict = Body(...)):
     """
     current_config = job_manager.load_config()
     
-    # Merge updates safely with strict validation
     for job_id, updates in config_updates.items():
         if job_id not in current_config or not isinstance(updates, dict):
             continue
             
         for field, val in updates.items():
-            # Validate Status
             if field == "status" and str(val).upper() not in ["RUN", "HOLD"]:
                 raise HTTPException(status_code=422, detail=f"Invalid status '{val}' for {job_id}. Must be RUN or HOLD.")
-            # Validate Hour
             if field == "hour" and (not isinstance(val, int) or not (0 <= val <= 23)):
                 raise HTTPException(status_code=422, detail=f"Invalid hour '{val}' for {job_id}. Must be 0-23.")
-            # Validate Minute / Minutes
             if field in ["minute", "minutes"] and (not isinstance(val, int) or not (0 <= val <= 59)):
                 raise HTTPException(status_code=422, detail=f"Invalid minute '{val}' for {job_id}. Must be 0-59.")
-            # Validate Day of Week
             if field == "day_of_week" and str(val).lower() not in ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]:
                 raise HTTPException(status_code=422, detail=f"Invalid day_of_week '{val}' for {job_id}.")
                 

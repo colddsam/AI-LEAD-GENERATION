@@ -1,22 +1,36 @@
 """
-Lead management API endpoints.
-Provides CRUD operations, filtered listing, and CSV export capabilities
-for the discovered local business leads lifecycle.
+AI Lead Generation System - Lead Management API
+
+This module provides a comprehensive suite of endpoints for managing the 
+prospect lifecycle. It serves as the primary data source for the frontend 
+dashboard, enabling granular filtering and bulk data extraction.
+
+Functionality:
+- Paginated Search: Filter leads by city, category, status, and discovery date.
+- CSV Extraction: Export filtered datasets for external CRM usage.
+- Enrichment Review: Retrieve detailed AI qualification scores and social signals.
+- Manual Maintenance: Authorize status overrides and lead deletion.
 """
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select, func
-from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.main import get_api_key
-from app.core.database import get_db
-from app.models.lead import Lead
-from app.schemas.lead import LeadResponse, LeadDetailResponse, LeadUpdate, LeadListResponse
 from fastapi.responses import StreamingResponse
+from sqlalchemy import select, func
+from typing import Optional, List
+from sqlalchemy.ext.asyncio import AsyncSession
 import csv
 import io
 from datetime import date
 
-router = APIRouter(prefix="/leads", dependencies=[Depends(get_api_key)])
+from app.api.deps import get_current_user
+from app.core.database import get_db
+from app.models.lead import Lead
+from app.schemas.lead import (
+    LeadResponse, 
+    LeadUpdate, 
+    LeadDetailResponse, 
+    LeadListResponse
+)
+
+router = APIRouter(prefix="/leads", dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=LeadListResponse)
 async def list_leads(
@@ -198,3 +212,27 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, db: AsyncSession = 
     await db.commit()
     await db.refresh(lead)
     return lead
+
+@router.delete("/{lead_id}", status_code=204)
+async def delete_lead(lead_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Permanently deletes a lead and all associated records from the system.
+    
+    This includes social networks, outreach history, and event tracking.
+    Use with caution as this action cannot be undone.
+
+    Args:
+        lead_id: UUID string identifying the target lead.
+
+    Raises:
+        HTTPException 404: If no lead matches the provided identifier.
+    """
+    stmt = select(Lead).where(Lead.id == lead_id)
+    result = await db.execute(stmt)
+    lead = result.scalars().first()
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+        
+    await db.delete(lead)
+    await db.commit()
+    return None

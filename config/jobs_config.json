@@ -31,8 +31,8 @@
     "daily_report": {
         "status": "RUN",
         "type": "cron",
-        "hour": 23,
-        "minute": 30
+        "hour": 21,
+        "minute": 41
     },
     "followup_dispatch": {
         "status": "RUN",

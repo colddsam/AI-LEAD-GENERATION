@@ -45,7 +45,7 @@ async def cancel_followup_sequence(lead_id: UUID, db: AsyncSession):
         lead.followup_sequence_active = False
         await db.commit()
 
-async def run_followup_dispatch():
+async def run_followup_dispatch(manual: bool = False):
     """
     Cron-triggered dispatcher. Scans for due follow-ups, queries the LLM for 
     contextual sequence progression strings, dispatches the SMTP transport, and 
@@ -58,7 +58,7 @@ async def run_followup_dispatch():
     
     logger.info("Starting Follow-Up Engine")
     
-    if not job_manager.is_job_active("followup_dispatch"):
+    if not job_manager.is_job_active("followup_dispatch", ignore_global_hold=manual):
         logger.warning("🚨 [followup_dispatch] is HOLD. Skipping follow-up.")
         return
         
@@ -96,7 +96,7 @@ async def run_followup_dispatch():
                     "location": lead.city,
                     "rating": lead.rating,
                     "review_count": lead.review_count,
-                    "web_presence_notes": lead.web_presence_notes
+                    "qualification_notes": lead.qualification_notes
                 }
                 
                 ai_data = await groq_client.generate_followup_email(lead_data, next_count)

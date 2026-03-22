@@ -5,7 +5,7 @@ from datetime import datetime
 from loguru import logger
 from functools import lru_cache
 
-from app.config import get_settings
+from app.config import get_settings, get_production_status
 
 settings = get_settings()
 
@@ -108,41 +108,33 @@ class JobManager:
                 content = f.read().strip()
                 config = json.loads(content) if content else {}
                 
-            # Deep copy defaults
             merged_config = json.loads(json.dumps(DEFAULT_JOBS_CONFIG))
             
-            # Validation logic
             needs_save = False
             for key, val in config.items():
                 if key in merged_config and isinstance(val, dict):
                     # Validate individual fields securely before merging
                     for field, field_val in val.items():
-                        # Status checks
                         if field == "status" and str(field_val).upper() not in ["RUN", "HOLD"]:
                             needs_save = True
-                            continue # Revert to default
+                            continue
                             
-                        # Hour checks
                         if field == "hour" and (not isinstance(field_val, int) or not (0 <= field_val <= 23)):
                             needs_save = True
-                            continue # Revert to default
+                            continue
                             
-                        # Minute / Minutes checks
                         if field in ["minute", "minutes"] and (not isinstance(field_val, int) or not (0 <= field_val <= 59)):
                             needs_save = True
-                            continue # Revert to default
+                            continue
                             
-                        # Day of week checks
                         if field == "day_of_week" and str(field_val).lower() not in ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]:
                             needs_save = True
                             continue
                             
-                        # If validation passes, merge the valid field
                         merged_config[key][field] = field_val
                 else:
-                    needs_save = True # Discard unknown keys
+                    needs_save = True
                     
-            # Auto-save file if it was empty, corrupted, or missing keys
             if needs_save or config != merged_config:
                 cls.save_config(merged_config)
             else:
@@ -158,37 +150,44 @@ class JobManager:
     @classmethod
     def save_config(cls, config: dict):
         """
-        Safely serializes and persists the provided configuration dictionary to the JSON store.
-        
-        Args:
-            config (dict): The target dictionary containing updated scheduling schemas.
+        Safely serializes and persists the provided configuration dictionary to the JSON store
+        using an atomic write operation (temp file + rename).
         """
         os.makedirs(CONFIG_DIR, exist_ok=True)
+        temp_file = f"{CONFIG_FILE}.tmp"
         try:
-            with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(config, f, indent=4)
+                f.flush()
+                os.fsync(f.fileno())
+            
+            os.replace(temp_file, CONFIG_FILE)
+            
             cls._config_cache = config
             cls._last_modified_time = os.path.getmtime(CONFIG_FILE)
-            logger.info("Successfully updated jobs_config.json")
+            logger.info("Successfully updated jobs_config.json (atomic write)")
         except Exception as e:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
             logger.error(f"Failed to write configuration to {CONFIG_FILE}: {e}")
 
     @classmethod
-    def is_job_active(cls, job_id: str) -> bool:
+    def is_job_active(cls, job_id: str, ignore_global_hold: bool = False) -> bool:
         """
         Analyzes the active state of a specific job ID by referencing the current JSON configuration.
         
         Also acts as a gateway check against the global `.env` configuration `PRODUCTION_STATUS`. 
-        If the global status is `HOLD`, all jobs automatically resolve to an inactive state.
+        If the global status is `HOLD`, all jobs automatically resolve to an inactive state, 
+        UNLESS ignore_global_hold is set to True (e.g. for manual API triggers).
 
         Args:
             job_id (str): The unique identifier corresponding to the scheduled job.
+            ignore_global_hold (bool): If True, bypasses the master PRODUCTION_STATUS check.
 
         Returns:
             bool: True if the job is permitted to run, False otherwise.
         """
-        # Master kill-switch check
-        if settings.PRODUCTION_STATUS.upper() == "HOLD":
+        if not ignore_global_hold and get_production_status() == "HOLD":
             return False
             
         config = cls.load_config()

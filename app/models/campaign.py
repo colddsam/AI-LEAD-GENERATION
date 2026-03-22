@@ -1,6 +1,9 @@
 """
-Campaign and outreach database models.
-Defines schemas for tracking campaigns and associated email dispatches.
+AI Lead Generation System - Campaign and Outreach Models
+
+This module handles the orchestration of outreach efforts. It links leads
+to specific campaigns and tracks the detailed delivery state of every 
+individual email sent by the system.
 """
 import uuid
 from sqlalchemy import Column, String, Integer, DateTime, Boolean, Date, ARRAY, ForeignKey, Text, JSON

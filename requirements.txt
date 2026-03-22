@@ -1,12 +1,13 @@
 # Core
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
-pydantic==2.9.0
+pydantic[email]==2.9.0
 pydantic-settings==2.6.0
 
 # Database
 sqlalchemy[asyncio]==2.0.36
 asyncpg==0.30.0
+psycopg2-binary==2.9.10
 alembic==1.13.3
 
 # Task Queue
@@ -52,3 +53,8 @@ python-dotenv==1.0.1
 slowapi==0.1.9
 tenacity==9.0.0       # Retry logic
 python-multipart==0.0.12
+bleach==6.1.0         # XSS Sanitization
+
+# Authentication
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0

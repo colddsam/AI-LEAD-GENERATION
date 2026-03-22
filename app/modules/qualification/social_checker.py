@@ -33,7 +33,7 @@ async def check_social_media(url: str) -> Tuple[bool, List[Dict[str, str]]]:
         Tuple[bool, List[Dict[str, str]]]:
             - bool: True if at least one social profile was found.
             - list: Deduplicated list of dicts with keys
-                    'platform_name' and 'profile_url'.
+                    'platform' and 'url'.
                     Returns an empty list on failure or no socials found.
     """
     if not url:
@@ -84,8 +84,8 @@ async def check_social_media(url: str) -> Tuple[bool, List[Dict[str, str]]]:
                             seen_platforms.add(platform)
                             social_profiles.append(
                                 {
-                                    "platform_name": platform,
-                                    "profile_url": href_raw,
+                                    "platform": platform,
+                                    "url": href_raw,
                                 }
                             )
                         break  # a single link can only match one platform

@@ -1,12 +1,21 @@
-# app/core/scheduler.py
-# ✅ ACTIVE — APScheduler async approach with JSON Configuration
+"""
+Dynamic Task Scheduling Core.
+
+This module initializes the APScheduler background worker and synchronizes 
+its state with the dynamic JSON-based configuration (`jobs_config.json`).
+
+Design Choice:
+We use a 60-second 'Sync Heartbeat' (`sync_scheduler_config`). This allows 
+administrators to change a task's hour or status in the dashboard and have 
+it take effect at runtime without a process reboot.
+"""
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from loguru import logger
 
-from app.config import get_settings
+from app.config import get_settings, get_production_status
 from app.core.job_manager import job_manager
 
 settings = get_settings()
@@ -14,7 +23,10 @@ settings = get_settings()
 scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 
 def _apply_job_config(job_id: str, func, cfg: dict, misfire_grace_time_default: int = 600):
-    """Adds a job to the scheduler based on JSON config, or updates status."""
+    """
+    Low-level helper to translate JSON configuration schemas into 
+    concrete APScheduler Trigger objects (Cron or Interval).
+    """
     trigger = None
     if cfg.get("type") == "cron":
         kwargs = {}
@@ -29,7 +41,6 @@ def _apply_job_config(job_id: str, func, cfg: dict, misfire_grace_time_default: 
         logger.error(f"Invalid trigger configuration for {job_id}")
         return
 
-    # Add the job
     scheduler.add_job(
         func,
         trigger,
@@ -38,13 +49,19 @@ def _apply_job_config(job_id: str, func, cfg: dict, misfire_grace_time_default: 
         misfire_grace_time=misfire_grace_time_default
     )
 
-    # Initial Pause State Check
     if not job_manager.is_job_active(job_id):
         scheduler.pause_job(job_id)
 
 
 def sync_scheduler_config():
-    """Runs periodically to check for JSON config updates and applies changes to APScheduler dynamically."""
+    """
+    Administrative Heartbeat.
+    
+    Reads the current JSON configuration on disk and reconciles it with 
+    the live scheduler. This handles:
+    1. Pausing/Resuming jobs based on the 'status' field.
+    2. Modifying triggers (e.g., changing run time from 6 AM to 7 AM).
+    """
     config = job_manager.load_config()
     
     for job_id, cfg in config.items():
@@ -52,10 +69,8 @@ def sync_scheduler_config():
         if not job:
             continue
             
-        # 1. Sync Status (Pause/Resume)
         is_active = job_manager.is_job_active(job_id)
         
-        # job.next_run_time is None when paused
         if is_active and job.next_run_time is None:
             scheduler.resume_job(job_id)
             logger.info(f"▶️ Resumed Job: {job_id}")
@@ -63,7 +78,6 @@ def sync_scheduler_config():
             scheduler.pause_job(job_id)
             logger.info(f"⏸️ Paused Job: {job_id}")
 
-        # 2. Sync Schedule Timings
         new_trigger = None
         if cfg.get("type") == "cron":
             kwargs = {}
@@ -84,7 +98,6 @@ def setup_scheduler():
     Registers all pipeline stages as dynamic cron jobs mapped to the JSON configuration.
     """
     
-    # Import here to avoid circular imports
     from app.tasks.daily_pipeline import (
         run_discovery_stage,
         run_qualification_stage,
@@ -98,7 +111,6 @@ def setup_scheduler():
 
     config = job_manager.load_config()
 
-    # Map jobs to their functions
     job_map = {
         "discovery": run_discovery_stage,
         "qualification": run_qualification_stage,
@@ -110,13 +122,11 @@ def setup_scheduler():
         "weekly_optimization": run_weekly_optimization,
     }
 
-    # Register each job dynamically
     for j_id, func in job_map.items():
         cfg = config.get(j_id)
         if cfg:
             _apply_job_config(j_id, func, cfg, misfire_grace_time_default=3600 if j_id == "weekly_optimization" else 600)
 
-    # Register the Sync task that checks the JSON file every 60 seconds
     scheduler.add_job(
         sync_scheduler_config,
         IntervalTrigger(seconds=60),
@@ -126,7 +136,7 @@ def setup_scheduler():
 
     scheduler.start()
     
-    is_master_hold = settings.PRODUCTION_STATUS.upper() == "HOLD"
+    is_master_hold = get_production_status() == "HOLD"
     if is_master_hold:
         logger.warning("🚨 PRODUCTION_STATUS is HOLD. All tasks are initialized in a PAUSED state.")
     else:

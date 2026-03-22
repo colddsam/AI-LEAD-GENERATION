@@ -10,6 +10,18 @@ from app.tasks.daily_pipeline import (
     generate_daily_report
 )
 
+from contextlib import asynccontextmanager
+
+@pytest.fixture(autouse=True)
+def mock_job_manager():
+    @asynccontextmanager
+    async def dummy_lock(*args, **kwargs):
+        yield
+
+    with patch("app.tasks.daily_pipeline.job_manager.is_job_active", return_value=True), \
+         patch("app.tasks.daily_pipeline.advisory_lock", new=dummy_lock):
+        yield
+
 @pytest.mark.asyncio
 async def test_run_discovery_stage(db_session):
     # Mock GooglePlaces and Groq Client to skip network requests

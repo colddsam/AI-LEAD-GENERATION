@@ -98,11 +98,16 @@ Return ONLY the new prompt text.
                     logger.error(f"Error optimizing prompt: {e}")
                     await db.rollback()
 
-async def run_weekly_optimization():
+async def run_weekly_optimization(manual: bool = False):
     """
     Wrapper function for APScheduler to run without arguments.
     Acquires its own database session and calls the core logic.
     """
+    from app.core.job_manager import job_manager
+    if not job_manager.is_job_active("weekly_optimization", ignore_global_hold=manual):
+        logger.warning("🚨 [weekly_optimization] is HOLD. Skipping optimization.")
+        return
+
     from app.core.database import get_session_maker
     async_session = get_session_maker()
     async with async_session() as db:

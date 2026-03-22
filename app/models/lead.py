@@ -1,7 +1,14 @@
 """
-Core lead and geographic targeting database models.
-Defines schemas for discovered local businesses, search constraints,
-and the full lead lifecycle footprint.
+AI Lead Generation System - Lead and Geographic Models
+
+This module defines the data structures for managing the entire lead lifecycle.
+From initial discovery via Google Places to AI-driven qualification and 
+final outreach engagement.
+
+Key Models:
+1. SearchHistory: Prevents redundant API costs by tracking geographic/category coverage.
+2. Lead: The central entity representing a business prospect.
+3. LeadSocialNetwork: Stores multi-channel contact signals discovered during scraping.
 """
 import uuid
 from datetime import datetime
@@ -48,7 +55,7 @@ class Lead(Base):
     """
     __tablename__ = "leads"
 
-    # ── Identity ──────────────────────────────────────────────────────────────
+    # Identity Fields
     id             = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     place_id       = Column(String(255), unique=True, index=True, nullable=False)
     business_name  = Column(String(255), nullable=False)
@@ -61,34 +68,28 @@ class Lead(Base):
     google_maps_url = Column(String, nullable=True)
     rating         = Column(Float, nullable=True)
     review_count   = Column(Integer, nullable=True)
+    state          = Column(String(100), nullable=True)
 
-    # ── Qualification ─────────────────────────────────────────────────────────
-    qualification_score = Column(Integer, default=0)
+    # Qualification Metrics
+    ai_score            = Column(Integer, default=0)
     has_website         = Column(Boolean, default=False)
     has_social_media    = Column(Boolean, default=False)
-    web_presence_notes  = Column(String, nullable=True)
+    qualification_notes = Column(String, nullable=True)
+    competitor_intel    = Column(Text, nullable=True)
 
-    # Lead tier: A / B / C / D  (VARCHAR(2), 1-character values only)
     lead_tier = Column(String(2), nullable=True)
 
-    # ── Website quality signals (populated during qualification) ──────────────
+    # Website Quality Signals
     website_title        = Column(String(255), nullable=True)
     website_copyright_year = Column(Integer, nullable=True)
     is_mobile_responsive = Column(Boolean, nullable=True)
     has_online_booking   = Column(Boolean, nullable=True)
     has_ecommerce        = Column(Boolean, nullable=True)
 
-    # ── Status lifecycle ──────────────────────────────────────────────────────
-    # Valid values:
-    #   discovered | qualified | phone_qualified | rejected
-    #   queued_for_send | email_sent
-    #   opened | clicked | replied | bounced | unsubscribed
+    # Status Lifecycle Constraints
     status = Column(String(50), default="discovered", index=True)
 
-    # ── Lifecycle timestamps ──────────────────────────────────────────────────
-    # discovered_at must NEVER be overwritten after the initial insert.
-    # The check_stmt guard in run_discovery_stage skips existing place_ids,
-    # so re-runs will never touch this value.
+    # Lifecycle Timestamps
     discovered_at  = Column(
         DateTime(timezone=True), default=func.now(), nullable=False, index=True
     )
@@ -104,20 +105,19 @@ class Lead(Base):
     )
     first_replied_at = Column(DateTime(timezone=True), nullable=True)
 
-    # ── Follow-up sequence ────────────────────────────────────────────────────
+    # Follow-up Sequence Tracking
     followup_count           = Column(Integer, default=0)
+    follow_up_stage          = Column(Integer, default=0)
     next_followup_at         = Column(DateTime(timezone=True), nullable=True)
     followup_sequence_active = Column(Boolean, default=True)
 
-    # ── Reply intelligence ────────────────────────────────────────────────────
-    # classification: interested | not_interested | auto_reply |
-    #                 wrong_person | question | pricing_inquiry
+    # Reply Intelligence
     reply_classification  = Column(String(50), nullable=True)
     reply_confidence      = Column(Float, nullable=True)
     reply_key_signal      = Column(Text, nullable=True)
     suggested_reply_draft = Column(Text, nullable=True)
 
-    # ── Metadata ──────────────────────────────────────────────────────────────
+    # Metadata
     raw_places_data = Column(
         JSON, nullable=True,
         comment="Raw Google Places API payload for discovery fallback."
@@ -133,7 +133,7 @@ class Lead(Base):
         onupdate=func.now(),
     )
 
-    # ── Relationships ─────────────────────────────────────────────────────────
+    # Relationships
     outreach = relationship(
         "EmailOutreach", back_populates="lead", cascade="all, delete-orphan"
     )
@@ -158,10 +158,10 @@ class LeadSocialNetwork(Base):
         ForeignKey("leads.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
-    # platform_name values: facebook | instagram | linkedin | twitter |
-    #                        youtube | tiktok | pinterest
-    platform_name = Column(String(50), nullable=False, index=True)
-    profile_url   = Column(String, nullable=False)
+    # platform values: facebook | instagram | linkedin | twitter |
+    #                  youtube | tiktok | pinterest
+    platform = Column(String(50), nullable=False, index=True)
+    url      = Column(String, nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(

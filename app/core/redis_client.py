@@ -1,14 +1,15 @@
-# app/core/redis_client.py
-# ============================================================
-# 🔴 PRESERVED FOR FUTURE USE — NOT IMPORTED IN ACTIVE CODE
-#
-# This file is intentionally not imported by any active module.
-# When scaling up:
-#   1. pip install redis==5.2.0
-#   2. Set REDIS_URL in .env
-#   3. Import get_redis() wherever caching is needed
-#   4. Re-enable Celery (see celery_app.py)
-# ============================================================
+"""
+Optional Redis Client Connectivity Module.
+
+NOTE: This is currently a PASSIVE module reserved for future horizontal scaling.
+The system currently uses APScheduler's in-memory / persistent JobManager 
+strategy which is sufficient for single-instance deployments.
+
+Scale-Up Path:
+1. Install requirements: `pip install redis==5.2.0`
+2. Configure: Set `REDIS_URL` in your environment.
+3. Integration: Import `get_redis()` for distributed caching or Celery brokerage.
+"""
 
 import redis.asyncio as redis
 from app.config import get_settings

@@ -1,18 +1,25 @@
 """
-Campaign management API endpoints.
-Exposes read-only access to outreach campaigns, their associated email dispatches,
-and aggregated engagement statistics (open, click, reply rates).
+AI Lead Generation System - Campaign Engagement API
+
+This module provides high-level visibility into outreach performance. It enables
+administrators to track campaign success rates by aggregating engagement signals 
+(opens, clicks, replies) at both the campaign and individualized lead level.
+
+Functionality:
+- Campaign Indexing: List all scheduled and completed outreach efforts.
+- Deep Dive Views: Retrieve detailed outreach payloads for a specific campaign.
+- Real-time Analytics: Derive funnel conversion metrics (Discovered → Qualified → Engaged).
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
+from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.main import get_api_key
+from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.models.campaign import Campaign
 from app.schemas.campaign import CampaignResponse, CampaignDetailResponse, CampaignStatsResponse
-from typing import List
 
-router = APIRouter(prefix="/campaigns", dependencies=[Depends(get_api_key)])
+router = APIRouter(prefix="/campaigns", dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=List[CampaignResponse])
 async def list_campaigns(db: AsyncSession = Depends(get_db)):

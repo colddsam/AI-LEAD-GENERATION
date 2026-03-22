@@ -4,18 +4,18 @@ Provides read access to automated pipeline performance reports and
 facilitates Excel workbook downloads for administrative review.
 """
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy import select
+from typing import List
+import datetime
+import os
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.main import get_api_key
+from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.models.daily_report import DailyReport
 from app.schemas.report import ReportResponse
-from typing import List
-from fastapi.responses import FileResponse
-import os
-import datetime
 
-router = APIRouter(prefix="/reports", dependencies=[Depends(get_api_key)])
+router = APIRouter(prefix="/reports", dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=List[ReportResponse])
 async def list_reports(db: AsyncSession = Depends(get_db)):

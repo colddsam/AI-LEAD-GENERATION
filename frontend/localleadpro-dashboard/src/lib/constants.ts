@@ -1,0 +1,63 @@
+import type { LeadStatus, IntentLabel } from './api';
+
+/**
+ * Mapping of lead status keys to Tailwind-friendly semantic color names.
+ * Centralizes the visual branding for lead progression across the dashboard.
+ */
+export const STATUS_COLORS: Record<string, string> = {
+  discovered: 'amber',
+  qualified: 'teal',
+  contacted: 'teal',
+  email_sent: 'teal',
+  replied: 'green',
+  closed: 'green',
+  rejected: 'red',
+};
+
+export const STATUS_LABELS: Record<string, string> = {
+  discovered: 'Discovered',
+  qualified: 'Qualified',
+  contacted: 'Contacted',
+  email_sent: 'Email Sent',
+  replied: 'Replied',
+  closed: 'Closed',
+  rejected: 'Rejected',
+};
+
+export const INTENT_COLORS: Record<IntentLabel, string> = {
+  interested: 'green',
+  pricing_inquiry: 'teal',
+  not_interested: 'red',
+  unsubscribe: 'red',
+  other: 'amber',
+};
+
+export const INTENT_LABELS: Record<IntentLabel, string> = {
+  interested: 'Interested',
+  pricing_inquiry: 'Pricing Inquiry',
+  not_interested: 'Not Interested',
+  unsubscribe: 'Unsubscribe',
+  other: 'Other',
+};
+
+export const PIPELINE_STAGES = [
+  { id: 'discovery', label: 'Discovery', icon: 'Search', description: 'Discover new local business leads via Google Maps API' },
+  { id: 'qualification', label: 'Qualification', icon: 'CheckCircle', description: 'AI-score and qualify leads based on business signals' },
+  { id: 'personalization', label: 'Personalization', icon: 'Sparkles', description: 'Generate personalized pitches and email content' },
+  { id: 'outreach', label: 'Outreach', icon: 'Send', description: 'Send personalized outreach emails with tracking' },
+  { id: 'daily_report', label: 'Report', icon: 'BarChart2', description: 'Generate daily performance analytics report' },
+  { id: 'weekly_optimization', label: 'Optimization', icon: 'TrendingUp', description: 'Run weekly AI optimization on email performance' },
+] as const;
+
+export const LEAD_STATUSES: LeadStatus[] = ['discovered', 'qualified', 'contacted', 'replied', 'closed', 'rejected', 'email_sent'];
+
+export const NAV_ITEMS = [
+  { path: '/overview', label: 'Overview', icon: 'LayoutDashboard' },
+  { path: '/pipeline', label: 'Pipeline', icon: 'GitBranch' },
+  { path: '/scheduler', label: 'Scheduler', icon: 'Clock' },
+  { path: '/leads', label: 'Leads CRM', icon: 'Users' },
+  { path: '/campaigns', label: 'Campaigns', icon: 'Send' },
+  { path: '/inbox', label: 'Smart Inbox', icon: 'Inbox' },
+  { path: '/analytics', label: 'Analytics', icon: 'BarChart2' },
+  { path: '/settings', label: 'Settings', icon: 'Settings' },
+] as const;

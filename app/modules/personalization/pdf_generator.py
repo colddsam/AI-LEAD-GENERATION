@@ -354,7 +354,7 @@ def generate_proposal_pdf(
     rating: Optional[float] = None,
     review_count: Optional[int] = None,
     city: Optional[str] = None,
-    web_presence_notes: Optional[str] = None,
+    qualification_notes: Optional[str] = None,
 ) -> Optional[str]:
     """
     Renders a visually polished, multi-section business proposal PDF.
@@ -367,7 +367,7 @@ def generate_proposal_pdf(
         rating:              Google rating (optional, shown in header context).
         review_count:        Number of Google reviews (optional).
         city:                Business city (optional).
-        web_presence_notes:  Short diagnosis string from scorer (optional).
+        qualification_notes:  Short diagnosis string from scorer (optional).
 
     Returns:
         str: Relative path to generated PDF, or None on failure.
@@ -395,8 +395,8 @@ def generate_proposal_pdf(
 
         # Section 1 — What We Found
         cursor = _draw_section_heading(c, PAD_X, cursor, "1", "What We Found About Your Online Presence")
-        if web_presence_notes:
-            notes_display = web_presence_notes.replace(" | ", "  •  ")[:200]
+        if qualification_notes:
+            notes_display = qualification_notes.replace(" | ", "  •  ")[:200]
             cursor = _wrapped_text(c, PAD_X, cursor, notes_display,
                                    "Helvetica", 9, GRAY_700,
                                    max_width=INNER, line_height=13)

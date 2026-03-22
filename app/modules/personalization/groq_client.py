@@ -25,17 +25,17 @@ class GroqClient:
         prompt_template = f"""
 You are a professional business development writer. Write a short, warm outreach email for:
 
-Business: {{business_name}}
-Category: {{category}}
-Location: {{location}}
-Rating: {{rating}} stars on Google ({{review_count}} reviews)
-Current web presence: {{web_presence_notes}}
+Business: $business_name
+Category: $category
+Location: $location
+Rating: $rating stars on Google ($review_count reviews)
+Current web presence: $qualification_notes
 
 Deep Enrichment Context:
-- Website Title: {{website_title}}
-- Services Mentioned: {{website_services}}
-- Copyright Year: {{website_year}}
-- Target Competitor: {{competitor_name}}
+- Website Title: $website_title
+- Services Mentioned: $website_services
+- Copyright Year: $website_year
+- Target Competitor: $competitor_name
 
 Requirements:
 - Subject line: Compelling, mentions business name, max 60 chars
@@ -43,16 +43,16 @@ Requirements:
 - Paragraph 1: Acknowledge their business specifically. Mention something from the Deep Enrichment Context if useful (e.g., complementing their specific services or noting they might need an update compared to a local competitor).
 - Paragraph 2: Explain what a custom platform/website could do for their specific business type
 - Paragraph 3: Soft CTA - ask if they'd like a free consultation
-- Include 3 specific ROI benefits for a {{category}}
+- Include 3 specific ROI benefits for a $category
 - Tone: Helpful partner, not salesy
 - Length: 150-200 words max
 
 Return ONLY a valid JSON object in the following format:
-{{{{
+{{
   "subject": "...",
   "body_html": "<p>...</p>",
   "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"]
-}}}}
+}}
 """
         from app.core.database import get_session_maker
         from app.models.prompt_config import PromptConfig
@@ -68,18 +68,28 @@ Return ONLY a valid JSON object in the following format:
         except Exception as e:
             logger.warning(f"Could not load dynamic prompt, using fallback: {e}")
             
-        prompt = prompt_template.format(
-            business_name=lead_data.get('business_name', 'your business'),
-            category=lead_data.get('category', 'business'),
-            location=lead_data.get('location', 'your area'),
-            rating=lead_data.get('rating', 'good'),
-            review_count=lead_data.get('review_count', 'some'),
-            web_presence_notes=lead_data.get('web_presence_notes', 'needs improvement'),
-            website_title=lead_data.get('website_title', 'None'),
-            website_services=', '.join(lead_data.get('website_services', [])),
-            website_year=lead_data.get('website_year', 'None'),
-            competitor_name=lead_data.get('competitor_name', 'None')
-        )
+        from string import Template
+        
+        mapping = {
+            "business_name": lead_data.get('business_name', 'your business'),
+            "category": lead_data.get('category', 'business'),
+            "location": lead_data.get('location', 'your area'),
+            "rating": lead_data.get('rating', 'good'),
+            "review_count": lead_data.get('review_count', 'some'),
+            "qualification_notes": lead_data.get('qualification_notes', 'needs improvement'),
+            "website_title": lead_data.get('website_title', 'None'),
+            "website_services": ', '.join(lead_data.get('website_services', [])),
+            "website_year": lead_data.get('website_year', 'None'),
+            "competitor_name": lead_data.get('competitor_name', 'None')
+        }
+        
+        try:
+            # Use Template.safe_substitute to ignore extra placeholders in the prompt
+            prompt = Template(prompt_template).safe_substitute(mapping)
+        except Exception as e:
+            logger.error(f"Error formatting prompt template: {e}")
+            # Fallback to a very simple version if even Template fails
+            prompt = f"Write an outreach email for {mapping['business_name']}."
         
         @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
         async def _call_groq(prompt_text):
@@ -107,6 +117,7 @@ Return ONLY a valid JSON object in the following format:
                 "benefits": ["Increased visibility", "Better customer engagement", "More sales"]
             }
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     async def generate_daily_targets(self, exclude_cities: list, exclude_categories: list) -> dict:
         """
         Determines novel geographic and categorical targets for discovery,
@@ -143,11 +154,9 @@ Example format:
             return data.get("targets", [])
         except Exception as e:
             logger.exception("Error generating daily targets with Groq")
-            return [
-                {"city": "Pune", "category": "Gyms"},
-                {"city": "Ahmedabad", "category": "Cafes"}
-            ]
+            raise e # Trigger retry
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     async def generate_followup_email(self, lead_data: dict, followup_number: int) -> dict:
         """
         followup_number: 1, 2, or 3
@@ -159,14 +168,14 @@ Example format:
         else:
             angle = "A final, polite 'break-up' email. If they aren't interested, that's fine, but leave the door open."
 
-        prompt = f"""
-You are a professional business development writer. Write a short, personalized follow-up email #{followup_number} for:
+        prompt_template = f"""
+You are a professional business development writer. Write a short, personalized follow-up email #$followup_number for:
 
-Business: {lead_data.get('business_name')}
-Category: {lead_data.get('category')}
-Location: {lead_data.get('location')}
+Business: $business_name
+Category: $category
+Location: $location
 
-Angle: {angle}
+Angle: $angle
 
 Requirements:
 - Subject line: Relevant to the angle, max 60 chars ("Re: " is good)
@@ -180,6 +189,38 @@ Return ONLY a valid JSON object in the following format:
   "body_html": "<p>...</p>"
 }}
 """
+        from app.core.database import get_session_maker
+        from app.models.prompt_config import PromptConfig
+        from sqlalchemy import select
+        
+        try:
+            async with get_session_maker()() as db:
+                stmt = select(PromptConfig).where(
+                    PromptConfig.prompt_type == f"followup_{followup_number}", 
+                    PromptConfig.is_active == True
+                )
+                res = await db.execute(stmt)
+                db_prompt = res.scalars().first()
+                if db_prompt:
+                    prompt_template = db_prompt.prompt_text
+        except Exception as e:
+            logger.warning(f"Could not load dynamic follow-up prompt, using fallback: {e}")
+
+        from string import Template
+        mapping = {
+            "business_name": lead_data.get('business_name', 'your business'),
+            "category": lead_data.get('category', 'business'),
+            "location": lead_data.get('location', 'your area'),
+            "followup_number": followup_number,
+            "angle": angle
+        }
+
+        try:
+            prompt = Template(prompt_template).safe_substitute(mapping)
+        except Exception as e:
+            logger.error(f"Error formatting follow-up prompt: {e}")
+            prompt = f"Write a follow-up email #{followup_number} for {mapping['business_name']}."
+
         try:
             chat_completion = await self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
@@ -188,9 +229,6 @@ Return ONLY a valid JSON object in the following format:
                 temperature=0.7,
             )
             return json.loads(chat_completion.choices[0].message.content)
-        except Exception:
+        except Exception as e:
             logger.exception("Error calling Groq API for followup")
-            return {
-                "subject": f"Re: {lead_data.get('business_name')} website",
-                "body_html": "<p>Hi,</p><p>Just checking in on my previous email. Let me know if you'd like to chat!</p>"
-            }
+            raise e # Trigger retry

@@ -43,7 +43,7 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str, 
         email_ids = messages[0].split()
         results = []
         
-        for e_id in email_ids[-20:]:
+        for e_id in email_ids[-50:]:
             status, msg_data = mail.fetch(e_id, "(RFC822)")
             if status != "OK":
                 continue
@@ -93,3 +93,9 @@ async def fetch_recent_replies(since_minutes: int = 30) -> List[Tuple[str, str, 
     except Exception as e:
         logger.error(f"Error checking replies via IMAP: {e}")
         return []
+    finally:
+        try:
+            if 'mail' in locals() and mail:
+                mail.logout()
+        except:
+            pass

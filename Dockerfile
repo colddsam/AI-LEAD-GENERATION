@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgdk-pixbuf-xlib-2.0-0 \
     libffi-dev \
     shared-mime-info \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user for security
@@ -40,6 +41,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy the rest of the application code
 COPY --chown=appuser:appuser . .
 
+# Set entrypoint.sh permissions
+RUN chmod +x entrypoint.sh
+
 # Switch to the non-root user
 USER appuser
 
@@ -50,5 +54,5 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT:-8000}/api/v1/health')" || exit 1
 
-# Start the uvicorn server with proxy headers enabled for reverse-proxy (e.g. Render/Nginx)
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]
+# Start the application using entrypoint.sh
+CMD ["./entrypoint.sh"]

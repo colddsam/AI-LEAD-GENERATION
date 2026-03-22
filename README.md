@@ -1,17 +1,16 @@
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=AI%20Lead%20Generation%20System&fontSize=50&animation=twinkling" width="100%" />
 
-  <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=00A393&center=true&vCenter=true&width=600&lines=Automated.+Intelligent.+Scalable.;Discover.+Qualify.+Outreach.;24%2F7+AI+Sales+Representative" alt="Typing SVG" /></a>
+  <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=24&pause=1000&color=00A393&center=true&vCenter=true&width=600&lines=Automated.+Intelligent.+Scalable.;Discover.+Qualify.+Outreach.;Your+24%2F7+AI+Sales+Representative" alt="Typing SVG" /></a>
 
-<p>An end-to-end local business discovery, deep-enrichment, qualification, and multi-touchpoint AI outreach pipeline.</p>
+  <p>An enterprise-grade, end-to-end B2B lead generation pipeline. Discovers, deeply enriches, qualifies, and engages prospects via AI-driven outreach.</p>
 
-<p>
-    <img src="https://img.shields.io/badge/Python-3.11+-blue.svg" alt="Python Version" />
-    <img src="https://img.shields.io/badge/FastAPI-0.100+-00a393.svg" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/APScheduler-In--Process_Jobs-37814A.svg" alt="APScheduler" />
-    <img src="https://img.shields.io/badge/PostgreSQL-Database-336791.svg" alt="PostgreSQL" />
-    <img src="https://img.shields.io/badge/Version-v2.1_Branded_Outreach-8A2BE2.svg" alt="Version 2.1" />
-    <img src="https://img.shields.io/badge/Status-Production_Ready-success.svg" alt="Status" />
+  <p>
+    <img src="https://img.shields.io/badge/Python-3.11+-blue.svg?style=for-the-badge&logo=python" alt="Python" />
+    <img src="https://img.shields.io/badge/FastAPI-0.100+-00a393.svg?style=for-the-badge&logo=fastapi" alt="FastAPI" />
+    <img src="https://img.shields.io/badge/React-18+-61DAFB.svg?style=for-the-badge&logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/PostgreSQL-Ready-336791.svg?style=for-the-badge&logo=postgresql" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=for-the-badge&logo=docker" alt="Docker" />
   </p>
 </div>
 
@@ -19,255 +18,217 @@
 
 ## 📖 Table of Contents
 
-- [Why We Need This in the Modern Age](#-why-we-need-this-in-the-modern-age)
 - [Project Overview](#-project-overview)
 - [System Architecture](#-system-architecture)
-- [Key Features](#-key-features)
-- [Complete System Setup](#-complete-system-setup)
-  - [Prerequisites](#1-prerequisites)
-  - [Environment Variables](#2-environment-variables)
-  - [Local Installation](#3-local-installation-recommended-for-development)
-  - [Docker Setup](#docker-installation-recommended-for-production)
-- [Running the System](#-running-the-system)
-- [Automated Testing](#-automated-testing)
+- [Prerequisites](#-prerequisites)
+- [Local Development Setup](#-local-development-setup)
+- [Environment Variables](#-environment-variables)
+- [Deployment](#-deployment)
 - [License](#-license)
-
----
-
-## 🌍 Why We Need This in the Modern Age
-
-In today's highly competitive digital landscape, B2B lead generation is often a manual, tedious, and error-prone process. Sales teams spend countless hours scraping directories, validating email addresses, researching company backgrounds, and writing generic outreach emails that result in low conversion rates.
-
-**The AI Lead Generation System** shifts the paradigm. By leveraging Large Language Models (LLMs) and distributed background processing, this system acts as a persistent, tireless 24/7 sales development representative.
-
-It autonomously:
-
-1. **Discovers** niche local businesses completely organically.
-2. **Scrapes & Qualifies** their websites to ensure they match your Ideal Customer Profile (ICP).
-3. **Personalizes** outreach copy specifically tailored to the prospect's real-world business data.
-4. **Executes** the campaign securely with built-in tracking.
 
 ---
 
 ## 🚀 Project Overview
 
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=python,fastapi,postgres,docker,githubactions" alt="Tech Stack" />
-</div>
+**The AI Lead Generation System** completely automates the traditional sales development lifecycle. By utilizing a distributed architecture and LLM-powered qualification, this platform acts as a tireless, fully autonomous SDR (Sales Development Representative).
 
-The project is built on a robust, asynchronous tech stack designed to handle high-throughput network operations:
-
-- **Backend API:** `FastAPI` + `Uvicorn` for high-performance RESTful operations.
-- **Task Scheduling:** `APScheduler` for lightweight, in-process asynchronous task execution (Optimized for free-tiers).
-- **Database:** `PostgreSQL` via `SQLAlchemy (Async)` & `asyncpg` for non-blocking I/O.
-- **Scraping Engine:** `Playwright` & `BeautifulSoup4` for deep web crawling.
-- **AI Brain:** `Groq API` (Llama 3) for lightning-fast business qualification and personalized email generation.
-- **Monitoring & Alerting:** `Loguru` for structured logging and `Telegram Bot API` for real-time pipeline notifications.
-- **Document Generation:** Auto-populates business-specific `PDF Proposals`, `Excel ROI Workbooks`, and daily performance reports.
-- **Email Template Engine:** `Jinja2`-powered branded HTML emails with configurable logo via Cloudinary CDN.
+### Key Features
+1. **🔍 Organic Discovery**: Leverages Google Places to find local businesses matching specific search parameters.
+2. **🧠 AI Qualification**: Scrapes company websites and uses Llama 3 (via Groq) to qualify leads against a strict Ideal Customer Profile (ICP).
+3. **✉️ Hyper-Personalization**: Analyzes prospect data to generate highly customized, non-generic outreach emails.
+4. **📊 Real-time Dashboard**: A sleek React-based control center to manage campaigns, monitor automation jobs, and track conversion metrics.
+5. **🤖 Smart Notifications**: Integrated Telegram bot for real-time alerts on lead discovery, qualification successes, and system health.
+6. **🚀 Automated Monitoring**: Proactive GitHub Actions and `cron-job.org` integration to ensure 24/7 uptime and pipeline reliability.
+7. **🛡️ Scalable Backend**: Built on FastAPI and PostgreSQL with `async` database connectivity for high-throughput web scraping.
 
 ---
 
 ## 🏗 System Architecture
 
-The workflow follows a directed acyclic pipeline running daily via `APScheduler`.
+The workflow is orchestrated via an asynchronous pipeline with robust state management.
 
 ```mermaid
 graph TD;
-    subgraph "Schedule & Management"
-        Cron[APScheduler] -->|Triggers Daily| Pipeline[Daily Pipeline Task]
-        Pipeline -.->|Real-time System Alerts| Telegram[Telegram Bot]
+    subgraph "Frontend Layer"
+        UI[Admin Dashboard <br> React + Vite + Tailwind] 
     end
 
-    subgraph "The AI Funnel"
-        Pipeline -->|1. Find Targets| GooglePlaces[Google Places API]
-        GooglePlaces -->|Return places| Scraper[Playwright Web Scraper]
-      
-        Scraper -->|Extract Text| AI_Qualify{Groq AI Qualification}
-        AI_Qualify -- Rejected --> Drop[Discard Lead]
-        AI_Qualify -- Approved --> DB[(PostgreSQL Database)]
-
-        DB -->|Fetch Approved Leads| AI_Personalize[Groq AI Content Generator]
-        AI_Personalize -->|Generate Context| PDFGen[PDF Proposal Generator]
-        PDFGen --> XLSXGen[Excel ROI Workbook Generator]
-        XLSXGen --> EmailBuilder[Build Branded HTML Email]
-        EmailBuilder -->|Attach PDF + XLSX| Mailer[Email Delivery System]
+    subgraph "Backend API Layer"
+        UI -- REST API --> API[FastAPI Server]
+        API <--> DB[(PostgreSQL Database)]
+        API -.-> Cron[APScheduler]
     end
 
-    subgraph "Delivery & Tracking"
-        Mailer -->|Send| ClientOutbox[SMTP / Brevo]
-        ClientOutbox --> Webhook[Tracking Webhooks]
-        Webhook -->|Open/Click Events| DB
-        Cron -->|Polling| Poller[IMAP Reply Poller]
-        Poller -->|Fetch Direct Replies| DB
-    end
-
-    subgraph "Reporting"
-        Pipeline -->|End of Day| Reporter[Daily Excel & Email Report]
-        Reporter --> Admin[Admin Inbox]
+    subgraph "Automation Pipeline (Daily)"
+        Cron ==> |Triggers at 9 AM| Pipeline
+        Pipeline --> |1| Search[Google Places API]
+        Search --> |2| Scrape[Playwright Engine]
+        Scrape --> |3| Qualify[Groq AI / Llama 3]
+        Qualify --> |4| Email[Groq AI Personalized Copy]
+        Email --> |5| SMTP[Brevo / SMTP Server]
     end
 ```
 
 ---
 
-## ✨ Key Features
+## 🛠 Prerequisites
 
-| Feature                              | Description                                                                                                               |
-| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
-| **🔍 Multi-Radius Discovery**  | Uses Google Places API to search for specific niches within calculated geographical radii. |
-| **🧠 Deep AI Qualification**   | Extracts structured website signals (old copyright years, mobile responsiveness) and leverages Groq LLM to answer: *Does this business need our services?* |
-| **🌐 Social & Competitor Intel**| Autonomously detects social media footprints and performs local competitor benchmarking to find unique sales angles. |
-| **✍️ Hyper-Personalization** | Generates completely unique email bodies referencing the prospect's specific services, location, and competitor gaps.          |
-| **📄 Dynamic PDF Proposals**   | Auto-generates customized, visually polished business proposals (via ReportLab) and attaches them to outreach emails.          |
-| **📊 Interactive Excel ROI Workbook** | Generates a 3-sheet Excel proposal per lead: ROI projections with editable assumptions, competitor digital snapshot, and a phased project roadmap. |
-| **🖼 Branded Email Templates** | Renders rich HTML emails via Jinja2 templating with configurable company logos sourced from a CDN (`IMAGE_BASE_URL`), tracking pixels, and CTA buttons. |
-| **🔁 Autonomous Follow-Ups**   | Intelligent, tri-stage multi-touchpoint sequence that automatically pauses upon prospect engagement (clicks or replies). |
-| **🤖 Smart AI Inbox**          | Reads incoming replies, categorizes intent (e.g., *interested*, *pricing_inquiry*), and automatically drafts context-aware responses. |
-| **📈 Self-Improving Prompts**  | Analyzes weekly campaign metrics (open/reply rates) and dynamically leverages LLM feedback loops to rewrite underperforming outreach prompts. |
-| **🔔 WhatsApp & Telegram Alerts** | Real-time notifications for discovered leads, pipeline errors, and high-intent prospect engagements (e.g., hot replies).       |
-| **📉 ROI & Excel Reporting**   | Compiles daily and weekly outreach metrics and sends an Excel overview directly to the administrator.                                |
-| **🛡 API Key Security**        | All management endpoints are protected by `X-API-Key` headers.                                                          |
-| **💸 Serverless Optimized**    | In-process APScheduler execution optimized for restrictive free-tiers (e.g., Render) by minimizing external connections. |
-| **⏸ Dynamic Pipeline Control**| API-driven `jobs_config.json` system allows granular `HOLD`/`RUN` and schedule adjustments for individual pipeline stages without a server reboot, paired with a global `.env` kill-switch. |
-| **🏢 Enterprise-Grade Code**   | Fully documented, strictly typed codebase featuring professional Python docstrings, dependency injection (`lru_cache`), and comprehensive testing. |
+Before starting, ensure your system has the following installed:
+- **Python 3.11+**
+- **Node.js 18+** & **npm/yarn**
+- **PostgreSQL 14+** (if running locally without Docker)
+- **Docker & Docker Compose** (highly recommended for deployment)
 
 ---
 
-## ⚙️ Complete System Setup
+## 💻 Local Development Setup
 
-### 1. Prerequisites
+To run the complete system locally, follow these steps meticulously.
 
-- Python 3.11+
-- PostgreSQL 15+ (Local or Cloud e.g., Supabase)
-- API Keys for Google Places, Groq, and an SMTP Provider (Brevo/Sendinblue).
+### 1. Backend Setup (FastAPI)
 
-### 2. Environment Variables
-
-Copy the `.env.example` to `.env` and fill in the specifics:
-
-```bash
-cp .env.example .env
-```
-
-The following critical variables must be configured:
-
-| Variable | Purpose |
-|:---------|:--------|
-| `DATABASE_URL` | PostgreSQL connection string (asyncpg format) |
-| `GROQ_API_KEY` | Groq LLM API key for qualification & personalization |
-| `BREVO_SMTP_*` | SMTP relay credentials for email dispatch |
-| `GOOGLE_PLACES_API_KEY` | Google Places API for lead discovery |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot for real-time pipeline alerts |
-| `IMAP_*` | IMAP credentials for polling incoming replies |
-| `IMAGE_BASE_URL` | CDN URL for the branded logo displayed in outreach emails |
-| `PRODUCTION_STATUS` | Global pipeline kill-switch (`RUN` or `HOLD`) |
-| `BOOKING_LINK` | CTA booking URL for email call-to-action buttons |
-| `SENDER_ADDRESS` | Physical sender address for CAN-SPAM compliance |
-
-Granular per-job control is managed dynamically via the API and `config/jobs_config.json`.
-
-### 3. Local Installation (Recommended for Development)
-
-1. **Clone & Environment:**
-
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/your-username/ai-lead-generation.git
    cd "AI LEAD GENERATION"
-   python -m venv venv
-   source venv/bin/activate # On Windows: venv\Scripts\activate
    ```
-2. **Install Dependencies:**
 
+2. **Set up the Python Virtual Environment:**
+   ```bash
+   python -m venv venv
+   # Windows:
+   venv\Scripts\activate
+   # macOS/Linux:
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies:**
    ```bash
    pip install -r requirements.txt
+   playwright install chromium
    ```
-3. **Run Database Migrations:**
 
+4. **Initialize Database & Create Admin:**
+   Make sure you have configured your `.env` (see Environment Variables section).
    ```bash
-   alembic upgrade head
+   python scripts/create_tables.py
+   python scripts/seed_admin.py
+   ```
+   *(Save the generated admin credentials to log into the dashboard).*
+
+5. **Start the Development Server:**
+   ```bash
+   uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   ```
+   *API is available at: `http://localhost:8000/docs`*
+
+### 2. Frontend Setup (React Dashboard)
+
+1. **Open a new terminal window** and navigate to the frontend folder:
+   ```bash
+   cd frontend/localleadpro-dashboard
    ```
 
-### Docker Installation (Recommended for Production)
+2. **Install Node Modules:**
+   ```bash
+   npm install
+   ```
 
-If you prefer an isolated containerized environment, ensure Docker is installed and run:
+3. **Configure Frontend Environment:**
+   Create a `.env` block in `frontend/localleadpro-dashboard/`:
+   ```env
+   VITE_PROXY_URL=http://localhost:8000
+   ```
 
-```bash
-docker compose up -d --build
-```
-
-This will spin up the FastAPI app with a built-in health check (`/api/v1/health`) and persistent job configuration volume. All background tasks run seamlessly inside the API process via APScheduler.
-
-### External Cron-Job Setup (For Serverless Free Tiers)
-
-If deploying to a platform that puts the server to sleep (e.g., Render Free Tier), this repository includes an automated GitHub Action (`.github/workflows/setup_cronjob.yml`) that links your deployment to [cron-job.org](https://cron-job.org).
-Simply provide your `CRON_JOB_API_KEY` and `APP_URL` as GitHub Secrets/Variables, and a system keep-alive will be automatically configured upon deployment.
-
----
-
-## 🏃 Running the System
-
-Start the FastAPI Server, which automatically instantiates the APScheduler for background operations:
-
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-> *API Documentation is available at: [http://localhost:8000/docs](http://localhost:8000/docs)*
-
-### Manual Pipeline Execution
-
-For debugging or immediate execution, you can bypass the APScheduler and run the pipeline stages sequentially via the standalone script:
-
-```bash
-python test.py
-```
-
-This ensures the database tables exist and immediately triggers the configured stages (e.g., Discovery, Qualification).
+4. **Start the Development Server:**
+   ```bash
+   npm run dev
+   ```
+   *Dashboard is available at: `http://localhost:5173`*
 
 ---
 
-## 🧪 Automated Testing
+## 🔐 Environment Variables
 
-We enforce a strict 100% test coverage expectation across the system.
-Our End-to-End test suite automatically spins up an asynchronous SQLite memory database (`test.db`) to safely perform operations. Models dynamically adapt schema bindings to ensure cross-compatibility between production PostgreSQL and local SQLite testing environments.
+To run the system, you must populate your `.env` file with these keys. 
 
-To run the entire suite:
+> [!TIP]
+> **Need help finding these keys?** Follow our [**Step-by-Step API Key Acquisition Guide**](./DEPLOYMENT.md#-mastering-api-keys--secrets-100-free-way) to get everything for free.
 
-```bash
-pytest -v tests/
+```ini
+# --- Core Application ---
+APP_ENV=production
+APP_SECRET_KEY=generate_a_secure_random_string
+API_KEY=your_secure_api_key
+SECURITY_SALT=generate_a_secure_random_salt
+APP_URL=https://your-app-url.onrender.com
+IMAGE_BASE_URL=https://your-cdn.com/logo.png
+PRODUCTION_STATUS=RUN  # Set to HOLD to pause the pipeline
+BACKEND_CORS_ORIGINS=http://localhost:3000,http://localhost:5173,https://your-app.vercel.app
+
+# --- Admin & Security ---
+ADMIN_EMAIL=admin@domain.com
+INITIAL_ADMIN_PASSWORD=your_secure_password
+VITE_API_KEY=your_secure_api_key  # Must match API_KEY
+
+# --- Database & Storage ---
+DATABASE_URL=postgresql+asyncpg://user:password@host:5432/postgres
+SUPABASE_URL=https://your-ref.supabase.co
+SUPABASE_ANON_KEY=your_anon_key
+REDIS_URL=  # Optional: only for Celery horizontal scaling
+
+# --- AI Models ---
+GROQ_API_KEY=gsk_your_key
+GROQ_MODEL=llama-3.1-8b-instant
+GOOGLE_PLACES_API_KEY=AIza_your_key
+
+# --- Email (SMTP & IMAP) ---
+BREVO_SMTP_HOST=smtp-relay.brevo.com
+BREVO_SMTP_PORT=587
+BREVO_SMTP_USER=your_smtp_user
+BREVO_SMTP_PASSWORD=your_smtp_password
+FROM_EMAIL=sender@domain.com
+FROM_NAME="Lead Gen System"
+REPLY_TO_EMAIL=replies@domain.com
+IMAP_HOST=imap.gmail.com
+IMAP_USER=your_email@gmail.com
+IMAP_PASSWORD=your_gmail_app_password
+
+# --- Alerts & Automation ---
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+WHATSAPP_NUMBER=+91XXXXXXXXXX
+CALLMEBOT_API_KEY=your_callmebot_key
+CRON_JOB_API_KEY=your_cron_job_api_key
+RENDER_DEPLOY_HOOK=your_render_deploy_hook_url
+
+# --- Scheduling (IST) ---
+DISCOVERY_HOUR=6
+QUALIFICATION_HOUR=7
+PERSONALIZATION_HOUR=8
+OUTREACH_HOUR=9
+REPORT_HOUR=23
+REPORT_MINUTE=30
+EMAIL_SEND_INTERVAL_SECONDS=360
+
+# --- Branding & Outreach ---
+VITE_SITE_NAME="Local Lead Pro"
+BOOKING_LINK=https://calendly.com/your-link
+SENDER_ADDRESS="Your City, Your Country"
 ```
 
-**Testing coverage includes:**
-
-- ✅ Database Schema & ORM capabilities (w/ schema-agnostic adaptations).
-- ✅ Discovery Module (Mocks Google API & DOM Scrapers).
-- ✅ Asynchronous Task Pipeline validation.
-- ✅ System integration & Error handling cases.
-
 ---
 
-## 🔮 Future Roadmap (v3.0)
+## 🚢 Deployment
 
-With the successful deployment of **v2.1**, the platform now possesses autonomous follow-ups, reply classification, deep enrichment, self-improving prompt analytics, and branded outreach templates. 
-Our upcoming v3.0 goals focus on expanding beyond email:
+Deploying the system is straightforward using Docker for the backend and static hosting for the frontend.
 
-- **Multi-Omnichannel Sequences:** Coordinated outreach traversing SMS, direct LinkedIn messaging, and automated voicemail drops.
-- **Continuous CRM Sync:** Bi-directional sync integrations with Salesforce and HubSpot to pass qualified leads instantaneously to closing teams.
-- **Voice AI Handoff:** Integration with voice agents to trigger immediate outbound calls the moment a prospect hits a tracking landing page.
-
-*(Note: Technical implementation models and architectural choices for these upcoming changes are managed internally).*
+Please refer to the complete, step-by-step [**DEPLOYMENT.md**](./DEPLOYMENT.md) production guide. It contains visual, stage-by-stage instructions for deploying to **Supabase**, **Render**, and **Vercel**.
 
 ---
-
-## 📜 License
-
-This project is **PROPRIETARY AND CONFIDENTIAL**. 
-
-It is strictly licensed only to the original author. Any other person, entity, or corporation wishing to implement, deploy, or use this system must obtain **explicit, prior written permission** from the author. 
-
-Unauthorized copying, distribution, modification, or commercial use of this codebase is strictly prohibited. See the [LICENSE](LICENSE) file for the full End-User License Agreement (EULA) rules and regulations.
 
 <div align="center">
   <br>
-  <em>Built with ❤️ to revolutionize B2B Sales</em>
+  <em>Built with ❤️ for High-Performance B2B Sales Teams</em>
+</div> revolutionize B2B Sales</em>
 </div>

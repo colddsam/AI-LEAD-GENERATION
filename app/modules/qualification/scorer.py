@@ -246,12 +246,19 @@ async def qualify_lead(lead: Lead, db) -> tuple[bool, int, str]:
         has_socials, social_profiles = await check_social_media(lead.website_url)
         if has_socials:
             from app.models.lead import LeadSocialNetwork
+            from sqlalchemy import delete
+
+            # Clear existing socials first to ensure idempotency if re-qualified
+            await db.execute(
+                delete(LeadSocialNetwork).where(LeadSocialNetwork.lead_id == lead.id)
+            )
+
             for profile in social_profiles:
                 db.add(
                     LeadSocialNetwork(
                         lead_id=lead.id,
-                        platform_name=profile["platform_name"],
-                        profile_url=profile["profile_url"],
+                        platform=profile["platform"],
+                        url=profile["url"],
                     )
                 )
 

@@ -10,7 +10,7 @@ from app.config import get_settings
 from sqlalchemy import text
 from loguru import logger
 
-Base = declarative_base()
+from app.models.base import Base
 
 _engine = None
 _async_session_maker = None
@@ -84,7 +84,6 @@ async def verify_tables_exist():
     engine = get_engine()
     async with engine.begin() as conn:
         try:
-            # Try to query two of the most foundational tables explicitly in public schema
             await conn.execute(text("SELECT id FROM public.leads LIMIT 1"))
             await conn.execute(text("SELECT id FROM public.search_history LIMIT 1"))
         except Exception as e:
@@ -96,7 +95,6 @@ async def verify_tables_exist():
                 import sys
                 import subprocess
                 try:
-                    # Run alembic upgrade head programmatically using the current python executable
                     result = subprocess.run(
                         [sys.executable, "-m", "alembic", "upgrade", "head"],
                         check=True,
@@ -110,5 +108,4 @@ async def verify_tables_exist():
                     logger.error(error_msg)
                     sys.exit(error_msg)
             else:
-                # If it's a different exception (e.g. auth failed), surface it
                 raise

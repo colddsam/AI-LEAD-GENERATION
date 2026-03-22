@@ -1,0 +1,88 @@
+import { format, formatDistanceToNow, parseISO } from 'date-fns';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+/**
+ * Utility for conditional class name merging.
+ * Combines clsx for conditional logic and tailwind-merge to handle conflicting Tailwind classes.
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+/**
+ * Formats an ISO date string into a human-readable "MMM d, yyyy HH:mm" format.
+ * Returns a fallback placeholder if the date is null or invalid.
+ */
+export function formatDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return '—';
+  try {
+    return format(parseISO(dateStr), 'MMM d, yyyy HH:mm');
+  } catch {
+    return dateStr;
+  }
+}
+
+export function formatDateShort(dateStr: string | null | undefined): string {
+  if (!dateStr) return '—';
+  try {
+    return format(parseISO(dateStr), 'MMM d, yyyy');
+  } catch {
+    return dateStr;
+  }
+}
+
+/**
+ * Returns a relative time string (e.g., "2 hours ago") for a given ISO date.
+ */
+export function timeAgo(dateStr: string | null | undefined): string {
+  if (!dateStr) return '—';
+  try {
+    return formatDistanceToNow(parseISO(dateStr), { addSuffix: true });
+  } catch {
+    return dateStr;
+  }
+}
+
+export function scoreColor(score: number): string {
+  if (score >= 80) return 'text-green-400';
+  if (score >= 60) return 'text-amber-500';
+  return 'text-red-500';
+}
+
+export function scoreBgColor(score: number): string {
+  if (score >= 80) return 'bg-green-400/10 text-green-400 border-green-400/30';
+  if (score >= 60) return 'bg-amber-500/10 text-amber-500 border-amber-500/30';
+  return 'bg-red-500/10 text-red-500 border-red-500/30';
+}
+
+/**
+ * Truncates a string to a specified length and appends an ellipsis.
+ */
+export function truncate(text: string, maxLen: number = 60): string {
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen) + '…';
+}
+
+export function buildCronDescription(config: Record<string, unknown>): string {
+  const parts: string[] = [];
+  if (config.hour !== undefined) parts.push(`at ${String(config.hour).padStart(2, '0')}:${String(config.minute ?? 0).padStart(2, '0')}`);
+  if (config.minutes !== undefined) parts.push(`every ${config.minutes} minutes`);
+  if (config.day_of_week) parts.push(`on ${config.day_of_week}`);
+  return parts.join(' ') || 'Custom schedule';
+}
+
+/**
+ * Triggers a browser-level download for a given Blob object.
+ * Primarily used for exporting CSVs and downloading PDF reports.
+ */
+export function downloadBlob(blob: Blob, filename: string) {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}

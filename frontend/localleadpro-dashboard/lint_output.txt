@@ -1,0 +1,89 @@
+
+> coldscout-dashboard@0.0.0 lint
+> eslint .
+
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\components\ui\Badge.tsx
+  48:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\components\ui\Countdown.tsx
+  13:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\components\ui\Countdown.tsx:13:7
+  11 |   useEffect(() => {
+  12 |     if (!to) {
+> 13 |       setDisplay('ΓÇö');
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  14 |       return;
+  15 |     }
+  16 |  react-hooks/set-state-in-effect
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\components\ui\DataTable.tsx
+  26:90  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\components\ui\DataTable.tsx:26:90
+  24 |       {Array.from({ length: cols }).map((_, i) => (
+  25 |         <td key={i} className="px-4 py-3">
+> 26 |           <div className="h-4 bg-navy-700 rounded animate-pulse" style={{ width: `${60 + Math.random() * 40}%` }} />
+     |                                                                                          ^^^^^^^^^^^^^ Cannot call impure function
+  27 |         </td>
+  28 |       ))}
+  29 |     </tr>  react-hooks/purity
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\hooks\useAuth.tsx
+  38:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\hooks\useAuth.tsx:38:7
+  36 |     
+  37 |     if (savedToken && savedUser) {
+> 38 |       setToken(savedToken);
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |       setUser(JSON.parse(savedUser));
+  40 |     }
+  41 |     setIsLoading(false);  react-hooks/set-state-in-effect
+  76:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-refresh/only-export-components
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\pages\Login.tsx
+  55:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\pages\Scheduler.tsx
+  23:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\pages\Settings.tsx
+  32:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\src\pages\Settings.tsx:32:7
+  30 |   useEffect(() => {
+  31 |     if (jobsConfig) {
+> 32 |       setJsonStr(JSON.stringify(jobsConfig, null, 2));
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  33 |     }
+  34 |   }, [jobsConfig]);
+  35 |  react-hooks/set-state-in-effect
+
+C:\Users\SAMRAT\OneDrive\Documents\projects\AI LEAD GENERATION\frontend\localleadpro-dashboard\tailwind.config.ts
+  62:13  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Γ£û 10 problems (10 errors, 0 warnings)
+

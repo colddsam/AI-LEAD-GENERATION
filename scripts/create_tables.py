@@ -1,5 +1,10 @@
 import asyncio
 import sys
+import os
+
+# Ensure the root directory is in sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from loguru import logger
 from app.core.database import get_engine
 from app.models import Base

@@ -22,21 +22,33 @@ def get_template_env() -> Environment:
     os.makedirs(template_dir, exist_ok=True)
     return Environment(loader=FileSystemLoader(template_dir))
 
+import bleach
+
 def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_token: str, app_url: str) -> str:
     """
     Renders the final HTML email body payload, merging static template structures
     with dynamic LLM-generated content and unique tracking pixels.
-    
-    Args:
-        lead_data (Dict[str, Any]): Dictionary containing foundational lead attributes.
-        ai_body_html (str): The pre-generated HTML body content from the LLM.
-        tracking_token (str): The uniquely generated token for tracking engagement metrics.
-        app_url (str): The base URL of the application to facilitate pixel tracking.
-        
-    Returns:
-        str: The fully rendered HTML document string.
+    Sanitizes AI-generated content to prevent XSS.
     """
     try:
+        # Sanitize AI-generated HTML
+        # Allow basic formatting tags but strip scripts/styles
+        allowed_tags = [
+            'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li', 'span', 'div', 'a', 'b', 'i'
+        ]
+        allowed_attrs = {
+            'a': ['href', 'title', 'target'],
+            '*': ['style'] # Some basic styling might be used by LLM
+        }
+        # In a real scenario, we might want to restrict 'style' more strictly
+        sanitized_body = bleach.clean(
+            ai_body_html,
+            tags=allowed_tags,
+            attributes=allowed_attrs,
+            strip=True
+        )
+
         env = get_template_env()
         
         template_file = os.path.join(env.loader.searchpath[0], "email_html.j2")
@@ -49,7 +61,7 @@ def render_email_html(lead_data: Dict[str, Any], ai_body_html: str, tracking_tok
         
         html_content = template.render(
             business_name=lead_data.get("business_name", "Valued Business"),
-            ai_body_html=ai_body_html,
+            ai_body_html=sanitized_body,
             tracking_token=tracking_token,
             app_url=app_url,
             reply_email=settings.REPLY_TO_EMAIL or settings.FROM_EMAIL,
