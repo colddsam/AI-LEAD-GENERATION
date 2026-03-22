@@ -8,12 +8,11 @@ backbone of the administrative authentication layer.
 from datetime import datetime, timedelta, timezone
 from typing import Any, Union
 from jose import jwt
-from passlib.context import CryptContext
+import bcrypt
 from app.config import get_settings
 
 settings = get_settings()
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ALGORITHM = "HS256"
 
 def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
@@ -41,10 +40,15 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verifies a plaintext password against a hashed representation.
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    password_byte_enc = plain_password.encode('utf-8')
+    hashed_password_byte_enc = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(password_byte_enc, hashed_password_byte_enc)
 
 def get_password_hash(password: str) -> str:
     """
     Generates a secure hash for a given password using bcrypt.
     """
-    return pwd_context.hash(password)
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(pwd_bytes, salt)
+    return hashed_password.decode('utf-8')

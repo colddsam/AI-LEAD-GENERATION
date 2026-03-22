@@ -47,8 +47,8 @@ jobs:
         IMAP_USER: ${{ secrets.IMAP_USER }}
         IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
         ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+        APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY || 'dummy_secret_key' }}
+        API_KEY: ${{ secrets.API_KEY || 'dummy_api_key' }}
+        SECURITY_SALT: ${{ secrets.SECURITY_SALT || 'dummy_security_salt' }}
       run: |
         python -c "import app.main; print('Build successful')"
-
-  # Since Render automatically pulls from GitHub upon a push to the main branch,
-  # the deployment step itself is handled natively by the platform!

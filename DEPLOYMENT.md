@@ -122,7 +122,7 @@ graph LR
 
 ```mermaid
 graph TD
-    A[Search @BotFather] --> B[/newbot command]
+    A[Search @BotFather] --> B[Send /newbot command]
     B --> C[Set Name & Username]
     C --> D[Copy HTTP API Token]
     D --> E[Search @userinfobot]
