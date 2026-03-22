@@ -1,12 +1,25 @@
+/**
+ * Accessible Binary Switch Component.
+ * 
+ * Primarily used for administrative system toggles (e.g., Hold/Run).
+ * Features animated transitions and customizable labels for each state.
+ */
 import { cn } from '../../lib/utils';
 
 interface ToggleProps {
+  /** The current Boolean state of the toggle */
   value: boolean;
+  /** Callback triggered when the switch position is toggled */
   onChange: (v: boolean) => void;
+  /** Label text shown in the 'true' state */
   labelOn?: string;
+  /** Label text shown in the 'false' state */
   labelOff?: string;
+  /** Background color class for the 'true' state */
   colorOn?: string;
+  /** Background color class for the 'false' state */
   colorOff?: string;
+  /** Interaction lock for the toggle */
   disabled?: boolean;
 }
 
@@ -15,8 +28,8 @@ export default function Toggle({
   onChange,
   labelOn = 'RUN',
   labelOff = 'HOLD',
-  colorOn = 'bg-coldscout-teal',
-  colorOff = 'bg-red-500',
+  colorOn = 'bg-black',
+  colorOff = 'bg-gray-300',
   disabled = false,
 }: ToggleProps) {
   return (
@@ -37,7 +50,7 @@ export default function Toggle({
       />
       <span className={cn(
         'absolute text-xs font-mono font-semibold transition-all',
-        value ? 'left-2.5 text-navy-900' : 'right-2 text-white',
+        value ? 'left-2.5 text-white' : 'right-2 text-gray-600',
       )}>
         {value ? labelOn : labelOff}
       </span>

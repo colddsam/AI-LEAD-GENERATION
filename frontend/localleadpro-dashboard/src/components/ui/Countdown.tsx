@@ -1,7 +1,15 @@
+/**
+ * Dynamic Countdown Timer Component.
+ * 
+ * Calculates and displays the remaining time until a specified ISO date string.
+ * Automatically updates every second and formats the output into a human-readable
+ * duration (e.g., "in 2h 15m 30s").
+ */
 import { useState, useEffect } from 'react';
 import { differenceInSeconds, parseISO } from 'date-fns';
 
 interface CountdownProps {
+  /** The target ISO 8601 date string to count down towards */
   to: string | null;
 }
 
@@ -42,11 +50,11 @@ export default function Countdown({ to }: CountdownProps) {
   }, [to]);
 
   if (!to) {
-    return <span className="font-mono text-coldscout-teal tabular-nums">—</span>;
+    return <span className="font-mono text-black tabular-nums">—</span>;
   }
 
   return (
-    <span className="font-mono text-coldscout-teal tabular-nums">
+    <span className="font-mono text-black tabular-nums">
       {display !== '—' && display !== 'now' ? `in ${display}` : display}
     </span>
   );

@@ -1,3 +1,10 @@
+/**
+ * Persistent Header / Topbar Component.
+ * 
+ * Displays context-aware page titles, real-time system health metrics,
+ * and the administrative "System Hold" safety toggle.
+ * Integrates with the application state to show data freshness timestamps.
+ */
 import { useLocation } from 'react-router-dom';
 import { useHealth, useSystemToggle } from '../../hooks/useConfig';
 import Badge from '../ui/Badge';
@@ -10,6 +17,7 @@ import { timeAgo } from '../../lib/utils';
 import { Menu } from 'lucide-react';
 
 interface TopbarProps {
+  /** Callback triggered to reveal the mobile navigation sidebar */
   onMenuClick: () => void;
 }
 
@@ -34,20 +42,20 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between h-14 px-4 md:px-6 bg-navy-800/50 border-b border-white/5 backdrop-blur-sm">
+      <header className="flex items-center justify-between h-14 px-4 md:px-6 bg-white border-b border-gray-200">
         <div className="flex items-center gap-4">
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-1.5 text-gray-400 hover:text-white"
+            className="lg:hidden p-1.5 text-secondary hover:text-black transition-colors"
           >
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="text-base md:text-lg font-display font-semibold text-white whitespace-nowrap">{pageTitle}</h1>
+          <h1 className="text-base md:text-lg font-semibold text-black tracking-tight whitespace-nowrap">{pageTitle}</h1>
         </div>
 
         <div className="flex items-center gap-3 md:gap-4">
-          {/* Last updated - hide on small mobile */}
-          <span className="hidden sm:inline text-[10px] md:text-xs font-mono text-gray-500">
+          {/* Last updated */}
+          <span className="hidden sm:inline text-[10px] md:text-xs font-mono text-subtle">
             Updated {dataUpdatedAt ? timeAgo(new Date(dataUpdatedAt).toISOString()) : '—'}
           </span>
 
@@ -75,7 +83,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
       </header>
 
       <Modal open={showConfirm} onClose={() => setShowConfirm(false)} title="Confirm System Toggle">
-        <p className="text-gray-400 text-sm mb-4">
+        <p className="text-secondary text-sm mb-4">
           {isRunning
             ? 'This will pause ALL automated pipeline operations. Are you sure?'
             : 'This will resume all automated pipeline operations. Are you sure?'}

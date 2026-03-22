@@ -1,18 +1,31 @@
+/**
+ * Local Development Proxy Server.
+ * 
+ * Provides a CORS-compliant bridge between the Vite frontend and the Python backend.
+ * Features:
+ * - Automatic injection of the system API Key into all proxied requests.
+ * - Forwarding of Authorization headers for authenticated sessions.
+ * - Detailed request logging for debugging local integration issues.
+ */
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 
+// Load environmental configuration from the root directory
 dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
 const app = express();
+/** Port used by the proxy; must match the proxy URL in frontend constants */
 const PORT = process.env.PORT || 3001;
+/** Target backend API URL (resolved from .env.local) */
 const API_BASE_URL = process.env.API_BASE_URL;
+/** Global secret key used for administrative authentication */
 const API_KEY = process.env.API_KEY;
 
 if (!API_BASE_URL || !API_KEY) {
-  console.error('❌ Missing API_BASE_URL or API_KEY in .env.local (looking in parent directory)');
+  console.error('❌ Missing Critical Configuration: API_BASE_URL or API_KEY in .env.local');
   process.exit(1);
 }
 
@@ -31,7 +44,12 @@ app.use(createProxyMiddleware({
     proxyReq: (proxyReq, req) => {
       // Automatically attach the global API Key to every outgoing request for local development
       proxyReq.setHeader('X-API-Key', API_KEY);
-      console.log(`[PROXY] ${req.method} ${req.url}`);
+      // Forward Authorization header from the frontend (JWT Bearer token)
+      const authHeader = req.headers['authorization'];
+      if (authHeader) {
+        proxyReq.setHeader('Authorization', authHeader);
+      }
+      console.log(`[PROXY] ${req.method} ${req.url} | Auth: ${authHeader ? 'Bearer ...' + (authHeader as string).slice(-8) : 'NONE'}`);
     },
     proxyRes: (proxyRes, req, _res) => {
       console.log(`[PROXY] ${req.method} ${req.url} -> ${proxyRes.statusCode}`);

@@ -1,8 +1,16 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+/**
+ * Root Application Component.
+ * 
+ * Orchestrates the global providers (QueryClient, React Router, AuthContext)
+ * and defines the primary routing architecture for the Local Lead Pro dashboard.
+ * Includes both public-facing pages and protected dashboard routes.
+ */
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
 import Shell from './components/layout/Shell';
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Overview from './pages/Overview';
 import Pipeline from './pages/Pipeline';
@@ -17,6 +25,10 @@ import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
+/**
+ * Shared QueryClient instance with optimized development defaults.
+ * Configured to minimize unnecessary network traffic while maintaining data freshness.
+ */
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -34,6 +46,7 @@ export default function App() {
         <AuthProvider>
           <Routes>
             {/* Public */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
 
             {/* Dashboard (inside ProtectedRoute + Shell layout) */}
@@ -51,8 +64,7 @@ export default function App() {
               </Route>
             </Route>
 
-            {/* Redirects + 404 */}
-            <Route path="/" element={<Navigate to="/overview" replace />} />
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
@@ -62,18 +74,19 @@ export default function App() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: '#101829',
-            color: '#e2e8f0',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
+            background: '#ffffff',
+            color: '#000000',
+            border: '1px solid #eaeaea',
+            borderRadius: '8px',
             fontSize: '13px',
-            fontFamily: '"JetBrains Mono", monospace',
+            fontFamily: '"Inter", system-ui, sans-serif',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           },
           success: {
-            iconTheme: { primary: '#00e5be', secondary: '#0a0f1e' },
+            iconTheme: { primary: '#2dde98', secondary: '#fff' },
           },
           error: {
-            iconTheme: { primary: '#ff3b5c', secondary: '#0a0f1e' },
+            iconTheme: { primary: '#ff3b5c', secondary: '#fff' },
           },
         }}
       />

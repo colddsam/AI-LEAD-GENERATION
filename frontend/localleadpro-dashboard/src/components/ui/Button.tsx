@@ -1,19 +1,29 @@
+/**
+ * Interactive Button Component.
+ * 
+ * Highly configurable action element supporting various semantic styles, sizes,
+ * and an integrated 'loading' state for async operations.
+ */
 import { cn } from '../../lib/utils';
 import { Loader2 } from 'lucide-react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Visual variant affecting the button's color and background */
   variant?: 'primary' | 'danger' | 'ghost' | 'outline';
+  /** Size multiplier for padding and font dimensions */
   size?: 'sm' | 'md' | 'lg';
+  /** Indicates if a background process is active; disables interaction and shows a spinner */
   loading?: boolean;
+  /** Optional Lucide icon to display before the label */
   icon?: ReactNode;
 }
 
 const variants: Record<string, string> = {
-  primary: 'bg-coldscout-teal text-navy-900 hover:bg-[#b8e5e3] font-bold shadow-lg shadow-coldscout-teal/10 hover:shadow-coldscout-teal/20',
-  danger: 'bg-red-500 text-white hover:bg-red-400 font-semibold shadow-lg shadow-red-500/20',
-  ghost: 'bg-transparent text-gray-400 hover:text-coldscout-teal hover:bg-navy-700/50',
-  outline: 'bg-transparent text-coldscout-teal border border-coldscout-teal/30 hover:bg-coldscout-teal/10',
+  primary: 'bg-black text-white hover:bg-gray-800 font-medium border border-black',
+  danger: 'bg-danger text-white hover:bg-red-600 font-medium border border-danger',
+  ghost: 'bg-transparent text-secondary hover:text-black hover:bg-gray-50',
+  outline: 'bg-white text-black border border-gray-200 hover:border-black hover:shadow-vercel font-medium',
 };
 
 const sizes: Record<string, string> = {
@@ -39,7 +49,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-body transition-all duration-200',
+        'inline-flex items-center justify-center gap-2 rounded-md font-sans transition-all duration-200',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         variants[variant],
         sizes[size],

@@ -76,28 +76,28 @@ export default function LeadDetail() {
               {/* Score Ring */}
               <div className="relative w-20 h-20 flex-shrink-0">
                 <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-                  <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#f3f4f6" strokeWidth="6" />
                   <circle
                     cx="40" cy="40" r="35" fill="none"
-                    stroke={score >= 80 ? '#2dde98' : score >= 60 ? '#f5a623' : '#ff3b5c'}
+                    stroke={score >= 80 ? '#059669' : score >= 60 ? '#d97706' : '#dc2626'}
                     strokeWidth="6" strokeLinecap="round"
                     strokeDasharray={`${(score / 100) * 220} 220`}
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={cn('text-xl font-mono font-bold', score >= 80 ? 'text-green-400' : score >= 60 ? 'text-amber-500' : 'text-red-500')}>
+                  <span className={cn('text-xl font-mono font-bold', score >= 80 ? 'text-emerald-600' : score >= 60 ? 'text-amber-600' : 'text-red-600')}>
                     {score}
                   </span>
                 </div>
               </div>
               <div className="text-center sm:text-left">
-                <h2 className="text-xl font-display font-bold text-white">{lead.business_name}</h2>
-                <p className="text-gray-400 text-sm">{lead.city}{lead.state && `, ${lead.state}`} · {lead.category}</p>
+                <h2 className="text-xl font-bold tracking-tight text-gray-900">{lead.business_name}</h2>
+                <p className="text-gray-500 text-sm">{lead.city}{lead.state && `, ${lead.state}`} · {lead.category}</p>
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                   {statusBadge(lead.status)}
                   {lead.rating && (
-                    <span className="flex items-center gap-1 text-xs text-amber-400">
-                      <Star className="w-3 h-3 fill-amber-400" />
+                    <span className="flex items-center gap-1 text-xs text-amber-500">
+                      <Star className="w-3 h-3 fill-amber-500" />
                       {lead.rating} ({lead.review_count} reviews)
                     </span>
                   )}
@@ -108,32 +108,32 @@ export default function LeadDetail() {
 
           {/* Business Info */}
           <Card>
-            <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-3">Business Info</h3>
+            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Business Info</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {lead.phone && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Phone className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-300">{lead.phone}</span>
+                  <Phone className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-700">{lead.phone}</span>
                 </div>
               )}
               {lead.email && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-gray-500" />
-                  <a href={`mailto:${lead.email}`} className="text-coldscout-teal hover:underline">{lead.email}</a>
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <a href={`mailto:${lead.email}`} className="text-black hover:underline">{lead.email}</a>
                 </div>
               )}
               {lead.website && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Globe className="w-4 h-4 text-gray-500" />
-                  <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-coldscout-teal hover:underline truncate">
+                  <Globe className="w-4 h-4 text-gray-400" />
+                  <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-black hover:underline truncate">
                     {lead.website} <ExternalLink className="w-3 h-3 inline" />
                   </a>
                 </div>
               )}
               {lead.google_maps_url && (
                 <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <a href={lead.google_maps_url} target="_blank" rel="noopener noreferrer" className="text-coldscout-teal hover:underline">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <a href={lead.google_maps_url} target="_blank" rel="noopener noreferrer" className="text-black hover:underline">
                     Google Maps <ExternalLink className="w-3 h-3 inline" />
                   </a>
                 </div>
@@ -144,7 +144,7 @@ export default function LeadDetail() {
           {/* AI Notes */}
           <Card>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider">AI Qualification Notes</h3>
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest">AI Qualification Notes</h3>
               {!editingNotes && (
                 <Button variant="ghost" size="sm" onClick={() => { setEditingNotes(true); setEditNotes(lead.notes || lead.qualification_notes || ''); }}>
                   Edit
@@ -154,7 +154,7 @@ export default function LeadDetail() {
             {editingNotes ? (
               <div className="space-y-3">
                 <textarea
-                  className="w-full bg-navy-900 border border-white/10 rounded-lg p-3 text-sm text-white font-mono resize-y min-h-[100px] focus:outline-none focus:border-coldscout-teal/30"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-md p-3 text-sm text-gray-900 font-mono resize-y min-h-[100px] focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors"
                   value={editNotes}
                   onChange={(e) => setEditNotes(e.target.value)}
                   rows={5}
@@ -167,7 +167,7 @@ export default function LeadDetail() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-400 font-mono bg-navy-900 rounded-lg p-3 whitespace-pre-wrap">
+              <p className="text-sm text-gray-600 font-mono bg-gray-50 rounded-md p-3 whitespace-pre-wrap">
                 {lead.notes || lead.qualification_notes || 'No qualification notes available'}
               </p>
             )}
@@ -175,7 +175,7 @@ export default function LeadDetail() {
 
           {/* Social & Competitor */}
           <Card>
-            <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-3">Social & Competitor Intel</h3>
+            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Social & Competitor Intel</h3>
             {lead.social_networks && lead.social_networks.length > 0 ? (
               <div className="flex gap-2 flex-wrap mb-3">
                 {lead.social_networks.map((sn) => (
@@ -184,17 +184,17 @@ export default function LeadDetail() {
                     href={sn.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1.5 bg-navy-700 rounded-lg text-xs font-mono text-coldscout-teal hover:bg-navy-600 transition-colors"
+                    className="px-3 py-1.5 bg-gray-100 rounded-md text-xs font-mono text-gray-700 hover:bg-gray-200 transition-colors border border-gray-200"
                   >
                     {sn.platform} <ExternalLink className="w-3 h-3 inline" />
                   </a>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 font-mono mb-3">No social links found</p>
+              <p className="text-sm text-gray-400 font-mono mb-3">No social links found</p>
             )}
             {lead.competitor_intel && (
-              <p className="text-sm text-gray-400">{lead.competitor_intel}</p>
+              <p className="text-sm text-gray-600">{lead.competitor_intel}</p>
             )}
           </Card>
         </div>
@@ -203,12 +203,12 @@ export default function LeadDetail() {
         <div className="space-y-4">
           {/* Status */}
           <Card>
-            <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-3">Status</h3>
+            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Status</h3>
             <div className="mb-3">{statusBadge(lead.status)}</div>
             <select
               value={editStatus || lead.status}
               onChange={(e) => setEditStatus(e.target.value)}
-              className="w-full bg-navy-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white mb-3 focus:outline-none focus:border-coldscout-teal/30"
+              className="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-900 mb-3 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors"
             >
               {LEAD_STATUSES.map((s) => (
                 <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}</option>
@@ -221,45 +221,45 @@ export default function LeadDetail() {
 
           {/* Sequence Stage */}
           <Card>
-            <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-3">Outreach Stage</h3>
+            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Outreach Stage</h3>
             <div className="flex gap-1 mb-2">
               {[0, 1, 2, 3].map((s) => (
                 <div
                   key={s}
                   className={cn(
                     'flex-1 h-2 rounded-full',
-                    s <= (lead.follow_up_stage ?? lead.sequence_stage ?? 0) ? 'bg-coldscout-teal' : 'bg-navy-700',
+                    s <= (lead.follow_up_stage ?? lead.sequence_stage ?? 0) ? 'bg-black' : 'bg-gray-200',
                   )}
                 />
               ))}
             </div>
-            <p className="text-xs font-mono text-gray-500">
+            <p className="text-xs font-mono text-gray-400">
               Stage {lead.follow_up_stage ?? lead.sequence_stage ?? 0} of 3
             </p>
           </Card>
 
           {/* Metadata */}
           <Card>
-            <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-3">Metadata</h3>
+            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Metadata</h3>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-gray-500">Created</span>
-                <span className="font-mono text-gray-300">{formatDate(lead.created_at)}</span>
+                <span className="text-gray-400">Created</span>
+                <span className="font-mono text-gray-700">{formatDate(lead.created_at)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Last Contacted</span>
-                <span className="font-mono text-gray-300">{formatDate(lead.last_contacted_at)}</span>
+                <span className="text-gray-400">Last Contacted</span>
+                <span className="font-mono text-gray-700">{formatDate(lead.last_contacted_at)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Lead ID</span>
-                <span className="font-mono text-gray-400 text-[10px] truncate max-w-[120px]">{lead.id}</span>
+                <span className="text-gray-400">Lead ID</span>
+                <span className="font-mono text-gray-500 text-[10px] truncate max-w-[120px]">{lead.id}</span>
               </div>
             </div>
           </Card>
 
           {/* Danger Zone */}
-          <Card className="border border-red-500/20">
-            <h3 className="text-sm font-mono text-red-400 uppercase tracking-wider mb-3">Danger Zone</h3>
+          <Card className="border border-red-200">
+            <h3 className="text-xs font-medium text-red-500 uppercase tracking-widest mb-3">Danger Zone</h3>
             <Button
               variant="danger"
               size="sm"
@@ -275,8 +275,8 @@ export default function LeadDetail() {
 
       {/* Delete Modal */}
       <Modal open={showDelete} onClose={() => setShowDelete(false)} title="Delete Lead">
-        <p className="text-gray-400 text-sm mb-4">
-          Are you sure you want to delete <strong className="text-white">{lead.business_name}</strong>?
+        <p className="text-gray-500 text-sm mb-4">
+          Are you sure you want to delete <strong className="text-gray-900">{lead.business_name}</strong>?
           This action cannot be undone.
         </p>
         <div className="flex gap-3 justify-end">

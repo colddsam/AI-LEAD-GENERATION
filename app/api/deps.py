@@ -46,7 +46,7 @@ async def get_api_key(
         str: The validated API key.
     """
     if api_key_header != settings.API_KEY:
-        logger.error(f"API Key mismatch! Received: '{api_key_header}', Expected: '{settings.API_KEY}'")
+        logger.error(f"API Key mismatch! Received: '{api_key_header[:8]}...', Expected: '{settings.API_KEY[:8]}...'")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate API KEY"

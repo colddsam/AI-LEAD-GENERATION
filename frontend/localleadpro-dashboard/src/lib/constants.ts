@@ -1,3 +1,9 @@
+/**
+ * Global Dashboard Constants & Configuration.
+ * 
+ * Central registry for shared business logic constants, UI display labels,
+ * navigation structures, and semantic theme mappings throughout the frontend.
+ */
 import type { LeadStatus, IntentLabel } from './api';
 
 /**

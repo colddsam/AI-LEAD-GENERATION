@@ -53,20 +53,20 @@ export default function Overview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pipeline Status */}
         <Card>
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Pipeline Status</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Pipeline Status</h3>
           <div className="flex flex-wrap items-center gap-y-3 gap-x-2 mb-4">
             {PIPELINE_STAGES.map((stage, i) => (
               <div key={stage.id} className="flex items-center gap-2">
                 <div className={cn(
                   "px-2.5 py-1.5 rounded-md text-[10px] md:text-xs font-mono border transition-all",
                   pipeline?.last_run?.stage === stage.id
-                    ? 'bg-coldscout-teal/10 text-coldscout-teal border-coldscout-teal/30 animate-glow'
-                    : 'bg-navy-700/50 text-gray-500 border-white/5'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-gray-50 text-gray-500 border-gray-200'
                 )}>
                   {stage.label}
                 </div>
                 {i < PIPELINE_STAGES.length - 1 && (
-                  <span className="text-gray-600 text-[10px]">→</span>
+                  <span className="text-gray-300 text-[10px]">→</span>
                 )}
               </div>
             ))}
@@ -89,23 +89,23 @@ export default function Overview() {
 
         {/* System Health */}
         <Card>
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">System Health</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">System Health</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400">API Status</span>
+              <span className="text-sm text-gray-500">API Status</span>
               <Badge label={health?.status === 'healthy' ? 'OK' : 'Error'} variant={health?.status === 'healthy' ? 'green' : 'red'} />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400">Scheduler</span>
+              <span className="text-sm text-gray-500">Scheduler</span>
               <Badge label={health?.scheduler_running ? 'Running' : 'Stopped'} variant={health?.scheduler_running ? 'green' : 'red'} />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400">Production Status</span>
+              <span className="text-sm text-gray-500">Production Status</span>
               <Badge label={health?.production_status ? 'RUN' : 'HOLD'} variant={health?.production_status ? 'green' : 'amber'} />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400">Version</span>
-              <span className="text-xs font-mono text-coldscout-teal">{health?.version ?? '—'}</span>
+              <span className="text-sm text-gray-500">Version</span>
+              <span className="text-xs font-mono text-black">{health?.version ?? '—'}</span>
             </div>
           </div>
         </Card>
@@ -114,12 +114,12 @@ export default function Overview() {
       {/* Recent Leads */}
       <Card>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider">Recent Leads</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest">Recent Leads</h3>
           <Button variant="ghost" size="sm" onClick={() => navigate('/leads')}>View All →</Button>
         </div>
         <DataTable<Lead & Record<string, unknown>>
           columns={[
-            { key: 'business_name', label: 'Business', render: (_, row) => <span className="text-white font-medium">{String(row.business_name)}</span> },
+            { key: 'business_name', label: 'Business', render: (_, row) => <span className="text-gray-900 font-medium">{String(row.business_name)}</span> },
             { key: 'city', label: 'City' },
             { key: 'category', label: 'Category' },
             { key: 'status', label: 'Status', render: (_, row) => statusBadge(String(row.status)) },
@@ -136,13 +136,13 @@ export default function Overview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Job Status */}
         <Card>
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Job Status</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Job Status</h3>
           <div className="space-y-3">
             {jobsConfig && Object.entries(jobsConfig).map(([jobId, config]) => (
-              <div key={jobId} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+              <div key={jobId} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                 <div className="flex items-center gap-3">
                   <StatusDot status={String(config.status).toUpperCase() === 'RUN' ? 'live' : 'hold'} />
-                  <span className="text-sm text-gray-300 font-mono">{jobId}</span>
+                  <span className="text-sm text-gray-700 font-mono">{jobId}</span>
                 </div>
                 <Badge
                   label={String(config.status).toUpperCase()}
@@ -151,14 +151,14 @@ export default function Overview() {
               </div>
             ))}
             {!jobsConfig && (
-              <p className="text-sm text-gray-500 font-mono">Loading jobs...</p>
+              <p className="text-sm text-gray-400 font-mono">Loading jobs...</p>
             )}
           </div>
         </Card>
 
         {/* Quick Actions */}
         <Card>
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Quick Actions</h3>
           <div className="space-y-3">
             <Button
               className="w-full"

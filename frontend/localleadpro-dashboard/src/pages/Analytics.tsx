@@ -59,11 +59,11 @@ export default function Analytics() {
     );
 
     const funnel = [
-      { label: 'Discovered', value: totals.discovered, color: '#00e5be' },
-      { label: 'Qualified', value: totals.qualified, color: '#2dde98' },
-      { label: 'Personalized', value: totals.personalized, color: '#f5a623' },
-      { label: 'Emailed', value: totals.emailed, color: '#38bdf8' },
-      { label: 'Opened', value: totals.opened, color: '#a78bfa' },
+      { label: 'Discovered', value: totals.discovered, color: '#111111' },
+      { label: 'Qualified', value: totals.qualified, color: '#333333' },
+      { label: 'Personalized', value: totals.personalized, color: '#666666' },
+      { label: 'Emailed', value: totals.emailed, color: '#999999' },
+      { label: 'Opened', value: totals.opened, color: '#A4DBD9' },
     ];
 
     return { line, bar, funnel };
@@ -90,31 +90,31 @@ export default function Analytics() {
 
       {/* Funnel */}
       <Card>
-        <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Lead Funnel (Last 7 Days)</h3>
+        <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Lead Funnel (Last 7 Days)</h3>
         <FunnelChart stages={chartData.funnel} />
       </Card>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Lead Discovery & Emails</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Lead Discovery & Emails</h3>
           <LineChart
             data={chartData.line}
             lines={[
-              { dataKey: 'leads_discovered', color: '#00e5be', label: 'Leads' },
-              { dataKey: 'emails_sent', color: '#38bdf8', label: 'Emails Sent' },
-              { dataKey: 'emails_opened', color: '#a78bfa', label: 'Emails Opened' },
+              { dataKey: 'leads_discovered', color: '#111111', label: 'Leads' },
+              { dataKey: 'emails_sent', color: '#666666', label: 'Emails Sent' },
+              { dataKey: 'emails_opened', color: '#A4DBD9', label: 'Emails Opened' },
             ]}
           />
         </Card>
 
         <Card>
-          <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Qualification & Outreach</h3>
+          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Qualification & Outreach</h3>
           <BarChart
             data={chartData.bar}
             bars={[
-              { dataKey: 'qualified', color: '#2dde98', label: 'Qualified' },
-              { dataKey: 'sent', color: '#38bdf8', label: 'Sent' },
+              { dataKey: 'qualified', color: '#111111', label: 'Qualified' },
+              { dataKey: 'sent', color: '#A4DBD9', label: 'Sent' },
             ]}
           />
         </Card>
@@ -122,27 +122,27 @@ export default function Analytics() {
 
       {/* Reports Table */}
       <Card>
-        <h3 className="text-sm font-mono text-gray-400 uppercase tracking-wider mb-4">Daily Reports</h3>
+        <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Daily Reports</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase tracking-wider text-gray-400">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase tracking-wider text-gray-400">Discovered</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase tracking-wider text-gray-400">Qualified</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase tracking-wider text-gray-400">Sent</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase tracking-wider text-gray-400">Opened</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase tracking-wider text-gray-400">Actions</th>
+              <tr className="border-b border-gray-200">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-widest text-gray-400">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-widest text-gray-400">Discovered</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-widest text-gray-400">Qualified</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-widest text-gray-400">Sent</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-widest text-gray-400">Opened</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-widest text-gray-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {(reports ?? []).slice(0, 14).map((r: DailyReport) => (
-                <tr key={r.report_date} className="border-b border-white/5 hover:bg-navy-700/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-gray-300">{r.report_date}</td>
-                  <td className="px-4 py-3 font-mono text-gray-300">{r.leads_discovered ?? 0}</td>
-                  <td className="px-4 py-3 font-mono text-gray-300">{r.leads_qualified ?? 0}</td>
-                  <td className="px-4 py-3 font-mono text-gray-300">{r.emails_sent ?? 0}</td>
-                  <td className="px-4 py-3 font-mono text-gray-300">{r.emails_opened ?? 0}</td>
+                <tr key={r.report_date} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-gray-700">{r.report_date}</td>
+                  <td className="px-4 py-3 font-mono text-gray-700">{r.leads_discovered ?? 0}</td>
+                  <td className="px-4 py-3 font-mono text-gray-700">{r.leads_qualified ?? 0}</td>
+                  <td className="px-4 py-3 font-mono text-gray-700">{r.emails_sent ?? 0}</td>
+                  <td className="px-4 py-3 font-mono text-gray-700">{r.emails_opened ?? 0}</td>
                   <td className="px-4 py-3">
                     <Button variant="ghost" size="sm" icon={<Download className="w-3.5 h-3.5" />} onClick={() => handleDownloadReport(r.report_date)}>
                       Download

@@ -1,27 +1,36 @@
+/**
+ * Semantic Badge/Tag Component.
+ * 
+ * Primarily used for status indicators and categorical tagging.
+ * Supports automated coloring based on the standard `LeadStatus`.
+ */
 import { cn } from '../../lib/utils';
 import type { LeadStatus } from '../../lib/api';
 import { STATUS_COLORS } from '../../lib/constants';
 
 interface BadgeProps {
+  /** Text content to be displayed in the badge */
   label: string;
+  /** Semantic color theme matching the application's design system */
   variant?: 'green' | 'teal' | 'amber' | 'red' | 'muted';
+  /** Additional CSS classes for custom positioning or sizing */
   className?: string;
 }
 
 const variantStyles: Record<string, string> = {
-  green: 'bg-green-400/10 text-green-400 border-green-400/30',
-  teal: 'bg-coldscout-teal/10 text-coldscout-teal border-coldscout-teal/30',
-  amber: 'bg-amber-500/10 text-amber-500 border-amber-500/30',
-  red: 'bg-red-500/10 text-red-500 border-red-500/30',
-  muted: 'bg-navy-700/50 text-gray-400 border-gray-600/30',
+  green: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  teal: 'bg-teal-50 text-teal-700 border-teal-200',
+  amber: 'bg-amber-50 text-amber-700 border-amber-200',
+  red: 'bg-red-50 text-red-700 border-red-200',
+  muted: 'bg-gray-50 text-gray-500 border-gray-200',
 };
 
 const dotColors: Record<string, string> = {
-  green: 'bg-green-400',
-  teal: 'bg-coldscout-teal',
+  green: 'bg-emerald-500',
+  teal: 'bg-teal-400',
   amber: 'bg-amber-500',
   red: 'bg-red-500',
-  muted: 'bg-gray-500',
+  muted: 'bg-gray-400',
 };
 
 /**
@@ -31,7 +40,7 @@ const dotColors: Record<string, string> = {
 export default function Badge({ label, variant = 'muted', className }: BadgeProps) {
   return (
     <span className={cn(
-      'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border font-mono',
+      'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider',
       variantStyles[variant],
       className,
     )}>

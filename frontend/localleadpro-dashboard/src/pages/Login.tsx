@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import { LogIn, Zap } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 
 /**
  * The authentication entry point to the system dashboard.
@@ -24,7 +24,7 @@ export default function Login() {
   const location = useLocation();
 
   // The 'from' object retains the URL path the user tried to visit before being intercepted
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/overview';
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -67,60 +67,69 @@ export default function Login() {
   if (isAuthenticated) return null; // Prevent flash of login while redirecting
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-navy-950 px-4 sm:px-0">
-      <div className="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-coldscout-teal/30 via-transparent to-transparent"></div>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white px-4 sm:px-0 relative overflow-hidden">
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 bg-grid opacity-40" />
       
-      <Card className="w-full max-w-md z-10 relative overflow-hidden ring-1 ring-white/10 shadow-2xl backdrop-blur-sm" padding={false}>
+      {/* Decorative gradient orb */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full blur-3xl opacity-60" />
+
+      <Card className="w-full max-w-md z-10 relative" padding={false}>
         <div className="p-8">
+          {/* Logo */}
           <div className="flex justify-center mb-8">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-coldscout-teal to-blue-500 flex items-center justify-center shadow-lg shadow-coldscout-teal/20">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                {import.meta.env.VITE_SITE_NAME || 'LocalLeadPro'}
+            <div className="flex items-center gap-3">
+              <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="8" fill="black" />
+                <path d="M12 20L20 12L28 20L20 28Z" fill="#A4DBD9" />
+                <circle cx="20" cy="20" r="4" fill="white" />
+              </svg>
+              <span className="text-2xl font-bold tracking-tight text-black">
+                Cold Scout
               </span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Admin Email</label>
+          <p className="text-center text-sm text-gray-500 mb-6">Sign in to access your dashboard</p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-navy-900/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-coldscout-teal/50 focus:border-coldscout-teal/50 transition-colors"
+                className="w-full bg-white border border-gray-200 rounded-md px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors text-sm"
                 placeholder="admin@example.com"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Master Password</label>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Password</label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-navy-900/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-coldscout-teal/50 focus:border-coldscout-teal/50 transition-colors"
+                className="w-full bg-white border border-gray-200 rounded-md px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors text-sm"
                 placeholder="••••••••"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full justify-center h-12 text-sm font-semibold tracking-wide"
+              className="w-full justify-center h-11 text-sm font-medium"
               loading={loading}
               icon={<LogIn className="w-4 h-4" />}
             >
-              Authenticate System
+              Sign In
             </Button>
           </form>
         </div>
         
-        <div className="border-t border-white/5 bg-white/[0.02] p-4 text-center">
-          <p className="text-xs text-gray-500">Authorized Personnel Only. Core Engine Node Alpha.</p>
+        <div className="border-t border-gray-100 bg-gray-50/50 p-4 text-center rounded-b-lg">
+          <p className="text-xs text-gray-400">Authorized Personnel Only</p>
         </div>
       </Card>
     </div>

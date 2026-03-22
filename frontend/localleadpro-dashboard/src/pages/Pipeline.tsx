@@ -50,19 +50,19 @@ export default function Pipeline() {
       <PageHeader title="Pipeline Control" subtitle="Trigger and monitor the AI lead generation pipeline" />
 
       {/* Status Banner */}
-      <div className={`rounded-xl p-6 border ${isRunning ? 'bg-coldscout-teal/5 border-coldscout-teal/30' : 'bg-navy-800 border-white/10'}`}>
+      <div className={`rounded-lg p-6 border ${isRunning ? 'bg-emerald-50 border-emerald-200' : 'bg-gray-50 border-gray-200'}`}>
         <div className="flex items-center gap-4">
           {isRunning ? (
             <>
               <Spinner size="md" />
               <div>
-                <p className="text-coldscout-teal font-display font-semibold">Pipeline Running</p>
-                <p className="text-sm text-gray-400">Current stage: {pipeline?.last_run?.stage ?? 'unknown'}</p>
+                <p className="text-emerald-700 font-semibold">Pipeline Running</p>
+                <p className="text-sm text-gray-500">Current stage: {pipeline?.last_run?.stage ?? 'unknown'}</p>
               </div>
             </>
           ) : (
             <div>
-              <p className="text-gray-300 font-display font-semibold">Pipeline Idle</p>
+              <p className="text-gray-900 font-semibold">Pipeline Idle</p>
               <p className="text-sm text-gray-500 font-mono">
                 Last run: {pipeline?.last_run?.at ? formatDate(pipeline.last_run.at) : 'Never'} · 
                 Status: {pipeline?.last_run?.status ?? '—'}
@@ -79,14 +79,14 @@ export default function Pipeline() {
           const isActive = pipeline?.last_run?.stage === stage.id;
 
           return (
-            <Card key={stage.id} className={isActive ? 'border-coldscout-teal/30' : ''}>
+            <Card key={stage.id} className={isActive ? 'border-black' : ''}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${isActive ? 'bg-coldscout-teal/10' : 'bg-navy-700'}`}>
-                    <Icon className={`w-5 h-5 ${isActive ? 'text-coldscout-teal' : 'text-gray-400'}`} />
+                  <div className={`p-2 rounded-md ${isActive ? 'bg-black' : 'bg-gray-100'}`}>
+                    <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white">{stage.label}</h3>
+                    <h3 className="text-sm font-semibold text-gray-900">{stage.label}</h3>
                     <p className="text-xs text-gray-500">{stage.description}</p>
                   </div>
                 </div>
@@ -117,14 +117,14 @@ export default function Pipeline() {
       </Button>
 
       {/* Live Log */}
-      <Card className="bg-navy-950">
-        <h3 className="text-xs font-mono text-gray-400 uppercase tracking-wider mb-3">Pipeline Log</h3>
-        <div className="bg-navy-900 rounded-lg p-4 max-h-64 overflow-y-auto font-mono text-xs space-y-1">
+      <Card>
+        <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Pipeline Log</h3>
+        <div className="bg-gray-50 border border-gray-200 rounded-md p-4 max-h-64 overflow-y-auto font-mono text-xs space-y-1">
           {logEntries.length === 0 ? (
-            <p className="text-gray-600">No log entries yet. Trigger a pipeline stage to see output.</p>
+            <p className="text-gray-400">No log entries yet. Trigger a pipeline stage to see output.</p>
           ) : (
             logEntries.map((entry, i) => (
-              <p key={i} className="text-gray-400">{entry}</p>
+              <p key={i} className="text-gray-600">{entry}</p>
             ))
           )}
         </div>
@@ -132,7 +132,7 @@ export default function Pipeline() {
 
       {/* Confirm Modal */}
       <Modal open={showConfirm} onClose={() => setShowConfirm(false)} title="Run Full Pipeline">
-        <p className="text-gray-400 text-sm mb-4">
+        <p className="text-gray-500 text-sm mb-4">
           This will trigger all pipeline stages sequentially: Discovery → Qualification → 
           Personalization → Outreach → Report. Are you sure?
         </p>

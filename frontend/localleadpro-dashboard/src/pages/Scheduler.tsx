@@ -40,9 +40,9 @@ export default function Scheduler() {
       <PageHeader title="Job Scheduler" subtitle="Manage pipeline execution schedules" />
 
       {hasChanges && (
-        <Card className="bg-coldscout-teal/10 border-coldscout-teal/20" padding={true}>
+        <Card className="bg-amber-50 border-amber-200" padding={true}>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-coldscout-teal">You have unsaved schedule changes.</span>
+            <span className="text-sm text-amber-700">You have unsaved schedule changes.</span>
             <Button size="sm" icon={<Save className="w-4 h-4" />} onClick={() => {
               updateConfig.mutate(localConfig);
               setLocalConfig({});
@@ -60,8 +60,8 @@ export default function Scheduler() {
             <Card key={stage.id} padding={true}>
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-white capitalize">{stage.label} Worker</h3>
-                  <p className="text-sm text-gray-400">Controls the `{stage.id}` stage execution</p>
+                  <h3 className="text-lg font-semibold text-gray-900 capitalize">{stage.label} Worker</h3>
+                  <p className="text-sm text-gray-500">Controls the `{stage.id}` stage execution</p>
                 </div>
                 <Button
                   variant={isRunning ? 'outline' : 'primary'}
@@ -74,24 +74,24 @@ export default function Scheduler() {
                 </Button>
               </div>
 
-              <div className="space-y-4 border-t border-white/10 pt-4">
+              <div className="space-y-4 border-t border-gray-100 pt-4">
                 <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-center gap-2">
-                  <span className="text-sm text-gray-400">Current Status</span>
-                  <span className={`text-sm font-medium ${isRunning ? 'text-green-400' : 'text-yellow-400'}`}>
+                  <span className="text-sm text-gray-500">Current Status</span>
+                  <span className={`text-sm font-medium ${isRunning ? 'text-emerald-600' : 'text-amber-600'}`}>
                     {isRunning ? '🟢 Active (Running on Schedule)' : '⏸️ Paused (On Hold)'}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-center gap-2">
-                  <span className="text-sm text-gray-400">Cron Schedule</span>
+                  <span className="text-sm text-gray-500">Cron Schedule</span>
                   <input
                     type="text"
                     value={jobConfig.schedule}
                     onChange={(e) => handleUpdate(stage.id, { schedule: e.target.value })}
-                    className="font-mono text-sm bg-navy-900 border border-white/10 rounded px-3 py-1.5 text-white w-full max-w-[200px] focus:outline-none focus:border-coldscout-teal/50"
+                    className="font-mono text-sm bg-gray-50 border border-gray-200 rounded-md px-3 py-1.5 text-gray-900 w-full max-w-[200px] focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors"
                   />
                 </div>
-                <p className="text-xs text-gray-500 font-mono ml-0 sm:ml-[128px]">
+                <p className="text-xs text-gray-400 font-mono ml-0 sm:ml-[128px]">
                   Example: "0 9 * * 1-5" (9 AM, Mon-Fri)
                 </p>
               </div>

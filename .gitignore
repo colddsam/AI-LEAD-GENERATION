@@ -63,3 +63,7 @@ alembic_*.txt
 .cron_setup_cached
 
 docs/
+
+.agent/
+
+sttichframe/

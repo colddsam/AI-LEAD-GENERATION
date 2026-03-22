@@ -1,3 +1,10 @@
+/**
+ * Backend API Client & Type Definitions.
+ * 
+ * Provides a type-safe interface for interacting with the AI Lead Generation backend.
+ * Uses Axios for HTTP requests, handles authentication tokens via interceptors,
+ * and normalizes error responses for UI consumption.
+ */
 import axios from 'axios';
 
 /**

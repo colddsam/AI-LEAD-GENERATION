@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 async def main():
     async with get_session_maker()() as db:
-        result = await db.execute(select(User).where(User.email == "admin@colddsam.com"))
+        result = await db.execute(select(User).where(User.email == "[EMAIL_ADDRESS]"))
         user = result.scalars().first()
         if user:
             user.hashed_password = get_password_hash("adminpassword")

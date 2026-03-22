@@ -57,6 +57,7 @@ out*.txt
 results.txt
 stitch_design.html
 github_meta.md
+.agent/
 
 # ── Project auxiliary directories ────────────────────────────────────────────
 docs/
@@ -72,3 +73,4 @@ README.md
 AI_Lead_Generation_Postman_Collection.json
 openapi.json
 
+sttichframe/
