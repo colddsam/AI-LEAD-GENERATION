@@ -58,7 +58,12 @@ export default function Button({
       disabled={disabled || loading}
       {...rest}
     >
-      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : icon}
+      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+        icon && <span className={cn(
+          size === 'sm' ? 'w-3.5 h-3.5' : size === 'lg' ? 'w-5 h-5' : 'w-4 h-4',
+          'flex items-center justify-center -ml-0.5'
+        )}>{icon}</span>
+      )}
       {children}
     </button>
   );

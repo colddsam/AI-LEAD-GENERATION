@@ -66,13 +66,7 @@ body {
   background-size: 20px 20px;
 }
 
-/* Vercel-style shadow cards */
-.shadow-vercel {
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.08);
-}
-.shadow-vercel-hover {
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 8px 30px rgba(0,0,0,0.12);
-}
+/* Vercel-style shadow cards are now in tailwind.config.ts as vercel and vercel-hover */
 
 /* Glass panel */
 .glass-panel {

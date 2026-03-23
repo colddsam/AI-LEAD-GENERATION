@@ -56,8 +56,8 @@ export default function Overview() {
                 <div className={cn(
                   "px-2.5 py-1.5 rounded-md text-[10px] md:text-xs font-mono border transition-all",
                   pipeline?.last_run?.stage === stage.id
-                    ? 'bg-black text-white border-black'
-                    : 'bg-gray-50 text-gray-500 border-gray-200'
+                    ? 'bg-black text-white border-black shadow-vercel'
+                    : 'bg-accents-1 text-secondary border-accents-2 hover:border-accents-3 hover:bg-white'
                 )}>
                   {stage.label}
                 </div>

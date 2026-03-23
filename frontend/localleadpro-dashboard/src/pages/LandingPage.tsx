@@ -51,11 +51,12 @@ function Navbar() {
           <a href="#features" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Features</a>
           <a href="#workflow" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">How it works</a>
           <a href="#pricing" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Pricing</a>
+          <Link to="/docs" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Docs</Link>
           <Link
             to={isAuthenticated ? '/overview' : '/login'}
             className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
           >
-            {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4" />
+            {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4 ml-1" />
           </Link>
         </div>
       </div>
@@ -93,7 +94,7 @@ function HeroSection() {
             to={isAuthenticated ? '/overview' : '/login'}
             className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition-all hover:shadow-vercel-hover"
           >
-            {isAuthenticated ? 'Go to Dashboard' : 'Get Started'} <ArrowRight className="w-4 h-4" />
+            {isAuthenticated ? 'Go to Dashboard' : 'Get Started'} <ArrowRight className="w-4 h-4 ml-1" />
           </Link>
           <a
             href="#features"
@@ -227,30 +228,36 @@ function WorkflowSection() {
 function PricingSection() {
   const plans = [
     {
-      name: 'Starter',
-      price: '$49',
-      period: '/month',
-      desc: 'For solo founders getting started.',
-      features: ['500 leads/month', 'Email enrichment', 'Basic campaigns', 'Email support'],
-      cta: 'Get Started',
+      name: 'Open Source',
+      price: 'Free',
+      period: '',
+      desc: 'Self-hosted from GitHub with your own API keys.',
+      features: ['Full platform access', 'All 5 pipeline stages', 'Unlimited leads (your keys)', 'Community support'],
+      cta: 'View on GitHub',
+      href: 'https://github.com/colddsam/AI-LEAD-GENERATION',
+      external: true,
       featured: false,
     },
     {
       name: 'Pro',
-      price: '$149',
+      price: '$30',
       period: '/month',
-      desc: 'For growing teams ready to scale.',
-      features: ['5,000 leads/month', 'AI intent scoring', 'Unlimited campaigns', 'Priority support', 'Analytics dashboard'],
-      cta: 'Start Free Trial',
+      desc: 'Hosted API & MCP Server — no deployment.',
+      features: ['No deployment needed', 'MCP server access', '2,000 leads/month', 'AI qualification + emails', 'Email support (48h)'],
+      cta: 'Get Started',
+      href: '/login',
+      external: false,
       featured: true,
     },
     {
       name: 'Enterprise',
-      price: 'Custom',
-      period: '',
-      desc: 'For agencies and large teams.',
-      features: ['Unlimited leads', 'Custom AI models', 'API access', 'Dedicated account manager', 'SLA guarantee'],
+      price: '$100',
+      period: '/month',
+      desc: 'For agencies and freelancing firms.',
+      features: ['Unlimited leads', 'Dedicated API instance', 'Custom ICP models', 'White-label templates', 'Priority support (4h)'],
       cta: 'Contact Sales',
+      href: 'mailto:colddsam@gmail.com?subject=Cold%20Scout%20Enterprise%20Inquiry',
+      external: true,
       featured: false,
     },
   ];
@@ -263,6 +270,7 @@ function PricingSection() {
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">
             Simple, transparent pricing
           </h2>
+          <p className="text-secondary mt-3 max-w-md mx-auto">Open source forever. Pay only for our hosted infrastructure.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -275,7 +283,7 @@ function PricingSection() {
                   : 'border-gray-200 bg-white hover:shadow-vercel'
               }`}
             >
-              <p className={`text-[10px] uppercase tracking-widest font-semibold mb-4 ${plan.featured ? 'text-gray-400' : 'text-subtle'}`}>{plan.name}</p>
+              <p className={`text-[10px] uppercase tracking-widest font-semibold mb-4 ${plan.featured ? 'text-coldscout-teal' : 'text-subtle'}`}>{plan.name}</p>
               <div className="mb-4">
                 <span className="text-4xl font-bold tracking-tighter">{plan.price}</span>
                 {plan.period && <span className={`text-sm ${plan.featured ? 'text-gray-400' : 'text-secondary'}`}>{plan.period}</span>}
@@ -284,23 +292,40 @@ function PricingSection() {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm">
-                    <span className={`w-1 h-1 rounded-full ${plan.featured ? 'bg-white' : 'bg-black'}`} />
+                    <span className={`w-1 h-1 rounded-full ${plan.featured ? 'bg-coldscout-teal' : 'bg-black'}`} />
                     {f}
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/login"
-                className={`block text-center py-2.5 rounded-md text-sm font-medium transition-colors ${
-                  plan.featured
-                    ? 'bg-white text-black hover:bg-gray-100'
-                    : 'bg-black text-white hover:bg-gray-800'
-                }`}
-              >
-                {plan.cta}
-              </Link>
+              {plan.external ? (
+                <a
+                  href={plan.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`block text-center py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    plan.featured
+                      ? 'bg-white text-black hover:bg-gray-100'
+                      : 'bg-black text-white hover:bg-gray-800'
+                  }`}
+                >
+                  {plan.cta}
+                </a>
+              ) : (
+                <Link
+                  to={plan.href}
+                  className="block text-center py-2.5 rounded-md text-sm font-medium bg-white text-black hover:bg-gray-100 transition-colors"
+                >
+                  {plan.cta}
+                </Link>
+              )}
             </div>
           ))}
+        </div>
+
+        <div className="text-center mt-8">
+          <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-black transition-colors">
+            See full comparison & regional pricing <ArrowRight className="w-4 h-4 ml-1" />
+          </Link>
         </div>
       </div>
     </section>
@@ -324,6 +349,7 @@ function Footer() {
             <a href="#features" className="text-xs text-secondary hover:text-black transition-colors">Features</a>
             <a href="#workflow" className="text-xs text-secondary hover:text-black transition-colors">How it works</a>
             <a href="#pricing" className="text-xs text-secondary hover:text-black transition-colors">Pricing</a>
+            <Link to="/docs" className="text-xs text-secondary hover:text-black transition-colors">Docs</Link>
           </div>
           <p className="text-xs text-subtle">
             &copy; {new Date().getFullYear()} Cold Scout. All rights reserved.

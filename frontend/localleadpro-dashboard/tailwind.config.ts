@@ -32,9 +32,18 @@ export default {
           500: '#6ab5b2',
         },
         // Semantic colors
-        success: '#2dde98',
-        warning: '#f5a623',
-        danger: '#ff3b5c',
+        success: {
+          DEFAULT: '#2dde98',
+          subtle: '#eafcf5',
+        },
+        warning: {
+          DEFAULT: '#f5a623',
+          subtle: '#fef6e9',
+        },
+        danger: {
+          DEFAULT: '#ff3b5c',
+          subtle: '#fff1f3',
+        },
       },
       fontFamily: {
         sans: ['"Inter"', 'system-ui', 'sans-serif'],

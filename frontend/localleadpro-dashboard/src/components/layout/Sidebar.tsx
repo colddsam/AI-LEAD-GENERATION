@@ -159,7 +159,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
 
           {/* System Status */}
           <div className={cn(
-            'flex items-center gap-2 px-3 py-2 rounded-md bg-accents-1 border border-gray-100',
+            'flex items-center gap-2 px-3 py-2 rounded-md bg-accents-1 border border-accents-2',
             collapsed && !mobileOpen && 'justify-center px-0',
           )}>
             <StatusDot status={isRunning ? 'live' : 'hold'} />
@@ -175,7 +175,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
             onClick={onToggle}
             className="hidden lg:flex items-center justify-center w-full p-2 rounded-md text-secondary hover:text-black hover:bg-gray-50 transition-colors"
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {collapsed ? <ChevronRight className="w-[18px] h-[18px]" /> : <ChevronLeft className="w-[18px] h-[18px]" />}
           </button>
         </div>
       </aside>

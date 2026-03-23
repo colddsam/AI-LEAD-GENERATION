@@ -41,7 +41,7 @@ interface DataTableProps<T> {
 
 function SkeletonRow({ cols }: { cols: number }) {
   return (
-    <tr className="border-b border-gray-100">
+    <tr className="border-b border-accents-1">
       {Array.from({ length: cols }).map((_, i) => (
         <td key={i} className="px-6 py-3">
           <div className="h-4 bg-gray-100 rounded animate-pulse" style={{ width: `${60 + ((i * 17) % 40)}%` }} />
@@ -55,7 +55,7 @@ function SkeletonRow({ cols }: { cols: number }) {
  * Generic, type-safe data table component with support for custom column rendering,
  * loading skeletons, and interactive row clicks.
  */
-export default function DataTable<T extends Record<string, unknown>>({
+export default function DataTable<T extends object>({
   columns,
   data,
   onRowClick,
@@ -68,7 +68,7 @@ export default function DataTable<T extends Record<string, unknown>>({
       <div className={cn('overflow-x-auto', className)}>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-accents-2">
               {columns.map((col) => (
                 <th key={col.key} className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-secondary" style={{ width: col.width }}>
                   {col.label}
@@ -98,7 +98,7 @@ export default function DataTable<T extends Record<string, unknown>>({
     <div className={cn('overflow-x-auto', className)}>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-200">
+          <tr className="border-b border-accents-2">
             {columns.map((col) => (
               <th key={col.key} className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-secondary" style={{ width: col.width }}>
                 {col.label}
@@ -112,15 +112,17 @@ export default function DataTable<T extends Record<string, unknown>>({
               key={i}
               onClick={() => onRowClick?.(row)}
               className={cn(
-                'border-b border-gray-100 transition-colors',
+                'border-b border-accents-1 transition-colors text-secondary',
                 onRowClick && 'cursor-pointer hover:bg-gray-50',
               )}
             >
               {columns.map((col) => (
                 <td key={col.key} className="px-6 py-4 text-secondary">
                   {col.render
-                    ? col.render(row[col.key], row)
-                    : String(row[col.key] ?? '—')}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ? col.render((row as any)[col.key], row)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    : String((row as any)[col.key] ?? '—')}
                 </td>
               ))}
             </tr>

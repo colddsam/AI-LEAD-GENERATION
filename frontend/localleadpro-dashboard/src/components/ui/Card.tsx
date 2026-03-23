@@ -61,7 +61,11 @@ export function StatCard({ label, value, icon, trend, className }: StatCardProps
           )}
         </div>
         {icon && (
-          <div className="text-gray-200 group-hover:text-gray-300 transition-colors mt-1">{icon}</div>
+          <div className="text-accents-3 group-hover:text-accents-8 transition-colors mt-1 p-2 bg-accents-1 rounded-lg border border-transparent group-hover:border-accents-2">
+            <span className="w-8 h-8 flex items-center justify-center">
+              {icon}
+            </span>
+          </div>
         )}
       </div>
     </Card>

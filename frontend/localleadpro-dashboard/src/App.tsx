@@ -12,6 +12,8 @@ import { Toaster } from 'react-hot-toast';
 import Shell from './components/layout/Shell';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
+import Documentation from './pages/Documentation';
+import Pricing from './pages/Pricing';
 import Overview from './pages/Overview';
 import Pipeline from './pages/Pipeline';
 import Scheduler from './pages/Scheduler';
@@ -50,6 +52,8 @@ export default function App() {
             {/* Public */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/docs" element={<Documentation />} />
+            <Route path="/pricing" element={<Pricing />} />
 
             {/* Dashboard (inside ProtectedRoute + Shell layout) */}
             <Route element={<ProtectedRoute />}>

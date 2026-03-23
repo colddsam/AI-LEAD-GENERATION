@@ -107,13 +107,13 @@ export default function Leads() {
       <Card padding={true}>
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 items-stretch sm:items-center">
           <div className="relative flex-1 min-w-[180px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
             <input
               type="text"
               placeholder="Search by city..."
               value={city}
               onChange={(e) => { setCity(e.target.value); setPage(1); }}
-              className="w-full bg-gray-50 border border-gray-200 rounded-md pl-10 pr-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors"
+              className="w-full bg-accents-1 border border-accents-2 rounded-md pl-10 pr-4 py-2 text-sm text-secondary placeholder:text-secondary/50 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-accents-3 transition-colors"
             />
           </div>
 
@@ -122,13 +122,13 @@ export default function Leads() {
             placeholder="Category..."
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="bg-gray-50 border border-gray-200 rounded-md px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors min-w-[120px]"
+            className="bg-accents-1 border border-accents-2 rounded-md px-4 py-2 text-sm text-secondary placeholder:text-secondary/50 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-accents-3 transition-colors min-w-[120px]"
           />
 
           <select
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-            className="bg-gray-50 border border-gray-200 rounded-md px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors"
+            className="bg-accents-1 border border-accents-2 rounded-md px-4 py-2 text-sm text-secondary focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-accents-3 transition-colors"
           >
             <option value="">All Statuses</option>
             {LEAD_STATUSES.map((s) => (
@@ -154,21 +154,21 @@ export default function Leads() {
       {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-[10px] md:text-xs font-mono text-gray-400 order-2 sm:order-1">
+          <span className="text-[10px] md:text-xs font-mono text-secondary/60 order-2 sm:order-1">
             Showing {((page - 1) * limit) + 1}–{Math.min(page * limit, data.total)} of {data.total} leads
           </span>
           <div className="flex items-center gap-2 order-1 sm:order-2">
             <Button
               variant="ghost"
               size="sm"
-              icon={<ChevronLeft className="w-4 h-4" />}
+              icon={<ChevronLeft />}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               className="px-2"
             >
               <span className="hidden xs:inline">Prev</span>
             </Button>
-            <span className="text-[10px] md:text-xs font-mono text-gray-500 min-w-[80px] text-center">
+            <span className="text-[10px] md:text-xs font-mono text-secondary min-w-[80px] text-center">
               Page {page} of {data.pages}
             </span>
             <Button
@@ -178,11 +178,12 @@ export default function Leads() {
               disabled={page >= data.pages}
               className="px-2"
             >
-              <span className="hidden xs:inline">Next</span> <ChevronRight className="w-4 h-4" />
+              <span className="hidden xs:inline">Next</span> <ChevronRight />
             </Button>
           </div>
         </div>
-      )}
+      )
+    }
     </div>
   );
 }
