@@ -18,7 +18,7 @@ jobs:
         env:
           CRON_JOB_API_KEY: ${{ secrets.CRON_JOB_API_KEY }}
           APP_URL: ${{ vars.APP_URL || secrets.APP_URL }}
-          API_KEY: ${{ secrets.API_KEY || secrets.APP_SECRET_KEY || 'moonlight' }}
+          API_KEY: ${{ secrets.API_KEY || secrets.APP_SECRET_KEY }}
         run: |
           # Compute a SHA-256 hash of secrets to trigger updates only on changes
           HASH=$(echo -n "$CRON_JOB_API_KEY|$APP_URL|$API_KEY" | sha256sum | awk '{print $1}')
@@ -47,7 +47,7 @@ jobs:
         env:
           CRON_JOB_API_KEY: ${{ secrets.CRON_JOB_API_KEY }}
           APP_URL: ${{ vars.APP_URL || secrets.APP_URL }}
-          API_KEY: ${{ secrets.API_KEY || secrets.APP_SECRET_KEY || 'moonlight' }}
+          API_KEY: ${{ secrets.API_KEY || secrets.APP_SECRET_KEY }}
         run: |
           python scripts/setup_cronjob.py
           touch .cron_setup_cached
