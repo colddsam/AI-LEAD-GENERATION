@@ -11,6 +11,7 @@ import { cn } from '../../lib/utils';
 import { NAV_ITEMS } from '../../lib/constants';
 import { useHealth } from '../../hooks/useConfig';
 import StatusDot from '../ui/StatusDot';
+import Logo from '../ui/Logo';
 import {
   LayoutDashboard, GitBranch, Clock, Users, Send, Inbox,
   BarChart2, Settings, ChevronLeft, ChevronRight, LogOut, Home
@@ -59,32 +60,13 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
       )}>
         {/* Logo */}
         <div className="flex items-center justify-between px-4 h-14 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="flex-shrink-0">
-              {/* Cold Scout Logo — SVG mark */}
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="28" height="28" rx="6" fill="#000"/>
-                <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9"/>
-                <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6"/>
-              </svg>
-            </div>
-            {(!collapsed || mobileOpen) && (
-              <span className="font-semibold text-lg text-black tracking-tight">
-                {(() => {
-                  const name = import.meta.env.VITE_SITE_NAME || 'Cold Scout';
-                  const parts = name.split(' ');
-                  if (parts.length === 1) return name;
-                  return (
-                    <>
-                      {parts[0]}
-                      <span className="text-secondary ml-1 font-normal">
-                        {parts.slice(1).join(' ')}
-                      </span>
-                    </>
-                  );
-                })()}
-              </span>
-            )}
+          <div className="flex items-center">
+            <Logo 
+              size={collapsed && !mobileOpen ? "sm" : "md"} 
+              showText={!collapsed || mobileOpen} 
+              forceShowText={mobileOpen}
+              className={cn(collapsed && !mobileOpen && "w-full justify-center gap-0")}
+            />
           </div>
           
           {/* Mobile Close Button */}

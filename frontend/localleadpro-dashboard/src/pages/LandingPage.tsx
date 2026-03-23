@@ -4,14 +4,16 @@
  * Marketing entry point featuring the value proposition, core features,
  * and pricing tiers for the AI Lead Generation system.
  */
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search, Zap, Mail, BarChart2, ArrowRight, ChevronRight,
-  Target, Shield
+  Target, Shield, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
+import Logo from '../components/ui/Logo';
 
 /* ── SVG Decorations ── */
 
@@ -35,25 +37,30 @@ function FloatingDots() {
 
 function Navbar() {
   const { isAuthenticated } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Prevent scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMenuOpen]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-panel">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3" aria-label="Cold Scout Home">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="28" height="28" rx="6" fill="#000" />
-            <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9" />
-            <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6" />
-          </svg>
-          <span className="text-lg font-semibold tracking-tight">
-            Cold <span className="text-secondary font-normal">Scout</span>
-          </span>
+        <Link to="/" className="flex items-center" aria-label="Cold Scout Home">
+          <Logo size="md" />
         </Link>
-        <div className="flex items-center gap-6">
-          <a href="#features" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Features</a>
-          <a href="#workflow" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">How it works</a>
-          <a href="#pricing" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Pricing</a>
-          <Link to="/docs" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Docs</Link>
+        
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-6">
+          <a href="#features" className="text-sm text-secondary hover:text-black transition-colors">Features</a>
+          <a href="#workflow" className="text-sm text-secondary hover:text-black transition-colors">How it works</a>
+          <a href="#pricing" className="text-sm text-secondary hover:text-black transition-colors">Pricing</a>
+          <Link to="/docs" className="text-sm text-secondary hover:text-black transition-colors">Docs</Link>
           <Link
             to={isAuthenticated ? '/overview' : '/login'}
             className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
@@ -61,7 +68,59 @@ function Navbar() {
             {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4 ml-1" />
           </Link>
         </div>
+
+        {/* Mobile Toggle */}
+        <button 
+          className="md:hidden p-2 text-secondary hover:text-black transition-colors"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-16 bg-white z-40 animate-fade-in">
+          <div className="flex flex-col p-6 gap-6 h-full bg-white">
+            <a 
+              href="#features" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Features
+            </a>
+            <a 
+              href="#workflow" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              How it works
+            </a>
+            <a 
+              href="#pricing" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </a>
+            <Link 
+              to="/docs" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Docs
+            </Link>
+            <Link
+              to={isAuthenticated ? '/overview' : '/login'}
+              className="mt-4 inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-4 rounded-md text-base font-medium hover:bg-gray-800 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-5 h-5 ml-1" />
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
@@ -339,13 +398,8 @@ function Footer() {
     <footer className="border-t border-gray-200 py-12 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="28" height="28" rx="6" fill="#000" />
-              <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9" />
-              <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6" />
-            </svg>
-            <span className="text-sm font-semibold tracking-tight">Cold Scout</span>
+          <div className="flex items-center">
+            <Logo size="sm" />
           </div>
           <div className="flex items-center gap-6">
             <a href="#features" className="text-xs text-secondary hover:text-black transition-colors">Features</a>
@@ -369,7 +423,7 @@ const LD_ORGANIZATION = {
   '@type': 'Organization',
   name: 'Cold Scout',
   url: 'https://coldscout.colddsam.com',
-  logo: 'https://coldscout.colddsam.com/android-chrome-512x512.png',
+  logo: 'https://coldscout.colddsam.com/web-app-manifest-512x512.png',
   description: 'AI-powered lead generation platform that discovers, qualifies, and engages local business leads at scale.',
   sameAs: ['https://github.com/colddsam/AI-LEAD-GENERATION'],
   contactPoint: {
