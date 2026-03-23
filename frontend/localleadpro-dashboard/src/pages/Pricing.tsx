@@ -5,15 +5,16 @@
  * feature comparison table, FAQ, and CTA. Follows the
  * Vercel-aesthetic design system used throughout the platform.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Check, X, ChevronDown, ExternalLink,
-  Github, Zap, Building2, Globe
+  Github, Zap, Building2, Globe, Menu
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
+import Logo from '../components/ui/Logo';
 
 /* ═══════════════ Currency Data ═══════════════ */
 
@@ -44,24 +45,28 @@ function formatPrice(value: number, symbol: string): string {
 
 function PricingNavbar() {
   const { isAuthenticated } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Prevent scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMenuOpen]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-panel">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="28" height="28" rx="6" fill="#000" />
-            <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9" />
-            <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6" />
-          </svg>
-          <span className="text-lg font-semibold tracking-tight">
-            Cold <span className="text-secondary font-normal">Scout</span>
-          </span>
+        <Link to="/" className="flex items-center" aria-label="Cold Scout Home">
+          <Logo size="md" />
         </Link>
-        <div className="flex items-center gap-6">
-          <Link to="/#features" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Features</Link>
-          <Link to="/docs" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Docs</Link>
-          <Link to="/pricing" className="hidden md:inline text-sm text-black font-medium border-b border-black pb-0.5">Pricing</Link>
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/#features" className="text-sm text-secondary hover:text-black transition-colors">Features</Link>
+          <Link to="/#workflow" className="text-sm text-secondary hover:text-black transition-colors">How it works</Link>
+          <Link to="/docs" className="text-sm text-secondary hover:text-black transition-colors">Docs</Link>
+          <Link to="/pricing" className="text-sm text-black font-medium border-b border-black pb-0.5">Pricing</Link>
           <Link
             to={isAuthenticated ? '/overview' : '/login'}
             className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
@@ -69,7 +74,59 @@ function PricingNavbar() {
             {isAuthenticated ? 'Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
+
+        {/* Mobile Toggle */}
+        <button 
+          className="md:hidden p-2 text-secondary hover:text-black transition-colors"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-16 bg-white z-40 animate-fade-in">
+          <div className="flex flex-col p-6 gap-6 h-full bg-white">
+            <Link 
+              to="/#features" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link 
+              to="/#workflow" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              How it works
+            </Link>
+            <Link 
+              to="/docs" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Docs
+            </Link>
+            <Link 
+              to="/pricing" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link
+              to={isAuthenticated ? '/overview' : '/login'}
+              className="inline-flex items-center justify-between text-lg font-medium text-black bg-accents-1 p-4 rounded-lg"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
@@ -488,13 +545,8 @@ function PricingFooter() {
     <footer className="border-t border-gray-200 py-12 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="28" height="28" rx="6" fill="#000" />
-              <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9" />
-              <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6" />
-            </svg>
-            <span className="text-sm font-semibold tracking-tight">Cold Scout</span>
+          <div className="flex items-center">
+            <Logo size="sm" />
           </div>
           <div className="flex items-center gap-6">
             <Link to="/" className="text-xs text-secondary hover:text-black transition-colors">Home</Link>

@@ -1,22 +1,26 @@
 /**
  * Documentation Page.
  *
+ * [x] Fix section visibility on mobile in `LandingPage.tsx`.
+ * [x] Update Topbar.tsx is actually not needed for landing/docs as they have their own navbars.
+ * [/] Optimize `Documentation.tsx` for small screens (typography, padding, layout).
  * Comprehensive, interactive documentation covering system architecture,
  * setup guides, API key acquisition, environment configuration,
  * deployment steps, and production architecture for the Cold Scout platform.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, ChevronDown, ChevronRight, ExternalLink,
   Search, Zap, Mail, BarChart2, Target, Shield,
   BookOpen, Code2, Server, Database, Cloud, Terminal,
   Key, Bell, Clock, Palette, Settings, Globe,
-  Cpu, GitBranch, Box, Layers
+  Cpu, GitBranch, Box, Layers, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
+import Logo from '../components/ui/Logo';
 
 /* ═══════════════ SVG Decorations ═══════════════ */
 
@@ -28,24 +32,27 @@ function GridBackground() {
 
 function DocsNavbar() {
   const { isAuthenticated } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMenuOpen]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-panel">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="28" height="28" rx="6" fill="#000" />
-            <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9" />
-            <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6" />
-          </svg>
-          <span className="text-lg font-semibold tracking-tight">
-            Cold <span className="text-secondary font-normal">Scout</span>
-          </span>
+        <Link to="/" className="flex items-center" aria-label="Cold Scout Home">
+          <Logo size="md" />
         </Link>
-        <div className="flex items-center gap-6">
-          <Link to="/#features" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Features</Link>
-          <Link to="/docs" className="hidden md:inline text-sm text-black font-medium border-b border-black pb-0.5">Docs</Link>
-          <Link to="/#pricing" className="hidden md:inline text-sm text-secondary hover:text-black transition-colors">Pricing</Link>
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/#features" className="text-sm text-secondary hover:text-black transition-colors">Features</Link>
+          <Link to="/#workflow" className="text-sm text-secondary hover:text-black transition-colors">How it works</Link>
+          <Link to="/docs" className="text-sm text-black font-medium border-b border-black pb-0.5">Docs</Link>
+          <Link to="/#pricing" className="text-sm text-secondary hover:text-black transition-colors">Pricing</Link>
           <Link
             to={isAuthenticated ? '/overview' : '/login'}
             className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
@@ -53,7 +60,59 @@ function DocsNavbar() {
             {isAuthenticated ? 'Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
+
+        {/* Mobile Toggle */}
+        <button 
+          className="md:hidden p-2 text-secondary hover:text-black transition-colors"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-16 bg-white z-40 animate-fade-in">
+          <div className="flex flex-col p-6 gap-6 h-full bg-white">
+            <Link 
+              to="/#features" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link 
+              to="/#workflow" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              How it works
+            </Link>
+            <Link 
+              to="/docs" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Docs
+            </Link>
+            <Link 
+              to="/#pricing" 
+              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link
+              to={isAuthenticated ? '/overview' : '/login'}
+              className="mt-4 inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-4 rounded-md text-base font-medium hover:bg-gray-800 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {isAuthenticated ? 'Dashboard' : 'Sign In'} <ArrowRight className="w-5 h-5 ml-1" />
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
@@ -118,7 +177,7 @@ function HeroSection() {
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter text-black leading-[0.95] mb-6 animate-fade-in-up">
           Platform<br />
-          <span className="text-gradient">Documentation</span>
+          <span className="text-gradient">Resources</span>
         </h1>
 
         <p className="text-lg md:text-xl text-secondary max-w-2xl mx-auto mb-12 animate-fade-in-up delay-200">
@@ -178,12 +237,12 @@ function TableOfContents() {
 
 function ArchitectureSection() {
   return (
-    <section id="architecture" className="py-24 bg-white">
+    <section id="architecture" className="py-16 md:py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Architecture</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">System Architecture</h2>
-          <p className="text-secondary mt-3 max-w-lg mx-auto">The platform orchestrates an asynchronous pipeline with robust state management across three deployment layers.</p>
+          <p className="text-secondary mt-3 max-w-lg mx-auto text-sm md:text-base">The platform orchestrates an asynchronous pipeline with robust state management across three deployment layers.</p>
         </div>
 
         {/* SVG Architecture Diagram */}
@@ -276,12 +335,12 @@ function PipelineSection() {
   ];
 
   return (
-    <section id="pipeline" className="py-24 bg-accents-1">
+    <section id="pipeline" className="py-16 md:py-24 bg-accents-1">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Pipeline</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">Automation Pipeline</h2>
-          <p className="text-secondary mt-3 max-w-lg mx-auto">Five automated stages execute daily, managed by APScheduler with configurable IST scheduling.</p>
+          <p className="text-secondary mt-3 max-w-lg mx-auto text-sm md:text-base">Five automated stages execute daily, managed by APScheduler with configurable IST scheduling.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -323,9 +382,9 @@ function TechStackSection() {
   ];
 
   return (
-    <section id="tech-stack" className="py-24 bg-white">
+    <section id="tech-stack" className="py-16 md:py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Stack</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">Built With</h2>
         </div>
@@ -353,12 +412,12 @@ function TechStackSection() {
 
 function SetupSection() {
   return (
-    <section id="setup" className="py-24 bg-accents-1">
+    <section id="setup" className="py-16 md:py-24 bg-accents-1">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Setup</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">Local Development Setup</h2>
-          <p className="text-secondary mt-3 max-w-lg mx-auto">Follow these steps meticulously to run the complete system locally.</p>
+          <p className="text-secondary mt-3 max-w-lg mx-auto text-sm md:text-base">Follow these steps meticulously to run the complete system locally.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -521,12 +580,12 @@ function ApiKeysSection() {
   ];
 
   return (
-    <section id="api-keys" className="py-24 bg-white">
+    <section id="api-keys" className="py-16 md:py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Integrations</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">API Keys & Services</h2>
-          <p className="text-secondary mt-3 max-w-lg mx-auto">All integrations are available on free tiers. Follow each guide to collect your keys.</p>
+          <p className="text-secondary mt-3 max-w-lg mx-auto text-sm md:text-base">All integrations are available on free tiers. Follow each guide to collect your keys.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -671,12 +730,12 @@ function EnvVarsSection() {
   const [expandedCat, setExpandedCat] = useState<string | null>('Security');
 
   return (
-    <section id="env-vars" className="py-24 bg-accents-1">
+    <section id="env-vars" className="py-16 md:py-24 bg-accents-1">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Configuration</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">Environment Variables</h2>
-          <p className="text-secondary mt-3 max-w-lg mx-auto">42 tokens required for full functionality. All must be mirrored across Render and Vercel.</p>
+          <p className="text-secondary mt-3 max-w-lg mx-auto text-sm md:text-base">42 tokens required for full functionality. All must be mirrored across Render and Vercel.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -780,12 +839,12 @@ function DeploymentSection() {
   ];
 
   return (
-    <section id="deployment" className="py-24 bg-white">
+    <section id="deployment" className="py-16 md:py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Deployment</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">Production Deployment</h2>
-          <p className="text-secondary mt-3 max-w-lg mx-auto">Three services, three steps. Your system running 24/7 in the cloud.</p>
+          <p className="text-secondary mt-3 max-w-lg mx-auto text-sm md:text-base">Three services, three steps. Your system running 24/7 in the cloud.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -925,13 +984,8 @@ function DocsFooter() {
     <footer className="border-t border-gray-200 py-12 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="28" height="28" rx="6" fill="#000" />
-              <path d="M8 14L12 10L16 14L12 18Z" fill="#A4DBD9" />
-              <path d="M12 14L16 10L20 14L16 18Z" fill="#fff" fillOpacity="0.6" />
-            </svg>
-            <span className="text-sm font-semibold tracking-tight">Cold Scout</span>
+          <div className="flex items-center">
+            <Logo size="sm" />
           </div>
           <div className="flex items-center gap-6">
             <Link to="/" className="text-xs text-secondary hover:text-black transition-colors">Home</Link>
