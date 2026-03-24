@@ -43,15 +43,15 @@ export function timeAgo(dateStr: string | null | undefined): string {
 }
 
 export function scoreColor(score: number): string {
-  if (score >= 80) return 'text-green-400';
-  if (score >= 60) return 'text-amber-500';
-  return 'text-red-500';
+  if (score >= 80) return 'text-black font-bold';
+  if (score >= 60) return 'text-gray-600';
+  return 'text-gray-400';
 }
 
 export function scoreBgColor(score: number): string {
-  if (score >= 80) return 'bg-green-400/10 text-green-400 border-green-400/30';
-  if (score >= 60) return 'bg-amber-500/10 text-amber-500 border-amber-500/30';
-  return 'bg-red-500/10 text-red-500 border-red-500/30';
+  if (score >= 80) return 'bg-black text-white border-black shadow-minimal';
+  if (score >= 60) return 'bg-gray-100 text-black border-gray-300';
+  return 'bg-white text-gray-400 border-gray-200';
 }
 
 /**

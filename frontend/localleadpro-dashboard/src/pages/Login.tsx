@@ -89,7 +89,7 @@ export default function Login() {
             <div className="flex items-center gap-3">
               <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
                 <rect width="40" height="40" rx="8" fill="black" />
-                <path d="M12 20L20 12L28 20L20 28Z" fill="#A4DBD9" />
+                <path d="M12 20L20 12L28 20L20 28Z" fill="white" />
                 <circle cx="20" cy="20" r="4" fill="white" />
               </svg>
               <span className="text-2xl font-bold tracking-tight text-black">

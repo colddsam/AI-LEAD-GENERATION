@@ -5,6 +5,11 @@ User-agent: *
 Allow: /
 Allow: /pricing
 Allow: /docs
+Allow: /privacy
+Allow: /terms
+Allow: /delete-data
+
+# Disallow authenticated/app routes
 Disallow: /overview
 Disallow: /pipeline
 Disallow: /scheduler

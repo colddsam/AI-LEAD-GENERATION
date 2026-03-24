@@ -55,11 +55,37 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://api.coldscout.colddsam.com" />
 
-    <!-- Google Fonts — Inter (UI) + JetBrains Mono (code) with display=swap for CLS -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Structured Data Fallback -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Cold Scout",
+        "url": "https://coldscout.colddsam.com/",
+        "logo": "https://coldscout.colddsam.com/web-app-manifest-512x512.png",
+        "sameAs": [
+          "https://github.com/colddsam/coldscout"
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Cold Scout",
+        "url": "https://coldscout.colddsam.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://coldscout.colddsam.com/docs?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
   </head>
   <body class="font-sans text-black antialiased">
     <div id="root"></div>

@@ -14,9 +14,9 @@ interface StatusDotProps {
 }
 
 const dotStyles: Record<string, string> = {
-  live: 'bg-success',
-  hold: 'bg-warning',
-  error: 'bg-danger',
+  live: 'bg-black',
+  hold: 'bg-gray-400',
+  error: 'bg-white border border-black',
   unknown: 'bg-accents-3',
 };
 
@@ -24,7 +24,7 @@ export default function StatusDot({ status, className }: StatusDotProps) {
   return (
     <span className={cn('relative inline-flex h-2.5 w-2.5', className)}>
       {status === 'live' && (
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75" />
       )}
       <span className={cn('relative inline-flex rounded-full h-2.5 w-2.5', dotStyles[status])} />
     </span>

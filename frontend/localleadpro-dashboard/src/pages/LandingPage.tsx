@@ -4,16 +4,16 @@
  * Marketing entry point featuring the value proposition, core features,
  * and pricing tiers for the AI Lead Generation system.
  */
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
+import { 
   Search, Zap, Mail, BarChart2, ArrowRight, ChevronRight,
-  Target, Shield, Menu, X, Heart
+  Target, Shield
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
-import Logo from '../components/ui/Logo';
+import PublicNavbar from '../components/layout/PublicNavbar';
+import PublicFooter from '../components/layout/PublicFooter';
 
 /* ── SVG Decorations ── */
 
@@ -35,112 +35,6 @@ function FloatingDots() {
 
 /* ── Components ── */
 
-function Navbar() {
-  const { isAuthenticated } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Prevent scroll when menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isMenuOpen]);
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-panel">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center" aria-label="Cold Scout Home">
-          <Logo size="md" />
-        </Link>
-        
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6">
-          <a href="#features" className="text-sm text-secondary hover:text-black transition-colors">Features</a>
-          <a href="#workflow" className="text-sm text-secondary hover:text-black transition-colors">How it works</a>
-          <a href="#pricing" className="text-sm text-secondary hover:text-black transition-colors">Pricing</a>
-          <Link to="/docs" className="text-sm text-secondary hover:text-black transition-colors">Docs</Link>
-          <a 
-            href="https://github.com/sponsors/colddsam" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-sm text-secondary hover:text-pink-600 transition-colors flex items-center gap-1"
-          >
-            <Heart className="w-3.5 h-3.5 fill-pink-500 text-pink-500" /> Sponsor
-          </a>
-          <Link
-            to={isAuthenticated ? '/overview' : '/login'}
-            className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
-          >
-            {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4 ml-1" />
-          </Link>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button 
-          className="md:hidden p-2 text-secondary hover:text-black transition-colors"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-white z-40 animate-fade-in">
-          <div className="flex flex-col p-6 gap-6 h-full bg-white">
-            <a 
-              href="#features" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </a>
-            <a 
-              href="#workflow" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How it works
-            </a>
-            <a 
-              href="#pricing" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Pricing
-            </a>
-            <Link 
-              to="/docs" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Docs
-            </Link>
-            <a 
-              href="https://github.com/sponsors/colddsam" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4 flex items-center gap-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Heart className="w-5 h-5 fill-pink-500 text-pink-500" /> Sponsor
-            </a>
-            <Link
-              to={isAuthenticated ? '/overview' : '/login'}
-              className="mt-4 inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-4 rounded-md text-base font-medium hover:bg-gray-800 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-5 h-5 ml-1" />
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-}
 
 function HeroSection() {
   const { isAuthenticated } = useAuth();
@@ -152,7 +46,7 @@ function HeroSection() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 border border-gray-200 rounded-full px-4 py-1.5 mb-8 bg-white shadow-minimal animate-fade-in">
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="inline-block w-2 h-2 rounded-full bg-black animate-pulse" />
           <span className="text-xs font-medium text-secondary">AI-Powered Lead Generation</span>
         </div>
 
@@ -361,7 +255,7 @@ function PricingSection() {
                   : 'border-gray-200 bg-white hover:shadow-vercel'
               }`}
             >
-              <p className={`text-[10px] uppercase tracking-widest font-semibold mb-4 ${plan.featured ? 'text-coldscout-teal' : 'text-subtle'}`}>{plan.name}</p>
+              <p className={`text-[10px] uppercase tracking-widest font-semibold mb-4 ${plan.featured ? 'text-white' : 'text-subtle'}`}>{plan.name}</p>
               <div className="mb-4">
                 <span className="text-4xl font-bold tracking-tighter">{plan.price}</span>
                 {plan.period && <span className={`text-sm ${plan.featured ? 'text-gray-400' : 'text-secondary'}`}>{plan.period}</span>}
@@ -370,7 +264,7 @@ function PricingSection() {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm">
-                    <span className={`w-1 h-1 rounded-full ${plan.featured ? 'bg-coldscout-teal' : 'bg-black'}`} />
+                    <span className={`w-1 h-1 rounded-full ${plan.featured ? 'bg-white' : 'bg-black'}`} />
                     {f}
                   </li>
                 ))}
@@ -410,36 +304,6 @@ function PricingSection() {
   );
 }
 
-function Footer() {
-  return (
-    <footer className="border-t border-gray-200 py-12 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center">
-            <Logo size="sm" />
-          </div>
-          <div className="flex items-center gap-6">
-            <a href="#features" className="text-xs text-secondary hover:text-black transition-colors">Features</a>
-            <a href="#workflow" className="text-xs text-secondary hover:text-black transition-colors">How it works</a>
-            <a href="#pricing" className="text-xs text-secondary hover:text-black transition-colors">Pricing</a>
-            <Link to="/docs" className="text-xs text-secondary hover:text-black transition-colors">Docs</Link>
-            <a 
-              href="https://github.com/sponsors/colddsam" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-xs text-secondary hover:text-pink-600 transition-colors flex items-center gap-1"
-            >
-              <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> Sponsor
-            </a>
-          </div>
-          <p className="text-xs text-subtle">
-            &copy; {new Date().getFullYear()} Cold Scout. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 /* ── Landing Page ── */
 
@@ -526,12 +390,12 @@ export default function LandingPage() {
       <JsonLd data={LD_ORGANIZATION} id="organization" />
       <JsonLd data={LD_WEBSITE} id="website" />
       <JsonLd data={LD_SOFTWARE} id="software" />
-      <Navbar />
+      <PublicNavbar />
       <HeroSection />
       <FeaturesSection />
       <WorkflowSection />
       <PricingSection />
-      <Footer />
+      <PublicFooter />
     </div>
   );
 }

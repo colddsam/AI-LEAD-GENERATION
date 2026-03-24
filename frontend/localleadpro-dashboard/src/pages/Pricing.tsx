@@ -5,16 +5,16 @@
  * feature comparison table, FAQ, and CTA. Follows the
  * Vercel-aesthetic design system used throughout the platform.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Check, X, ChevronDown, ExternalLink,
-  Github, Zap, Building2, Globe, Menu
+  Github, Zap, Building2, Globe
 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
-import Logo from '../components/ui/Logo';
+import PublicNavbar from '../components/layout/PublicNavbar';
+import PublicFooter from '../components/layout/PublicFooter';
 
 /* ═══════════════ Currency Data ═══════════════ */
 
@@ -41,95 +41,6 @@ function formatPrice(value: number, symbol: string): string {
   return `${symbol}${value.toLocaleString()}`;
 }
 
-/* ═══════════════ Navbar ═══════════════ */
-
-function PricingNavbar() {
-  const { isAuthenticated } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Prevent scroll when menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isMenuOpen]);
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-panel">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center" aria-label="Cold Scout Home">
-          <Logo size="md" />
-        </Link>
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/#features" className="text-sm text-secondary hover:text-black transition-colors">Features</Link>
-          <Link to="/#workflow" className="text-sm text-secondary hover:text-black transition-colors">How it works</Link>
-          <Link to="/docs" className="text-sm text-secondary hover:text-black transition-colors">Docs</Link>
-          <Link to="/pricing" className="text-sm text-black font-medium border-b border-black pb-0.5">Pricing</Link>
-          <Link
-            to={isAuthenticated ? '/overview' : '/login'}
-            className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
-          >
-            {isAuthenticated ? 'Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button 
-          className="md:hidden p-2 text-secondary hover:text-black transition-colors"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-white z-40 animate-fade-in">
-          <div className="flex flex-col p-6 gap-6 h-full bg-white">
-            <Link 
-              to="/#features" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </Link>
-            <Link 
-              to="/#workflow" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How it works
-            </Link>
-            <Link 
-              to="/docs" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Docs
-            </Link>
-            <Link 
-              to="/pricing" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Pricing
-            </Link>
-            <Link
-              to={isAuthenticated ? '/overview' : '/login'}
-              className="inline-flex items-center justify-between text-lg font-medium text-black bg-accents-1 p-4 rounded-lg"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {isAuthenticated ? 'Go to Dashboard' : 'Sign In'} <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-}
 
 /* ═══════════════ Currency Selector ═══════════════ */
 
@@ -206,7 +117,7 @@ function PricingHero({ currency, onCurrencyChange }: {
       <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-2 border border-gray-200 rounded-full px-4 py-1.5 mb-8 bg-white shadow-minimal animate-fade-in">
-          <Zap className="w-3.5 h-3.5 text-coldscout-teal" />
+          <Zap className="w-3.5 h-3.5 text-black" />
           <span className="text-xs font-medium text-secondary">Pricing</span>
         </div>
 
@@ -274,7 +185,7 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
       ctaLink: '/login',
       external: false,
       featured: true,
-      color: '#A4DBD9',
+      color: '#000',
     },
     {
       name: 'Enterprise',
@@ -314,7 +225,7 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
               }`}
             >
               {plan.featured && (
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-coldscout-teal to-teal-300" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-black" />
               )}
 
               <div className="p-8">
@@ -323,11 +234,11 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
                   <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
                     plan.featured ? 'bg-white/10' : 'bg-accents-1 border border-gray-200'
                   }`}>
-                    <plan.icon className={`w-4.5 h-4.5 ${plan.featured ? 'text-coldscout-teal' : 'text-secondary'}`} />
+                    <plan.icon className={`w-4.5 h-4.5 ${plan.featured ? 'text-white' : 'text-secondary'}`} />
                   </div>
                   <div>
                     <p className={`text-[10px] uppercase tracking-[0.15em] font-semibold ${
-                      plan.featured ? 'text-coldscout-teal' : 'text-subtle'
+                      plan.featured ? 'text-white' : 'text-subtle'
                     }`}>{plan.name}</p>
                   </div>
                 </div>
@@ -346,7 +257,7 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm">
-                      <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.featured ? 'text-coldscout-teal' : 'text-emerald-500'}`} />
+                      <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.featured ? 'text-white' : 'text-black'}`} />
                       <span className={plan.featured ? 'text-gray-200' : 'text-secondary'}>{f}</span>
                     </li>
                   ))}
@@ -408,7 +319,7 @@ function ComparisonTable() {
   ];
 
   function renderCell(val: boolean | string) {
-    if (val === true) return <Check className="w-4 h-4 text-emerald-500 mx-auto" />;
+    if (val === true) return <Check className="w-4 h-4 text-black mx-auto" />;
     if (val === false) return <X className="w-4 h-4 text-gray-300 mx-auto" />;
     return <span className="text-xs text-secondary">{val}</span>;
   }
@@ -430,7 +341,7 @@ function ComparisonTable() {
               <p className="text-lg font-bold tracking-tighter mt-0.5">Free</p>
             </div>
             <div className="p-4 text-center border-l border-gray-100 bg-black/5">
-              <p className="text-[10px] uppercase tracking-widest text-coldscout-teal-dark font-semibold">Pro</p>
+              <p className="text-[10px] uppercase tracking-widest text-black font-semibold">Pro</p>
               <p className="text-lg font-bold tracking-tighter mt-0.5">$30<span className="text-xs font-normal text-secondary">/mo</span></p>
             </div>
             <div className="p-4 text-center border-l border-gray-100">
@@ -438,6 +349,7 @@ function ComparisonTable() {
               <p className="text-lg font-bold tracking-tighter mt-0.5">$100<span className="text-xs font-normal text-secondary">/mo</span></p>
             </div>
           </div>
+
 
           {/* Rows */}
           {rows.map((row, i) => (
@@ -538,30 +450,6 @@ function CtaBanner() {
   );
 }
 
-/* ═══════════════ Footer ═══════════════ */
-
-function PricingFooter() {
-  return (
-    <footer className="border-t border-gray-200 py-12 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center">
-            <Logo size="sm" />
-          </div>
-          <div className="flex items-center gap-6">
-            <Link to="/" className="text-xs text-secondary hover:text-black transition-colors">Home</Link>
-            <Link to="/docs" className="text-xs text-secondary hover:text-black transition-colors">Docs</Link>
-            <Link to="/pricing" className="text-xs text-black font-medium">Pricing</Link>
-            <a href="https://github.com/colddsam/coldscout.git" target="_blank" rel="noopener noreferrer" className="text-xs text-secondary hover:text-black transition-colors">GitHub</a>
-          </div>
-          <p className="text-xs text-subtle">
-            &copy; {new Date().getFullYear()} Cold Scout. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 /* ═══════════════ Main Pricing Page ═══════════════ */
 
@@ -647,13 +535,13 @@ export default function Pricing() {
     <div className="bg-white text-black font-sans antialiased">
       <JsonLd data={LD_FAQ_PRICING} id="faq-pricing" />
       <JsonLd data={LD_BREADCRUMB_PRICING} id="breadcrumb-pricing" />
-      <PricingNavbar />
+      <PublicNavbar />
       <PricingHero currency={currency} onCurrencyChange={setCurrency} />
       <PricingCards currency={currency} />
       <ComparisonTable />
       <FaqSection />
       <CtaBanner />
-      <PricingFooter />
+      <PublicFooter />
     </div>
   );
 }

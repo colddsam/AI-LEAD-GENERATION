@@ -18,28 +18,29 @@ export default function BarChart({ data, bars, xKey = 'date' }: BarChartProps) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <RechartsBarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
         <XAxis
           dataKey={xKey}
-          stroke="#4a5878"
+          stroke="#999"
           fontSize={11}
-          fontFamily="JetBrains Mono"
+          fontFamily="Inter, system-ui, sans-serif"
           tickLine={false}
         />
         <YAxis
-          stroke="#4a5878"
+          stroke="#999"
           fontSize={11}
-          fontFamily="JetBrains Mono"
+          fontFamily="Inter, system-ui, sans-serif"
           tickLine={false}
           axisLine={false}
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#101829',
-            border: '1px solid rgba(255,255,255,0.1)',
+            backgroundColor: '#ffffff',
+            border: '1px solid #eeeeee',
             borderRadius: '8px',
             fontSize: '12px',
-            fontFamily: 'JetBrains Mono',
+            fontFamily: 'Inter, system-ui, sans-serif',
+            color: '#000000',
           }}
         />
         {bars.map((bar) => (

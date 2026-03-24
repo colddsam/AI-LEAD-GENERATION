@@ -22,17 +22,17 @@ function CampaignDetailPanel({ campaign }: { campaign: Campaign }) {
           <p className="text-xs text-gray-400">Sent</p>
         </div>
         <div className="bg-gray-50 border border-gray-100 rounded-md p-3 text-center">
-          <Eye className="w-4 h-4 text-blue-500 mx-auto mb-1" />
+          <Eye className="w-4 h-4 text-gray-400 mx-auto mb-1" />
           <p className="text-lg font-mono font-bold text-gray-900">{stats?.total_opened ?? campaign.total_opened ?? 0}</p>
           <p className="text-xs text-gray-400">Opened</p>
         </div>
         <div className="bg-gray-50 border border-gray-100 rounded-md p-3 text-center">
-          <MousePointerClick className="w-4 h-4 text-amber-500 mx-auto mb-1" />
+          <MousePointerClick className="w-4 h-4 text-gray-400 mx-auto mb-1" />
           <p className="text-lg font-mono font-bold text-gray-900">{stats?.total_clicked ?? campaign.total_clicked ?? 0}</p>
           <p className="text-xs text-gray-400">Clicked</p>
         </div>
         <div className="bg-gray-50 border border-gray-100 rounded-md p-3 text-center">
-          <Reply className="w-4 h-4 text-emerald-500 mx-auto mb-1" />
+          <Reply className="w-4 h-4 text-gray-400 mx-auto mb-1" />
           <p className="text-lg font-mono font-bold text-gray-900">{stats?.total_replied ?? campaign.total_replied ?? 0}</p>
           <p className="text-xs text-gray-400">Replied</p>
         </div>

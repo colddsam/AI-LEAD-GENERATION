@@ -34,7 +34,7 @@ export default function FunnelChart({ stages }: FunnelChartProps) {
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-mono font-bold text-navy-900">
+                <span className={`text-lg font-mono font-bold ${i < 3 ? 'text-white' : 'text-black'}`}>
                   {stage.value}
                 </span>
               </div>
@@ -45,7 +45,7 @@ export default function FunnelChart({ stages }: FunnelChartProps) {
 
             {/* Conversion rate */}
             {conversionRate && (
-              <span className="text-[10px] font-mono text-teal-400">{conversionRate}</span>
+              <span className="text-[10px] font-mono text-gray-500">{conversionRate}</span>
             )}
           </div>
         );

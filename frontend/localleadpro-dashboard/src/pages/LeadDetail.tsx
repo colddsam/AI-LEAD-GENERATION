@@ -67,13 +67,13 @@ export default function LeadDetail() {
                   <circle cx="40" cy="40" r="35" fill="none" stroke="#f3f4f6" strokeWidth="6" />
                   <circle
                     cx="40" cy="40" r="35" fill="none"
-                    stroke={score >= 80 ? '#059669' : score >= 60 ? '#d97706' : '#dc2626'}
+                    stroke={score >= 80 ? 'black' : score >= 60 ? '#666' : '#ccc'}
                     strokeWidth="6" strokeLinecap="round"
                     strokeDasharray={`${(score / 100) * 220} 220`}
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={cn('text-xl font-mono font-bold', score >= 80 ? 'text-emerald-600' : score >= 60 ? 'text-amber-600' : 'text-red-600')}>
+                  <span className={cn('text-xl font-mono font-bold', score >= 80 ? 'text-black' : score >= 60 ? 'text-gray-600' : 'text-gray-400')}>
                     {score}
                   </span>
                 </div>
@@ -84,8 +84,8 @@ export default function LeadDetail() {
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                   {statusBadge(lead.status)}
                   {lead.rating && (
-                    <span className="flex items-center gap-1 text-xs text-amber-500">
-                      <Star className="w-3 h-3 fill-amber-500" />
+                    <span className="flex items-center gap-1 text-xs text-black">
+                      <Star className="w-3 h-3 fill-black" />
                       {lead.rating} ({lead.review_count} reviews)
                     </span>
                   )}
@@ -246,8 +246,8 @@ export default function LeadDetail() {
           </Card>
 
           {/* Danger Zone */}
-          <Card className="border border-red-200">
-            <h3 className="text-xs font-medium text-red-500 uppercase tracking-widest mb-3">Danger Zone</h3>
+          <Card className="border border-black">
+            <h3 className="text-xs font-medium text-black uppercase tracking-widest mb-3">Danger Zone</h3>
             <Button
               variant="danger"
               size="sm"

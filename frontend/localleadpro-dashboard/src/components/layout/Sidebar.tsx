@@ -130,7 +130,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
             }}
             className={cn(
               "flex items-center gap-3 w-full px-3 py-2 rounded-md text-sm transition-all duration-200",
-              "text-secondary hover:text-danger hover:bg-red-50",
+              "text-secondary hover:text-black hover:bg-gray-50",
               collapsed && !mobileOpen && "justify-center px-0"
             )}
             title="Logout"
@@ -146,7 +146,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
             rel="noopener noreferrer"
             className={cn(
               "flex items-center gap-3 w-full px-3 py-2 rounded-md text-sm transition-all duration-200",
-              "text-secondary hover:text-pink-600 hover:bg-pink-50",
+              "text-secondary hover:text-black hover:bg-gray-50",
               collapsed && !mobileOpen && "justify-center px-0"
             )}
             title="Sponsor the project"

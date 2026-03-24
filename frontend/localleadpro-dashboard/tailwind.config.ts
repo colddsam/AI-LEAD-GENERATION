@@ -16,33 +16,18 @@ export default {
         'accents-2': '#eaeaea',
         'accents-3': '#d4d4d4',
         'accents-8': '#444444',
-        // Brand accent (carried over)
-        coldscout: {
-          teal: '#A4DBD9',
-          'teal-dark': '#86c9c6',
-          brown: '#4B3621',
-          gold: '#D4AF37',
-        },
-        teal: {
-          50: '#f0fafa',
-          100: '#e1f3f2',
-          200: '#c2e7e5',
-          300: '#A4DBD9',
-          400: '#86c9c6',
-          500: '#6ab5b2',
-        },
-        // Semantic colors
+        // Semantic colors (monochrome scale)
         success: {
-          DEFAULT: '#2dde98',
-          subtle: '#eafcf5',
+          DEFAULT: '#000000',
+          subtle: '#f5f5f5',
         },
         warning: {
-          DEFAULT: '#f5a623',
-          subtle: '#fef6e9',
+          DEFAULT: '#666666',
+          subtle: '#fafafa',
         },
         danger: {
-          DEFAULT: '#ff3b5c',
-          subtle: '#fff1f3',
+          DEFAULT: '#000000',
+          subtle: '#f5f5f5',
         },
       },
       fontFamily: {
@@ -95,8 +80,8 @@ export default {
           '50%': { transform: 'translateY(-10px)' },
         },
         glow: {
-          from: { boxShadow: '0 0 8px rgba(164,219,217,0.3)' },
-          to: { boxShadow: '0 0 20px rgba(164,219,217,0.7)' },
+          from: { boxShadow: '0 0 8px rgba(0,0,0,0.1)' },
+          to: { boxShadow: '0 0 20px rgba(0,0,0,0.2)' },
         },
       },
     },

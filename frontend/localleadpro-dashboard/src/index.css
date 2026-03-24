@@ -14,11 +14,11 @@
   --text-primary: #000000;
   --text-secondary: #666666;
   --text-muted: #999999;
-  --accent: #A4DBD9;
-  --accent-hover: #86c9c6;
-  --success: #2dde98;
-  --warning: #f5a623;
-  --danger: #ff3b5c;
+  --accent: #000000;
+  --accent-hover: #333333;
+  --success: #666666;
+  --warning: #999999;
+  --danger: #000000;
 }
 
 * { box-sizing: border-box; }
@@ -50,7 +50,7 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
 /* Selection */
-::selection { background: rgba(164,219,217,0.25); color: #000; }
+::selection { background: rgba(0,0,0,0.1); color: #000; }
 
 /* ===== Utility Classes ===== */
 

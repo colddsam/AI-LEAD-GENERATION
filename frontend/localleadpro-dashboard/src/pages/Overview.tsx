@@ -89,15 +89,15 @@ export default function Overview() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">API Status</span>
-              <Badge label={health?.status === 'healthy' ? 'OK' : 'Error'} variant={health?.status === 'healthy' ? 'green' : 'red'} />
+              <Badge label={health?.status === 'healthy' ? 'OK' : 'Error'} variant={health?.status === 'healthy' ? 'teal' : 'red'} />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Scheduler</span>
-              <Badge label={health?.scheduler_running ? 'Running' : 'Stopped'} variant={health?.scheduler_running ? 'green' : 'red'} />
+              <Badge label={health?.scheduler_running ? 'Running' : 'Stopped'} variant={health?.scheduler_running ? 'teal' : 'red'} />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Production Status</span>
-              <Badge label={health?.production_status ? 'RUN' : 'HOLD'} variant={health?.production_status ? 'green' : 'amber'} />
+              <Badge label={health?.production_status ? 'RUN' : 'HOLD'} variant={health?.production_status ? 'teal' : 'amber'} />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Version</span>
@@ -142,7 +142,7 @@ export default function Overview() {
                 </div>
                 <Badge
                   label={String(config.status).toUpperCase()}
-                  variant={String(config.status).toUpperCase() === 'RUN' ? 'green' : 'amber'}
+                  variant={String(config.status).toUpperCase() === 'RUN' ? 'teal' : 'amber'}
                 />
               </div>
             ))}

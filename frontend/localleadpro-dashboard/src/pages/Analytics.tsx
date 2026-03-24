@@ -64,7 +64,7 @@ export default function Analytics() {
       { label: 'Qualified', value: totals.qualified, color: '#333333' },
       { label: 'Personalized', value: totals.personalized, color: '#666666' },
       { label: 'Emailed', value: totals.emailed, color: '#999999' },
-      { label: 'Opened', value: totals.opened, color: '#A4DBD9' },
+      { label: 'Opened', value: totals.opened, color: '#CCCCCC' },
     ];
 
     return { line, bar, funnel };
@@ -130,7 +130,7 @@ export default function Analytics() {
             lines={[
               { dataKey: 'leads_discovered', color: '#111111', label: 'Leads' },
               { dataKey: 'emails_sent', color: '#666666', label: 'Emails Sent' },
-              { dataKey: 'emails_opened', color: '#A4DBD9', label: 'Emails Opened' },
+              { dataKey: 'emails_opened', color: '#CCCCCC', label: 'Emails Opened' },
             ]}
           />
         </Card>
@@ -141,7 +141,7 @@ export default function Analytics() {
             data={chartData.bar}
             bars={[
               { dataKey: 'qualified', color: '#111111', label: 'Qualified' },
-              { dataKey: 'sent', color: '#A4DBD9', label: 'Sent' },
+              { dataKey: 'sent', color: '#999999', label: 'Sent' },
             ]}
           />
         </Card>

@@ -27,6 +27,9 @@ import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import SessionExpiredModal from './components/auth/SessionExpiredModal';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import DataDeletion from './pages/DataDeletion.tsx';
 
 /**
  * Shared QueryClient instance with optimized development defaults.
@@ -54,6 +57,9 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/docs" element={<Documentation />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/delete-data" element={<DataDeletion />} />
 
             {/* Dashboard (inside ProtectedRoute + Shell layout) */}
             <Route element={<ProtectedRoute />}>
@@ -89,10 +95,10 @@ export default function App() {
             boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           },
           success: {
-            iconTheme: { primary: '#2dde98', secondary: '#fff' },
+            iconTheme: { primary: '#000000', secondary: '#ffffff' },
           },
           error: {
-            iconTheme: { primary: '#ff3b5c', secondary: '#fff' },
+            iconTheme: { primary: '#666666', secondary: '#ffffff' },
           },
         }}
       />

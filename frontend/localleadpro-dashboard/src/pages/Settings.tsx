@@ -127,7 +127,7 @@ export default function Settings() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Status</span>
-                <Badge label={health?.status === 'healthy' ? 'Healthy' : 'Error'} variant={health?.status === 'healthy' ? 'green' : 'red'} />
+                <Badge label={health?.status === 'healthy' ? 'Healthy' : 'Error'} variant={health?.status === 'healthy' ? 'teal' : 'red'} />
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Scheduler</span>

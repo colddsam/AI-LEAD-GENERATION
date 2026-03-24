@@ -63,7 +63,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           {health && (
             <Badge
               label={health.status === 'healthy' ? 'Healthy' : 'Error'}
-              variant={health.status === 'healthy' ? 'green' : 'red'}
+              variant={health.status === 'healthy' ? 'teal' : 'red'}
               className="hidden xs:flex"
             />
           )}

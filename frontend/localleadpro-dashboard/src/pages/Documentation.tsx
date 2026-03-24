@@ -8,19 +8,18 @@
  * setup guides, API key acquisition, environment configuration,
  * deployment steps, and production architecture for the Cold Scout platform.
  */
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import {
-  ArrowRight, ChevronDown, ChevronRight, ExternalLink,
+  ChevronDown, ChevronRight, ExternalLink,
   Search, Zap, Mail, BarChart2, Target, Shield,
   BookOpen, Code2, Server, Database, Cloud, Terminal,
   Key, Bell, Clock, Palette, Settings, Globe,
-  Cpu, GitBranch, Box, Layers, Menu, X
+  Cpu, GitBranch, Box, Layers
 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
-import Logo from '../components/ui/Logo';
+import PublicNavbar from '../components/layout/PublicNavbar';
+import PublicFooter from '../components/layout/PublicFooter';
 
 /* ═══════════════ SVG Decorations ═══════════════ */
 
@@ -28,94 +27,6 @@ function GridBackground() {
   return <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />;
 }
 
-/* ═══════════════ Shared Navbar ═══════════════ */
-
-function DocsNavbar() {
-  const { isAuthenticated } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isMenuOpen]);
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-panel">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center" aria-label="Cold Scout Home">
-          <Logo size="md" />
-        </Link>
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/#features" className="text-sm text-secondary hover:text-black transition-colors">Features</Link>
-          <Link to="/#workflow" className="text-sm text-secondary hover:text-black transition-colors">How it works</Link>
-          <Link to="/docs" className="text-sm text-black font-medium border-b border-black pb-0.5">Docs</Link>
-          <Link to="/#pricing" className="text-sm text-secondary hover:text-black transition-colors">Pricing</Link>
-          <Link
-            to={isAuthenticated ? '/overview' : '/login'}
-            className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
-          >
-            {isAuthenticated ? 'Dashboard' : 'Sign In'} <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button 
-          className="md:hidden p-2 text-secondary hover:text-black transition-colors"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-white z-40 animate-fade-in">
-          <div className="flex flex-col p-6 gap-6 h-full bg-white">
-            <Link 
-              to="/#features" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </Link>
-            <Link 
-              to="/#workflow" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How it works
-            </Link>
-            <Link 
-              to="/docs" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Docs
-            </Link>
-            <Link 
-              to="/#pricing" 
-              className="text-lg font-medium text-black border-b border-gray-100 pb-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Pricing
-            </Link>
-            <Link
-              to={isAuthenticated ? '/overview' : '/login'}
-              className="mt-4 inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-4 rounded-md text-base font-medium hover:bg-gray-800 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {isAuthenticated ? 'Dashboard' : 'Sign In'} <ArrowRight className="w-5 h-5 ml-1" />
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-}
 
 /* ═══════════════ Collapsible Section ═══════════════ */
 
@@ -171,7 +82,7 @@ function HeroSection() {
       <GridBackground />
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         <div className="inline-flex items-center gap-2 border border-gray-200 rounded-full px-4 py-1.5 mb-8 bg-white shadow-minimal animate-fade-in">
-          <BookOpen className="w-3.5 h-3.5 text-coldscout-teal" />
+          <BookOpen className="w-3.5 h-3.5 text-black" />
           <span className="text-xs font-medium text-secondary">Documentation</span>
         </div>
 
@@ -260,7 +171,7 @@ function ArchitectureSection() {
             {/* Backend Layer */}
             <rect x="280" y="30" width="160" height="60" rx="8" fill="#000" stroke="#000" strokeWidth="1.5" />
             <text x="360" y="55" textAnchor="middle" className="text-[11px] font-semibold" fill="#fff">FastAPI Server</text>
-            <text x="360" y="72" textAnchor="middle" className="text-[10px]" fill="#A4DBD9">Python 3.11+</text>
+            <text x="360" y="72" textAnchor="middle" className="text-[10px]" fill="#666">Python 3.11+</text>
 
             {/* Arrow to DB */}
             <line x1="440" y1="60" x2="520" y2="60" stroke="#d4d4d4" strokeWidth="1.5" markerEnd="url(#arrow)" />
@@ -274,12 +185,12 @@ function ArchitectureSection() {
             <line x1="360" y1="90" x2="360" y2="140" stroke="#d4d4d4" strokeWidth="1.5" markerEnd="url(#arrow)" />
 
             {/* Scheduler */}
-            <rect x="280" y="140" width="160" height="50" rx="8" fill="#fff" stroke="#A4DBD9" strokeWidth="1.5" />
+            <rect x="280" y="140" width="160" height="50" rx="8" fill="#fff" stroke="#000" strokeWidth="1.5" />
             <text x="360" y="162" textAnchor="middle" className="text-[11px] font-semibold" fill="#000">APScheduler</text>
             <text x="360" y="178" textAnchor="middle" className="text-[9px]" fill="#666">Cron Trigger</text>
 
             {/* Pipeline steps */}
-            <line x1="360" y1="190" x2="360" y2="230" stroke="#A4DBD9" strokeWidth="1.5" markerEnd="url(#arrowTeal)" />
+            <line x1="360" y1="190" x2="360" y2="230" stroke="#000" strokeWidth="1.5" markerEnd="url(#arrowBlack)" />
 
             {/* Pipeline boxes */}
             {[
@@ -300,7 +211,7 @@ function ArchitectureSection() {
             ))}
 
             {/* Connector from scheduler to first pipeline step */}
-            <path d="M 360 230 L 360 215 L 125 215 L 125 230" stroke="#A4DBD9" strokeWidth="1.5" fill="none" markerEnd="url(#arrowTeal)" />
+            <path d="M 360 230 L 360 215 L 125 215 L 125 230" stroke="#000" strokeWidth="1.5" fill="none" markerEnd="url(#arrowBlack)" />
 
             {/* Telegram alert branch */}
             <line x1="825" y1="280" x2="825" y2="340" stroke="#d4d4d4" strokeWidth="1" markerEnd="url(#arrow)" />
@@ -312,8 +223,8 @@ function ArchitectureSection() {
               <marker id="arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
                 <polygon points="0 0, 10 3.5, 0 7" fill="#d4d4d4" />
               </marker>
-              <marker id="arrowTeal" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="#A4DBD9" />
+              <marker id="arrowBlack" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
               </marker>
             </defs>
           </svg>
@@ -354,7 +265,7 @@ function PipelineSection() {
               <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-vercel transition-all duration-300 h-full">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-2xl font-bold text-accents-3 tracking-tighter">{stage.num}</span>
-                  <stage.icon className="w-4 h-4 text-coldscout-teal" />
+                  <stage.icon className="w-4 h-4 text-black" />
                 </div>
                 <h3 className="text-sm font-semibold text-black mb-2">{stage.title}</h3>
                 <p className="text-xs text-secondary leading-relaxed">{stage.desc}</p>
@@ -371,14 +282,14 @@ function PipelineSection() {
 
 function TechStackSection() {
   const techs = [
-    { name: 'Python 3.11+', desc: 'Core backend runtime', color: '#3776AB' },
-    { name: 'FastAPI', desc: 'Async REST API framework', color: '#009688' },
-    { name: 'React 18', desc: 'Frontend UI library', color: '#61DAFB' },
-    { name: 'Vite 5', desc: 'Next-gen build tool', color: '#646CFF' },
-    { name: 'TailwindCSS', desc: 'Utility-first styling', color: '#38B2AC' },
-    { name: 'PostgreSQL', desc: 'Relational database', color: '#336791' },
-    { name: 'Docker', desc: 'Container deployment', color: '#2496ED' },
-    { name: 'TypeScript', desc: 'Type-safe frontend', color: '#3178C6' },
+    { name: 'Python 3.11+', desc: 'Core backend runtime', color: '#000' },
+    { name: 'FastAPI', desc: 'Async REST API framework', color: '#000' },
+    { name: 'React 18', desc: 'Frontend UI library', color: '#000' },
+    { name: 'Vite 5', desc: 'Next-gen build tool', color: '#000' },
+    { name: 'TailwindCSS', desc: 'Utility-first styling', color: '#000' },
+    { name: 'PostgreSQL', desc: 'Relational database', color: '#000' },
+    { name: 'Docker', desc: 'Container deployment', color: '#000' },
+    { name: 'TypeScript', desc: 'Type-safe frontend', color: '#000' },
   ];
 
   return (
@@ -448,14 +359,14 @@ function SetupSection() {
                   <p className="text-xs text-secondary mb-2">Ensure your <code className="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-[11px]">.env</code> file is configured first.</p>
                 </div>
                 <CodeBlock code={`python scripts/create_tables.py\npython scripts/seed_admin.py`} />
-                <div className="mt-3 bg-teal-50 border border-teal-200 rounded-md px-3 py-2">
-                  <p className="text-[11px] text-teal-800">💡 Save the generated admin credentials to log into the dashboard.</p>
+                <div className="mt-3 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                  <p className="text-[11px] text-black">💡 Save the generated admin credentials to log into the dashboard.</p>
                 </div>
               </CollapsibleSection>
 
               <CollapsibleSection title="5. Start Development Server">
                 <CodeBlock code={`uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`} />
-                <p className="text-xs text-secondary mt-2">API available at: <a href="http://localhost:8000/docs" target="_blank" rel="noopener noreferrer" className="text-coldscout-teal-dark hover:underline">http://localhost:8000/docs</a></p>
+                <p className="text-xs text-secondary mt-2">API available at: <a href="http://localhost:8000/docs" target="_blank" rel="noopener noreferrer" className="text-black hover:underline font-medium">http://localhost:8000/docs</a></p>
               </CollapsibleSection>
             </div>
           </div>
@@ -486,7 +397,7 @@ function SetupSection() {
 
               <CollapsibleSection title="4. Start Development Server">
                 <CodeBlock code={`# Starts proxy on :3000 and Vite on :5173\nnpm run dev`} />
-                <p className="text-xs text-secondary mt-2">Dashboard available at: <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer" className="text-coldscout-teal-dark hover:underline">http://localhost:5173</a></p>
+                <p className="text-xs text-secondary mt-2">Dashboard available at: <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer" className="text-black hover:underline font-medium">http://localhost:5173</a></p>
               </CollapsibleSection>
 
               <CollapsibleSection title="5. Build for Production">
@@ -511,7 +422,7 @@ function ApiKeysSection() {
       envKey: 'GROQ_API_KEY',
       url: 'https://console.groq.com/keys',
       steps: ['Sign up at Groq Cloud', 'Navigate to API Keys', 'Create API Key', 'Copy key (starts with gsk_)'],
-      color: '#F55036',
+      color: '#000',
     },
     {
       name: 'Google Places',
@@ -519,7 +430,7 @@ function ApiKeysSection() {
       envKey: 'GOOGLE_PLACES_API_KEY',
       url: 'https://console.cloud.google.com/',
       steps: ['Create GCP Project', 'Enable Places API', 'Create Credentials → API Key', '$200/mo free credit included'],
-      color: '#4285F4',
+      color: '#000',
     },
     {
       name: 'Supabase',
@@ -527,7 +438,7 @@ function ApiKeysSection() {
       envKey: 'DATABASE_URL',
       url: 'https://supabase.com/',
       steps: ['Create free tier project', 'Settings → Database → Copy URI', 'Add +asyncpg to URI', 'Copy URL & Anon Key from API settings'],
-      color: '#3ECF8E',
+      color: '#000',
     },
     {
       name: 'Brevo SMTP',
@@ -535,7 +446,7 @@ function ApiKeysSection() {
       envKey: 'BREVO_SMTP_PASSWORD',
       url: 'https://www.brevo.com/',
       steps: ['Sign up free', 'Profile → SMTP & API tab', 'Generate new SMTP key', 'Verify sender domain/email'],
-      color: '#0B996E',
+      color: '#000',
     },
     {
       name: 'Gmail IMAP',
@@ -543,7 +454,7 @@ function ApiKeysSection() {
       envKey: 'IMAP_PASSWORD',
       url: 'https://myaccount.google.com/',
       steps: ['Enable 2-Step Verification', 'Search "App Passwords"', 'Create app: "ColdScout"', 'Copy 16-char code'],
-      color: '#EA4335',
+      color: '#000',
     },
     {
       name: 'Telegram Bot',
@@ -551,7 +462,7 @@ function ApiKeysSection() {
       envKey: 'TELEGRAM_BOT_TOKEN',
       url: 'https://t.me/BotFather',
       steps: ['Message @BotFather → /newbot', 'Set name & username', 'Copy API Token', 'Get Chat ID from @userinfobot'],
-      color: '#0088CC',
+      color: '#000',
     },
     {
       name: 'Cron-Job.org',
@@ -559,7 +470,7 @@ function ApiKeysSection() {
       envKey: 'CRON_JOB_API_KEY',
       url: 'https://cron-job.org/',
       steps: ['Create free account', 'Settings → API Keys', 'Generate new key', 'Run setup_cronjob.py script'],
-      color: '#FF6B35',
+      color: '#000',
     },
     {
       name: 'GitHub Actions',
@@ -567,7 +478,7 @@ function ApiKeysSection() {
       envKey: 'RENDER_DEPLOY_HOOK',
       url: 'https://github.com/',
       steps: ['Repo → Settings → Secrets', 'Add all env vars as secrets', 'Get Render Deploy Hook URL', 'Push to main triggers deploy'],
-      color: '#333',
+      color: '#000',
     },
     {
       name: 'Core Secrets',
@@ -751,7 +662,7 @@ function EnvVarsSection() {
                     : 'bg-white border border-gray-200 text-black hover:border-black'
                 }`}
               >
-                <cat.icon className={`w-4 h-4 ${expandedCat === cat.name ? 'text-coldscout-teal' : 'text-secondary'}`} />
+                <cat.icon className={`w-4 h-4 ${expandedCat === cat.name ? 'text-white' : 'text-secondary'}`} />
                 <span className="text-sm font-medium">{cat.name}</span>
                 <span className={`ml-auto text-[10px] ${expandedCat === cat.name ? 'text-gray-400' : 'text-subtle'}`}>{cat.vars.length}</span>
               </button>
@@ -797,7 +708,7 @@ function DeploymentSection() {
       step: 'Step 1',
       title: 'Database — Supabase',
       icon: Database,
-      color: '#3ECF8E',
+      color: '#000',
       items: [
         'Create a project on Supabase.com (Free Tier)',
         'Go to Project Settings → Database',
@@ -811,7 +722,7 @@ function DeploymentSection() {
       step: 'Step 2',
       title: 'Backend — Render',
       icon: Cloud,
-      color: '#46E3B7',
+      color: '#000',
       items: [
         'New → Web Service → Connect GitHub repo',
         'Select Docker as environment',
@@ -881,7 +792,7 @@ function DeploymentSection() {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[11px] font-medium text-black hover:text-coldscout-teal-dark transition-colors"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium text-black hover:underline transition-colors"
                 >
                   Visit {s.title.split('—')[1]?.trim()} <ExternalLink className="w-3 h-3" />
                 </a>
@@ -977,30 +888,6 @@ function ProdArchitectureSection() {
   );
 }
 
-/* ═══════════════ Footer ═══════════════ */
-
-function DocsFooter() {
-  return (
-    <footer className="border-t border-gray-200 py-12 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center">
-            <Logo size="sm" />
-          </div>
-          <div className="flex items-center gap-6">
-            <Link to="/" className="text-xs text-secondary hover:text-black transition-colors">Home</Link>
-            <Link to="/#features" className="text-xs text-secondary hover:text-black transition-colors">Features</Link>
-            <Link to="/docs" className="text-xs text-black font-medium">Docs</Link>
-            <a href="https://github.com/colddsam/AI-LEAD-GENERATION" target="_blank" rel="noopener noreferrer" className="text-xs text-secondary hover:text-black transition-colors">GitHub</a>
-          </div>
-          <p className="text-xs text-subtle">
-            &copy; {new Date().getFullYear()} Cold Scout. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 /* ═══════════════ Main Documentation Page ═══════════════ */
 
@@ -1036,7 +923,7 @@ export default function Documentation() {
   return (
     <div className="bg-white text-black font-sans antialiased">
       <JsonLd data={LD_BREADCRUMB_DOCS} id="breadcrumb-docs" />
-      <DocsNavbar />
+      <PublicNavbar />
       <HeroSection />
       <TableOfContents />
       <ArchitectureSection />
@@ -1047,7 +934,7 @@ export default function Documentation() {
       <EnvVarsSection />
       <DeploymentSection />
       <ProdArchitectureSection />
-      <DocsFooter />
+      <PublicFooter />
     </div>
   );
 }

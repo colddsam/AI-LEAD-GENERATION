@@ -18,18 +18,18 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<string, string> = {
-  green: 'bg-success-subtle text-green-700 border-green-200',
-  teal: 'bg-teal-50 text-teal-700 border-teal-200',
-  amber: 'bg-warning-subtle text-amber-700 border-amber-200',
-  red: 'bg-danger-subtle text-red-700 border-red-200',
+  green: 'bg-black text-white border-black shadow-minimal',
+  teal: 'bg-gray-100 text-black border-gray-400',
+  amber: 'bg-white text-black border-gray-200',
+  red: 'bg-gray-800 text-white border-gray-800',
   muted: 'bg-accents-1 text-secondary border-accents-2',
 };
 
 const dotColors: Record<string, string> = {
-  green: 'bg-success',
-  teal: 'bg-teal-300',
-  amber: 'bg-warning',
-  red: 'bg-danger',
+  green: 'bg-white',
+  teal: 'bg-black',
+  amber: 'bg-gray-400',
+  red: 'bg-gray-300',
   muted: 'bg-accents-3',
 };
 

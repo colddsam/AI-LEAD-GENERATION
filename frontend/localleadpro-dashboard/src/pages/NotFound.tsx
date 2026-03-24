@@ -16,8 +16,8 @@ export default function NotFound() {
 
   return (
     <div className="min-h-screen flex items-center justify-center flex-col text-center space-y-6 bg-white">
-      <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
-        <ShieldAlert className="w-10 h-10 text-red-400" />
+      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+        <ShieldAlert className="w-10 h-10 text-black" />
       </div>
       <div>
         <h1 className="text-5xl font-bold tracking-tight text-black mb-2">404</h1>

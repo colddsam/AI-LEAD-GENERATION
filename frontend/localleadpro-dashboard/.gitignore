@@ -5,3 +5,4 @@ server/.env
 server/node_modules/
 server/dist/
 *.log
+.stitch/
