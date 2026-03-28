@@ -6,14 +6,41 @@
  * Supabase configuration in the frontend.
  *
  * Environment Variables Required:
- * - VITE_SUPABASE_URL: Your Supabase project URL
+ * - VITE_SUPABASE_URL:   Your Supabase project URL
  * - VITE_SUPABASE_ANON_KEY: Your Supabase anonymous/public key
+ * - VITE_APP_URL:        Explicit base URL for OAuth / email redirect callbacks.
+ *                        Set to the URL your browser uses to access the app:
+ *                          Development:  http://localhost:5173
+ *                          Production:   https://your-production-domain.com
+ *                        Falls back to window.location.origin when not set,
+ *                        but an explicit value avoids mismatches when the proxy
+ *                        and the Vite dev server run on different ports.
+ *
+ * IMPORTANT — Supabase Dashboard settings must match VITE_APP_URL:
+ *   Authentication → URL Configuration
+ *     Site URL:      http://localhost:5173          (or production URL)
+ *     Redirect URLs: http://localhost:5173/**       (wildcard covers all paths)
+ *                    https://your-production-domain.com/**
  */
 import { createClient } from '@supabase/supabase-js';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+/**
+ * Explicit base URL for OAuth and email redirect callbacks.
+ *
+ * Using window.location.origin alone is unreliable in local development
+ * because the proxy server (port 3000/3001) and the Vite dev server (port 5173)
+ * share the same hostname but listen on different ports.  If Supabase redirects
+ * back to the proxy port, the Supabase JS client is never loaded and the PKCE
+ * code exchange cannot complete.
+ *
+ * VITE_APP_URL pins the callback to the correct origin at build time.
+ */
+const APP_URL = (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/$/, '')
+  ?? window.location.origin;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
@@ -68,7 +95,7 @@ export const signInWithOAuth = async (provider: OAuthProvider, role: UserRole = 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${APP_URL}/auth/callback`,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
@@ -118,7 +145,7 @@ export const signUp = async (
         role,
         full_name: fullName,
       },
-      emailRedirectTo: `${window.location.origin}/auth/callback`,
+      emailRedirectTo: `${APP_URL}/auth/callback`,
     },
   });
 
