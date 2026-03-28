@@ -42,7 +42,7 @@ const BASE_URL = 'https://coldscout.colddsam.com';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/banner.png`;
 const DEFAULT_KEYWORDS =
   'AI lead generation, local business leads, cold outreach automation, sales pipeline, B2B leads, automated prospecting';
-const TWITTER_SITE = '@coldscout';
+const TWITTER_SITE = '@ColdSc0ut';
 
 function setMeta(name: string, content: string, isProperty = false) {
   const attr = isProperty ? 'property' : 'name';
@@ -129,7 +129,7 @@ export function useSEO({
 
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
-    setMeta('twitter:site', '@ColdSc0ut');
+    setMeta('twitter:site', TWITTER_SITE);
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
     setMeta('twitter:image', ogImage);

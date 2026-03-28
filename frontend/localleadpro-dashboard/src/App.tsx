@@ -35,7 +35,7 @@ import Settings from './pages/Settings';
 import Threads from './pages/Threads';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/useAuth';
-import ProtectedRoute, { FreelancerRoute, ClientRoute } from './components/auth/ProtectedRoute';
+import { FreelancerRoute, ClientRoute } from './components/auth/ProtectedRoute';
 import SessionExpiredModal from './components/auth/SessionExpiredModal';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
