@@ -173,7 +173,7 @@ export default function SignUp() {
           {/* Logo — links to landing page */}
           <div className="flex justify-center mb-6">
             <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <Logo size="lg" />
+              <Logo size="lg" forceShowText />
             </Link>
           </div>
 
