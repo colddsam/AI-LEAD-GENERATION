@@ -15,7 +15,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load environmental configuration
-dotenv.config({ path: path.join(__dirname, '../.env.local') });
+// The proxy is started from within the 'server' directory via 'npm run dev:proxy'
+// So we need to look in the parent directory for .env.local
+const envPath = path.resolve(process.cwd(), '../.env.local');
+dotenv.config({ path: envPath });
 
 const app = express();
 
@@ -24,12 +27,17 @@ const PORT = process.env.PORT || 3001;
 /** Target backend API endpoint */
 const API_BASE_URL = process.env.API_BASE_URL;
 /** Global secret key for administrative tasks */
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.API_KEY || process.env.VITE_API_KEY;
+
+console.log(`[PROXY] Initializing with:`);
+console.log(`  - Environment File: ${envPath}`);
+console.log(`  - Target URL: ${API_BASE_URL}`);
+console.log(`  - API Key Loaded: ${API_KEY ? 'YES (prefix: ' + API_KEY.slice(0, 8) + '...)' : 'NO'}`);
 
 // Ensure required environment variables are present
 if (!API_BASE_URL || !API_KEY) {
   console.error('❌ Configuration Error: Missing API_BASE_URL or API_KEY in .env.local');
-  process.exit(1);
+  // We don't exit here to allow debugging, but requests will likely fail
 }
 
 // Enable CORS for authorized development origins
@@ -45,12 +53,12 @@ app.use(createProxyMiddleware({
   on: {
     proxyReq: (proxyReq, req) => {
       // Inject global API Key into outbound requests
-      proxyReq.setHeader('X-API-Key', API_KEY);
+      proxyReq.setHeader('X-API-Key', API_KEY || '');
       
       // Forward Authorization header (JWT Bearer tokens)
       const authHeader = req.headers['authorization'];
       if (authHeader) {
-        proxyReq.setHeader('Authorization', authHeader);
+        proxyReq.setHeader('Authorization', String(authHeader));
       }
       
       // Log outbound proxy request

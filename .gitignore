@@ -26,6 +26,7 @@ temp/
 Thumbs.db
 *.swp
 *.swo
+.claude/
 
 # Databases
 *.sqlite3

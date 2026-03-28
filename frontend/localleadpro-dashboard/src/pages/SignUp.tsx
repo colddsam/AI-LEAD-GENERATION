@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import type { UserRole, OAuthProvider } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import { LogIn, Mail, Github, Chrome } from 'lucide-react';
+import { UserPlus, Mail, User, Github, Chrome, Check } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import Spinner from '../components/ui/Spinner';
 import Logo from '../components/ui/Logo';
@@ -36,64 +36,73 @@ const socialProviders: { id: OAuthProvider; name: string; icon: React.ReactNode 
 ];
 
 /**
- * The authentication entry point to the system dashboard.
+ * Sign up page for new users.
  *
- * Provides both social login (Google, GitHub, Facebook, LinkedIn) and
- * email/password authentication. Users can select their role (Client or Freelancer)
- * which determines their post-login redirect destination.
+ * Provides role selection (Client or Freelancer), social sign up options,
+ * and email/password registration. Matches the design language of the login page.
  */
-export default function Login() {
+export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<OAuthProvider | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const { signInWithPassword, signInWithOAuth, isAuthenticated, user } = useAuth();
+  const { signUp, signInWithOAuth, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   useSEO({
-    title: 'Sign In — Cold Scout',
-    description: 'Sign in to your Cold Scout dashboard to manage your AI lead generation pipeline.',
-    canonical: 'https://coldscout.colddsam.com/login',
+    title: 'Sign Up — Cold Scout',
+    description: 'Create your Cold Scout account to start generating qualified leads with AI.',
+    canonical: 'https://coldscout.colddsam.com/signup',
     index: false,
   });
 
-  // The 'from' pathname retains the URL the user tried to visit before being intercepted
-  const from = location.state?.from?.pathname;
-
-  // Redirect only after backend user is synced — user.role is the authoritative source
   useEffect(() => {
     if (isAuthenticated && user) {
-      const defaultPath = user.role === 'client' ? '/welcome' : '/overview';
-      navigate(from || defaultPath, { replace: true });
+      const redirectTo = user.role === 'client' ? '/welcome' : '/overview';
+      navigate(redirectTo, { replace: true });
     }
-  }, [isAuthenticated, user, navigate, from]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
-    try {
-      // Do NOT store a pending role here — the user's role is authoritative in the
-      // backend DB and must not be overwritten on every login. Role selection only
-      // applies during account creation (SignUp page).
-      const { error: signInError } = await signInWithPassword(email, password);
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
 
-      if (signInError) {
-        setError(signInError.message || 'Invalid credentials');
+    // Validate password strength
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error: signUpError } = await signUp(email, password, selectedRole, fullName);
+
+      if (signUpError) {
+        setError(signUpError.message || 'Sign up failed');
+      } else {
+        setSuccess(true);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : 'Sign up failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider: OAuthProvider) => {
+  const handleSocialSignUp = async (provider: OAuthProvider) => {
     setSocialLoading(provider);
     setError(null);
 
@@ -101,18 +110,16 @@ export default function Login() {
       const { error: oauthError } = await signInWithOAuth(provider, selectedRole);
 
       if (oauthError) {
-        setError(oauthError.message || 'Social login failed');
+        setError(oauthError.message || 'Social sign up failed');
         setSocialLoading(null);
       }
       // Note: On success, the user will be redirected to the OAuth provider
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Social login failed');
+      setError(err instanceof Error ? err.message : 'Social sign up failed');
       setSocialLoading(null);
     }
   };
 
-  // While authenticated but backend user not yet synced, show a loading screen
-  // instead of the login form to prevent a flash before the redirect fires.
   if (isAuthenticated) {
     if (!user) {
       return (
@@ -121,7 +128,36 @@ export default function Login() {
         </div>
       );
     }
-    return null; // Redirect handled by useEffect above
+    return null;
+  }
+
+  // Success state - email confirmation required
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-white px-4 sm:px-0 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid opacity-40" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full blur-3xl opacity-60" />
+
+        <Card className="w-full max-w-md z-10 relative" padding={false}>
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Check className="w-8 h-8 text-green-600" />
+            </div>
+            <h2 className="text-xl font-bold text-black mb-2">Check your email</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              We've sent a confirmation link to <strong>{email}</strong>. Click the link to
+              activate your account.
+            </p>
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center w-full py-2.5 px-4 bg-black text-white rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
+            >
+              Back to Login
+            </Link>
+          </div>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -141,7 +177,7 @@ export default function Login() {
             </Link>
           </div>
 
-          <p className="text-center text-sm text-gray-500 mb-6">Sign in to access your dashboard</p>
+          <p className="text-center text-sm text-gray-500 mb-6">Create your account to get started</p>
 
           {/* Role Tabs */}
           <div className="flex gap-2 p-1 bg-gray-100 rounded-lg mb-6">
@@ -176,13 +212,13 @@ export default function Login() {
             </div>
           )}
 
-          {/* Social Login Buttons */}
+          {/* Social Sign Up Buttons */}
           <div className="space-y-2 mb-6">
             {socialProviders.map((provider) => (
               <button
                 key={provider.id}
                 type="button"
-                onClick={() => handleSocialLogin(provider.id)}
+                onClick={() => handleSocialSignUp(provider.id)}
                 disabled={socialLoading !== null}
                 className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -191,7 +227,7 @@ export default function Login() {
                 ) : (
                   provider.icon
                 )}
-                <span>Continue with {provider.name}</span>
+                <span>Sign up with {provider.name}</span>
               </button>
             ))}
           </div>
@@ -202,12 +238,26 @@ export default function Login() {
               <div className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-400">or continue with email</span>
+              <span className="px-4 bg-white text-gray-400">or sign up with email</span>
             </div>
           </div>
 
           {/* Email/Password Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full bg-white border border-gray-200 rounded-md pl-10 pr-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors text-sm"
+                  placeholder="John Doe"
+                />
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Email</label>
               <div className="relative">
@@ -235,22 +285,45 @@ export default function Login() {
               />
             </div>
 
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+              <input
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-md px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-gray-400 transition-colors text-sm"
+                placeholder="••••••••"
+              />
+            </div>
+
             <Button
               type="submit"
               className="w-full justify-center h-11 text-sm font-medium"
               loading={loading}
-              icon={<LogIn className="w-4 h-4" />}
+              icon={<UserPlus className="w-4 h-4" />}
             >
-              Sign In
+              Create Account
             </Button>
           </form>
+
+          <p className="mt-4 text-xs text-center text-gray-400">
+            By signing up, you agree to our{' '}
+            <Link to="/terms" className="text-gray-600 hover:underline">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy" className="text-gray-600 hover:underline">
+              Privacy Policy
+            </Link>
+          </p>
         </div>
 
         <div className="border-t border-gray-100 bg-gray-50/50 p-4 text-center rounded-b-lg">
           <p className="text-sm text-gray-500">
-            Don't have an account?{' '}
-            <Link to="/signup" className="font-medium text-black hover:underline">
-              Sign up
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-black hover:underline">
+              Sign in
             </Link>
           </p>
         </div>

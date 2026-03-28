@@ -1,98 +1,120 @@
-# 🖥️ Cold Scout Admin Dashboard
-> Also known internally as LocalLeadPro
+# Cold Scout Dashboard
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18-black.svg?style=for-the-badge&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/Vite-5-black.svg?style=for-the-badge&logo=vite" alt="Vite" />
   <img src="https://img.shields.io/badge/TailwindCSS-3-black.svg?style=for-the-badge&logo=tailwind-css" alt="Tailwind" />
   <img src="https://img.shields.io/badge/TypeScript-5-black.svg?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Supabase-Auth-black.svg?style=for-the-badge&logo=supabase" alt="Supabase" />
 </p>
 
-The **Cold Scout Dashboard** operates as the centralized, high-performance command center for the overarching AI-driven lead generation infrastructure. Engineered with a premium glassmorphic visual language, it bridges the gap between raw data acquisition and meaningful operational outreach by providing an uncompromising real-time tracking interface.
+The **Cold Scout Dashboard** is the centralized command center for the AI-driven lead generation pipeline. It provides real-time pipeline monitoring, campaign management, lead tracking, and role-based access for both **freelancers** and **clients**.
 
 ---
 
-## ✨ Architectural Features
+## Features
 
-- **🔐 Enterprise Authentication**: JWT-based identity verification, persistent session tracking, and rigorous route protection protocols.
-- **📊 Real-time Monitoring**: Provides live analytical observation of pipeline latency, campaign velocity, and throughput constraints.
-- **🕵️ Lead State Management**: Tracks strict progression models of acquired targets with integrated AI qualification scoring heuristics.
-- **⚙️ Integrated Scheduling Control**: Administrative access to override autonomous background processes (Discovery, Scraping, Execution).
-- **🛠️ Pipeline Actuation**: Granular manual triggers to force execution of isolated stages asynchronously.
-- **📥 Centralized Inbox Parsing**: Real-time evaluation of inbound communications, automatically categorizing intent vectors (Positive, Negative, Out-of-Office).
-- **🎨 Premium Component System**: Strictly adheres to the monochromatic, high-contrast, professional visual identity of the Cold Scout brand utilizing Tailwind CSS.
-
----
-
-## 🏗️ Technical Architecture & Local Proxy
-
-In development environments, security and Cross-Origin Resource Sharing (CORS) are strictly maintained via an isolated Development Proxy Server.
-
-- **Execution Context**: `server/index.ts`
-- **Utility**: Facilitates bridging from the Vite frontend to the FastAPI primary node.
-- **Security Paradigm**: Prohibits exposure of the primary `API_KEY` to the client browser by enforcing server-side header injection.
-- **CORS Mediation**: Securely processes cross-origin authorization tokens (JWT) to permit API integration without triggering browser security halts.
+- **Role-Based Access Control**: Two distinct user roles — `freelancer` (full pipeline access) and `client` (welcome/reporting view). Roles are fixed at account creation and enforced on both the frontend and backend.
+- **Supabase Auth**: Email/password and OAuth (Google, GitHub, Facebook, LinkedIn) sign-in via Supabase Auth with PKCE flow. JWT tokens are verified on the backend using the Supabase JWKS endpoint (ES256).
+- **Plan Gating**: Freelancers on the free plan see a skeleton dashboard and an upgrade prompt. Pro/Enterprise freelancers and all clients see live data.
+- **Real-time Pipeline Monitoring**: Live observation of discovery, qualification, and outreach stages.
+- **Lead State Management**: Full lead lifecycle tracking with AI qualification scores.
+- **Scheduler Control**: Override and manually trigger individual pipeline stages.
+- **Inbox Processing**: Categorises inbound email replies by intent (positive, negative, out-of-office).
 
 ---
 
-## 📂 Internal Directory Structure
+## Architecture
 
-```text
-frontend/localleadpro-dashboard/
-├── server/           # Development Proxy Server Sandbox (Node.js + TS)
-├── src/
-│   ├── components/   # Atomic, reusable UI elements governed by the brand system
-│   ├── hooks/        # Asynchronous state management and API interfacing logic
-│   ├── lib/          # Foundational utilities, client generators, definitions
-│   ├── pages/        # Route declarations and overarching view controllers
-│   ├── App.tsx       # Primary routing tree architecture
-│   └── main.tsx      # System initialization incorporating React Query contexts
-├── .env              # Isolated environment variable storage
-└── vite.config.ts    # Bundler and transpilation directives
+```
+src/
+├── components/
+│   ├── auth/           # ProtectedRoute, ClientRoute, FreelancerRoute, SessionExpiredModal
+│   ├── dashboard/      # DashboardSkeleton, UpgradeModal, stat cards, pipeline widgets
+│   ├── layout/         # Shell, Sidebar, Topbar, PublicNavbar, PublicFooter
+│   └── ui/             # Atomic design-system components (Button, Card, Badge, etc.)
+├── hooks/
+│   ├── useAuth.tsx     # AuthProvider + useAuth — central auth state, session sync
+│   └── useSEO.ts       # Page-level SEO / meta tag management
+├── lib/
+│   ├── api.ts          # Axios client with JWT interceptor and session-expiry handling
+│   └── supabase.ts     # Supabase client, signIn/signUp/signOut helpers, getUserRole
+├── pages/              # Route-level view components (Login, SignUp, AuthCallback, Welcome, …)
+└── App.tsx             # React Router v6 route tree
+server/
+└── index.ts            # Development-only Node.js proxy (injects X-API-Key server-side)
 ```
 
+### Authentication Flow
+
+1. **Email/Password**: `signInWithPassword` → Supabase session established → `onAuthStateChange` fires → auto-sync to backend (`/api/v1/auth/sync`) → role and plan loaded → redirect.
+2. **OAuth**: `signInWithOAuth` → Supabase OAuth redirect → `/auth/callback` page → sync to backend → redirect based on backend role.
+3. **Role authority**: `user.role` from the backend database is always the authoritative value. Supabase `user_metadata.role` is only used as a creation-time hint for brand-new accounts.
+
 ---
 
-## 🚀 Environment Initialization
+## Local Development Setup
 
-### 1. Package Verification
-Ensure compliance with Node.js version >= 18.
+### Prerequisites
+
+- Node.js 18+
+- The FastAPI backend running on `http://localhost:8000`
+
+### 1. Install Dependencies
 
 ```bash
-# Resolve and map all required dependencies
 npm install
 ```
 
-### 2. Parameter Configuration
-Initialize an isolated `.env` context specifically within the `frontend/localleadpro-dashboard` subsystem:
+### 2. Configure Environment
+
+Create a `.env.local` file inside `frontend/localleadpro-dashboard/`:
 
 ```env
-# Target API resolution endpoint
-API_BASE_URL=http://localhost:8000
+# Supabase project credentials (Settings → API in your Supabase dashboard)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Proxy authorization token (injected server-side)
-API_KEY=your_secret_api_key_here
+# Development proxy target (the running FastAPI backend)
+VITE_PROXY_URL=http://localhost:8000
 
-# Local Development resolution endpoints
-VITE_PROXY_URL=http://localhost:3000
-VITE_API_KEY=your_secret_api_key_here
+# API key injected by the dev proxy into every backend request
+VITE_API_KEY=your_api_key_matching_backend_API_KEY
 ```
 
-### 3. Server Execution
-Engage the proxy and the Vite server simultaneously:
+> **Note:** `.env.local` is listed in `.gitignore` and is never committed to version control. Do not commit real credentials.
+
+### 3. Start the Development Server
 
 ```bash
 npm run dev
 ```
 
+The dashboard is available at `http://localhost:5173`. The proxy server (`server/index.ts`) runs alongside Vite and injects `X-API-Key` into every forwarded request so the key is never exposed to the browser.
+
 ---
 
-## 🚢 Production Compilation
-
-Generate a highly optimized, minified bundle conforming to the highest performance standards:
+## Production Build
 
 ```bash
 npm run build
 ```
 
-The compiled `dist/` artifacts are strictly static and highly portable to any enterprise-grade edge distribution network (e.g., Vercel, AWS S3, Cloudflare Pages). Production rollout assumes the `VITE_PROXY_URL` parameter maps dynamically to the highly-available FastAPI backend endpoint, disregarding the local proxy.
+The compiled `dist/` output is a fully static bundle deployable to any edge CDN (Vercel, Cloudflare Pages, AWS S3).
+
+In production, set the following environment variables in your hosting platform:
+
+| Variable | Description |
+| --- | --- |
+| `VITE_SUPABASE_URL` | Your Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Your Supabase anonymous/public key |
+| `VITE_PROXY_URL` | The deployed FastAPI backend URL |
+| `VITE_API_KEY` | The API key (must match backend `API_KEY`) |
+
+---
+
+## Security Notes
+
+- The `X-API-Key` header is injected **server-side** by the Node.js proxy in development. In production it is injected by the Vite build-time environment. It is **never** stored in `localStorage` or exposed in the browser's network tab as a static string.
+- Supabase sessions are persisted in `localStorage` by the Supabase client SDK. The backend validates every request against the Supabase JWKS endpoint (ES256) or the legacy JWT secret (HS256).
+- Role values stored in `localStorage` (`llp_user`) are treated as a display-only cache. The backend role is re-verified on every sync call and is never overwritten during login — only during initial account creation.

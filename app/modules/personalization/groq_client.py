@@ -1,13 +1,60 @@
 """
-Large Language Model (LLM) integration module.
-Communicates with the Groq API for target discovery and content generation.
+Large Language Model (LLM) Integration Module.
+
+Communicates with the Groq API for dynamic content generation tasks:
+  - Initial outreach email personalisation
+  - Follow-up email sequences (up to 3 follow-ups)
+  - Daily target city/category selection for the discovery pipeline
+
+Security notes:
+  - All external lead data (business names, categories, etc.) is sanitised
+    before being substituted into LLM prompts to mitigate prompt-injection
+    attacks where scraped website content could redirect the model.
+  - Groq API credentials are sourced from application settings (env vars) and
+    are never embedded in code.
 """
+
 import json
+import re
 from loguru import logger
 from groq import AsyncGroq
 from tenacity import retry, stop_after_attempt, wait_exponential
 from app.config import get_settings
+
 settings = get_settings()
+
+# ---------------------------------------------------------------------------
+# Prompt injection defence
+# ---------------------------------------------------------------------------
+
+# Maximum number of characters allowed for a single lead field in a prompt.
+# Prevents excessively large scraped values from dominating prompt context.
+_MAX_FIELD_LENGTH = 300
+
+
+def _sanitize_prompt_value(value: str) -> str:
+    """
+    Strips control characters and limits the length of a value before it is
+    substituted into an LLM prompt.
+
+    Without sanitisation a compromised or malicious business listing could
+    embed instructions (e.g. "Ignore previous instructions and ...") inside
+    a scraped field such as ``business_name`` or ``website_services``, causing
+    the model to deviate from its intended task (prompt injection).
+
+    Args:
+        value: The raw string sourced from external lead data.
+
+    Returns:
+        str: A cleaned, length-limited string safe for prompt substitution.
+    """
+    if not isinstance(value, str):
+        value = str(value)
+    # Remove ASCII / Unicode control characters (U+0000–U+001F, U+007F)
+    value = re.sub(r"[\x00-\x1f\x7f]", "", value)
+    # Truncate to limit prompt inflation and context window abuse
+    return value[:_MAX_FIELD_LENGTH]
+
 
 class GroqClient:
     """
@@ -70,17 +117,20 @@ Return ONLY a valid JSON object in the following format:
             
         from string import Template
         
+        # Sanitise all lead fields before substitution to prevent prompt injection.
+        # Lead data originates from external sources (Google Places, web scraping)
+        # and could contain adversarial instructions embedded in scraped content.
         mapping = {
-            "business_name": lead_data.get('business_name', 'your business'),
-            "category": lead_data.get('category', 'business'),
-            "location": lead_data.get('location', 'your area'),
-            "rating": lead_data.get('rating', 'good'),
-            "review_count": lead_data.get('review_count', 'some'),
-            "qualification_notes": lead_data.get('qualification_notes', 'needs improvement'),
-            "website_title": lead_data.get('website_title', 'None'),
-            "website_services": ', '.join(lead_data.get('website_services', [])),
-            "website_year": lead_data.get('website_year', 'None'),
-            "competitor_name": lead_data.get('competitor_name', 'None')
+            "business_name": _sanitize_prompt_value(lead_data.get('business_name', 'your business')),
+            "category": _sanitize_prompt_value(lead_data.get('category', 'business')),
+            "location": _sanitize_prompt_value(lead_data.get('location', 'your area')),
+            "rating": _sanitize_prompt_value(str(lead_data.get('rating', 'good'))),
+            "review_count": _sanitize_prompt_value(str(lead_data.get('review_count', 'some'))),
+            "qualification_notes": _sanitize_prompt_value(lead_data.get('qualification_notes', 'needs improvement')),
+            "website_title": _sanitize_prompt_value(lead_data.get('website_title', 'None')),
+            "website_services": _sanitize_prompt_value(', '.join(lead_data.get('website_services', []))),
+            "website_year": _sanitize_prompt_value(str(lead_data.get('website_year', 'None'))),
+            "competitor_name": _sanitize_prompt_value(lead_data.get('competitor_name', 'None')),
         }
         
         try:
@@ -207,12 +257,13 @@ Return ONLY a valid JSON object in the following format:
             logger.warning(f"Could not load dynamic follow-up prompt, using fallback: {e}")
 
         from string import Template
+        # Sanitise external lead fields before prompt substitution.
         mapping = {
-            "business_name": lead_data.get('business_name', 'your business'),
-            "category": lead_data.get('category', 'business'),
-            "location": lead_data.get('location', 'your area'),
+            "business_name": _sanitize_prompt_value(lead_data.get('business_name', 'your business')),
+            "category": _sanitize_prompt_value(lead_data.get('category', 'business')),
+            "location": _sanitize_prompt_value(lead_data.get('location', 'your area')),
             "followup_number": followup_number,
-            "angle": angle
+            "angle": angle,
         }
 
         try:

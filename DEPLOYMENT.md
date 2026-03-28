@@ -128,6 +128,7 @@ Strict alignment of these 42 parameters is required across both rendering and ap
 | | `FROM_EMAIL` | Whitelisted transmitter address |
 | | `FROM_NAME` | Campaign sender display parameter |
 | | `REPLY_TO_EMAIL` | Redirect domain address |
+| | `BREVO_WEBHOOK_SECRET` | Shared secret for webhook request authentication (optional but recommended in production) |
 | **Tracking** | `IMAP_HOST` | Inbound synchronization host |
 | | `IMAP_USER` | Target mailbox |
 | | `IMAP_PASSWORD` | App-specific synchronization proxy |

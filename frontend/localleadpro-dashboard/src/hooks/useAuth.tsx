@@ -1,71 +1,173 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getMe } from '../lib/api';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import type { Session, User as SupabaseUser, AuthChangeEvent } from '@supabase/supabase-js';
+import {
+  signInWithOAuth as supabaseSignInWithOAuth,
+  signInWithPassword as supabaseSignInWithPassword,
+  signUp as supabaseSignUp,
+  signOut as supabaseSignOut,
+  getSession,
+  onAuthStateChange,
+  getUserRole,
+  getAuthProvider,
+} from '../lib/supabase';
+import type { OAuthProvider, UserRole } from '../lib/supabase';
+import { client } from '../lib/api';
 
+/**
+ * User interface for the application.
+ * Extended to support both legacy users and Supabase Auth users.
+ */
 interface User {
   id: number;
   email: string;
   is_superuser: boolean;
+  role?: UserRole;
+  plan?: 'free' | 'pro' | 'enterprise';
+  full_name?: string;
+  avatar_url?: string;
+  supabase_uid?: string;
+  auth_provider?: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  supabaseUser: SupabaseUser | null;
+  session: Session | null;
   token: string | null;
+  userRole: UserRole;
+  hasPaidPlan: boolean;
   login: (token: string, user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
+  signInWithOAuth: (provider: OAuthProvider, role?: UserRole) => Promise<{ error: Error | null }>;
+  signInWithPassword: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, role?: UserRole, fullName?: string) => Promise<{ error: Error | null }>;
   isAuthenticated: boolean;
   isLoading: boolean;
   isSessionExpired: boolean;
   setIsSessionExpired: (expired: boolean) => void;
+  syncUserToBackend: (role?: UserRole) => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * Global authentication provider.
- * Manages JWT persistence in LocalStorage and implements a dual-sync strategy:
- * 1. Immediate recovery from LocalStorage for UI responsiveness.
- * 2. Proactive server-side verification via `getMe()` to ensure session validity.
+ *
+ * Manages authentication state using Supabase Auth with fallback support
+ * for legacy JWT-based authentication. Implements:
+ *
+ * 1. Supabase Auth state management via onAuthStateChange listener
+ * 2. Session recovery from Supabase on app load
+ * 3. Backend user sync after successful authentication
+ * 4. Role-based access control (client vs freelancer)
  */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>('freelancer');
   const [isLoading, setIsLoading] = useState(true);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
+  /**
+   * Syncs the Supabase user to the backend database.
+   * Creates or updates the user record in our PostgreSQL database.
+   */
+  const syncUserToBackend = useCallback(async (role?: UserRole): Promise<User | null> => {
+    if (!supabaseUser || !session) {
+      return null;
+    }
+
+    try {
+      const syncData = {
+        supabase_uid: supabaseUser.id,
+        email: supabaseUser.email || '',
+        role: role || getUserRole(supabaseUser),
+        auth_provider: getAuthProvider(supabaseUser),
+        full_name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || null,
+        avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture || null,
+      };
+
+      const { data } = await client.post('/api/v1/auth/sync', syncData);
+      const backendUser: User = {
+        id: data.id,
+        email: data.email,
+        is_superuser: data.is_superuser,
+        role: data.role,
+        plan: data.plan ?? 'free',
+        full_name: data.full_name,
+        avatar_url: data.avatar_url,
+        supabase_uid: data.supabase_uid,
+        auth_provider: data.auth_provider,
+      };
+
+      setUser(backendUser);
+      setUserRole(backendUser.role || 'freelancer');
+
+      // Store in localStorage for quick recovery
+      localStorage.setItem('llp_user', JSON.stringify(backendUser));
+
+      return backendUser;
+    } catch (error) {
+      console.error('Failed to sync user to backend:', error);
+      return null;
+    }
+  }, [supabaseUser, session]);
+
+  /**
+   * Initialize authentication state from Supabase.
+   */
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const savedToken = localStorage.getItem('llp_token');
-        const savedUserData = localStorage.getItem('llp_user');
-        
-        if (savedToken) {
-          setToken(savedToken);
-          
-          // Try to restore user data if it looks valid
+        // Try to recover Supabase session
+        const { session: existingSession, error } = await getSession();
+
+        if (error) {
+          console.warn('Error getting Supabase session:', error);
+        }
+
+        if (existingSession) {
+          setSession(existingSession);
+          setSupabaseUser(existingSession.user);
+          setToken(existingSession.access_token);
+          setUserRole(getUserRole(existingSession.user));
+
+          // Try to restore user from localStorage first for quick UI
+          const savedUserData = localStorage.getItem('llp_user');
           if (savedUserData && savedUserData !== 'undefined') {
             try {
-              setUser(JSON.parse(savedUserData));
+              const savedUser = JSON.parse(savedUserData);
+              setUser(savedUser);
+              setUserRole(savedUser.role || 'freelancer');
             } catch {
-              console.warn('Malformed user data in storage, will recover via getMe()');
+              console.warn('Malformed user data in storage');
             }
           }
-          
-          // Proactive verification: Synchronize frontend state with the backend.
-          // This recovers full user metadata if LocalStorage is missing it (e.g., manual login).
-          try {
-            const freshUser = await getMe();
-            setUser(freshUser);
-            localStorage.setItem('llp_user', JSON.stringify(freshUser));
-          } catch {
-            // Error handling is primarily done in api.ts interceptor
-            // which clears storage and dispatches 'auth-session-expired'
-            console.warn('Session verification failed on startup');
+        } else {
+          // Check for legacy token
+          const savedToken = localStorage.getItem('llp_token');
+          const savedUserData = localStorage.getItem('llp_user');
+
+          if (savedToken && savedUserData) {
+            try {
+              setToken(savedToken);
+              const savedUser = JSON.parse(savedUserData);
+              setUser(savedUser);
+              setUserRole(savedUser.role || 'freelancer');
+            } catch {
+              console.warn('Failed to restore legacy session');
+              localStorage.removeItem('llp_token');
+              localStorage.removeItem('llp_user');
+            }
           }
         }
       } catch (err) {
-        console.error('Failed to restore session:', err);
+        console.error('Failed to initialize auth:', err);
         localStorage.removeItem('llp_token');
         localStorage.removeItem('llp_user');
       } finally {
@@ -76,7 +178,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
-  // Listen for global session expiration events (dispatched by api.ts interceptor)
+  /**
+   * Listen for Supabase auth state changes.
+   */
+  useEffect(() => {
+    const subscription = onAuthStateChange(
+      async (event: AuthChangeEvent, newSession: Session | null) => {
+        console.log('Auth state changed:', event);
+
+        if (event === 'SIGNED_IN' && newSession) {
+          setSession(newSession);
+          setSupabaseUser(newSession.user);
+          setToken(newSession.access_token);
+          setIsSessionExpired(false);
+
+          // Restore backend user from localStorage if the uid matches.
+          // This preserves the authoritative role from the last backend sync,
+          // preventing incorrect role assignment from Supabase metadata alone.
+          const savedUserData = localStorage.getItem('llp_user');
+          if (savedUserData && savedUserData !== 'undefined') {
+            try {
+              const savedUser = JSON.parse(savedUserData);
+              if (savedUser.supabase_uid === newSession.user.id) {
+                setUser(savedUser);
+                setUserRole(savedUser.role || getUserRole(newSession.user));
+              } else {
+                // Stale data from a different user — discard it
+                localStorage.removeItem('llp_user');
+                setUserRole(getUserRole(newSession.user));
+              }
+            } catch {
+              setUserRole(getUserRole(newSession.user));
+            }
+          } else {
+            setUserRole(getUserRole(newSession.user));
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setSupabaseUser(null);
+          setUser(null);
+          setToken(null);
+          setUserRole('freelancer');
+          localStorage.removeItem('llp_token');
+          localStorage.removeItem('llp_user');
+        } else if (event === 'TOKEN_REFRESHED' && newSession) {
+          setSession(newSession);
+          setToken(newSession.access_token);
+        } else if (event === 'USER_UPDATED' && newSession) {
+          setSupabaseUser(newSession.user);
+          setUserRole(getUserRole(newSession.user));
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Listen for global session expiration events (from api.ts interceptor)
   useEffect(() => {
     const handleExpired = () => setIsSessionExpired(true);
     window.addEventListener('auth-session-expired', handleExpired);
@@ -84,33 +244,142 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   /**
-   * Commits new session credentials to state and persistence.
+   * Auto-sync user to backend when a Supabase session is active but no backend
+   * user is loaded. This handles:
+   *   - Email/password login (never goes through AuthCallback)
+   *   - Sessions restored after localStorage was cleared
+   *   - Users whose role was changed in the backend
+   *
+   * Skips the /auth/callback page because AuthCallback manages its own sync.
    */
-  const login = (newToken: string, newUser: User) => {
+  useEffect(() => {
+    if (location.pathname === '/auth/callback') return;
+    if (!session || !supabaseUser || user || isLoading) return;
+
+    const pendingRole = (localStorage.getItem('llp_pending_role') || undefined) as UserRole | undefined;
+    syncUserToBackend(pendingRole).then((backendUser) => {
+      if (backendUser && pendingRole) {
+        localStorage.removeItem('llp_pending_role');
+      }
+    });
+  }, [session, supabaseUser, user, isLoading, syncUserToBackend, location.pathname]);
+
+  /**
+   * Legacy login function for email/password authentication.
+   * Kept for backward compatibility.
+   */
+  const login = useCallback((newToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
+    setUserRole(newUser.role || 'freelancer');
     setIsSessionExpired(false);
     localStorage.setItem('llp_token', newToken);
     localStorage.setItem('llp_user', JSON.stringify(newUser));
-  };
+  }, []);
 
   /**
-   * Destroys the current session and redirects to the login route.
+   * Signs out the user from both Supabase and local session.
    */
-  const logout = () => {
+  const logout = useCallback(async () => {
+    // Sign out from Supabase
+    await supabaseSignOut();
+
+    // Clear local state
     setToken(null);
     setUser(null);
+    setSupabaseUser(null);
+    setSession(null);
+    setUserRole('freelancer');
     setIsSessionExpired(false);
     localStorage.removeItem('llp_token');
     localStorage.removeItem('llp_user');
+
     navigate('/login');
-  };
+  }, [navigate]);
+
+  /**
+   * Signs in with OAuth provider (Google, GitHub, Facebook, LinkedIn).
+   */
+  const signInWithOAuth = useCallback(async (
+    provider: OAuthProvider,
+    role: UserRole = 'freelancer'
+  ): Promise<{ error: Error | null }> => {
+    // Store the selected role for use after callback
+    localStorage.setItem('llp_pending_role', role);
+
+    const { error } = await supabaseSignInWithOAuth(provider, role);
+    return { error: error as Error | null };
+  }, []);
+
+  /**
+   * Signs in with email and password using Supabase Auth.
+   */
+  const signInWithPassword = useCallback(async (
+    email: string,
+    password: string
+  ): Promise<{ error: Error | null }> => {
+    const { data, error } = await supabaseSignInWithPassword(email, password);
+
+    if (error) {
+      return { error: error as Error };
+    }
+
+    if (data.session) {
+      setSession(data.session);
+      setSupabaseUser(data.user);
+      setToken(data.session.access_token);
+      setUserRole(getUserRole(data.user));
+    }
+
+    return { error: null };
+  }, []);
+
+  /**
+   * Signs up a new user with email and password.
+   */
+  const signUp = useCallback(async (
+    email: string,
+    password: string,
+    role: UserRole = 'freelancer',
+    fullName?: string
+  ): Promise<{ error: Error | null }> => {
+    // Store the selected role for use after email confirmation
+    localStorage.setItem('llp_pending_role', role);
+
+    const { error } = await supabaseSignUp(email, password, role, fullName);
+    return { error: error as Error | null };
+  }, []);
+
+  const isAuthenticated = !!token || !!session;
+
+  // Plan gating only applies to freelancers.
+  // Clients are always treated as having "access" — they are never shown the upgrade
+  // dialog or skeleton, regardless of what plan value is stored on their account.
+  const hasPaidPlan =
+    user?.role === 'client' ||          // clients: always true
+    !!(user?.plan && user.plan !== 'free'); // freelancers: true only on pro/enterprise
 
   return (
-    <AuthContext.Provider value={{ 
-      user, token, login, logout, isAuthenticated: !!token, isLoading, 
-      isSessionExpired, setIsSessionExpired 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        supabaseUser,
+        session,
+        token,
+        userRole,
+        hasPaidPlan,
+        login,
+        logout,
+        signInWithOAuth,
+        signInWithPassword,
+        signUp,
+        isAuthenticated,
+        isLoading,
+        isSessionExpired,
+        setIsSessionExpired,
+        syncUserToBackend,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -128,3 +397,4 @@ export const useAuth = () => {
   return context;
 };
 
+export type { User, UserRole, OAuthProvider };

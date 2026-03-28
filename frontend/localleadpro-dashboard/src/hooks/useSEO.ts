@@ -31,13 +31,18 @@ interface SEOOptions {
   index?: boolean;
   /** Additional keywords for this page. */
   keywords?: string;
+  /** Article published date (ISO 8601) for article pages. */
+  publishedTime?: string;
+  /** Article modified date (ISO 8601) for article pages. */
+  modifiedTime?: string;
 }
 
 const SITE_NAME = 'Cold Scout';
 const BASE_URL = 'https://coldscout.colddsam.com';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/banner.png`;
 const DEFAULT_KEYWORDS =
-  'AI lead generation, local business leads, cold outreach automation, sales pipeline, B2B leads';
+  'AI lead generation, local business leads, cold outreach automation, sales pipeline, B2B leads, automated prospecting';
+const TWITTER_SITE = '@coldscout';
 
 function setMeta(name: string, content: string, isProperty = false) {
   const attr = isProperty ? 'property' : 'name';
@@ -72,6 +77,8 @@ export function useSEO({
   ogImageAlt = 'Cold Scout — AI Lead Generation Platform',
   index = true,
   keywords,
+  publishedTime,
+  modifiedTime,
 }: SEOOptions) {
   useEffect(() => {
     // Title
@@ -83,32 +90,50 @@ export function useSEO({
     // Keywords
     setMeta('keywords', keywords ?? DEFAULT_KEYWORDS);
 
-    // Robots
-    setMeta('robots', index ? 'index, follow' : 'noindex, nofollow');
+    // Robots — fine-grained directives for maximum crawl budget efficiency
+    if (index) {
+      setMeta('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+      setMeta('googlebot', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+    } else {
+      setMeta('robots', 'noindex, nofollow');
+      setMeta('googlebot', 'noindex, nofollow');
+    }
 
     // Canonical
     if (canonical) setLink('canonical', canonical);
+
+    // Alternate hreflang (English)
+    if (canonical) setLink('alternate', canonical, { hreflang: 'en' });
 
     // Open Graph
     setMeta('og:type', ogType, true);
     setMeta('og:title', title, true);
     setMeta('og:description', description, true);
     setMeta('og:image', ogImage, true);
+    setMeta('og:image:secure_url', ogImage, true);
     setMeta('og:url', canonical ?? `${BASE_URL}/`, true);
     setMeta('og:site_name', SITE_NAME, true);
+    setMeta('og:locale', 'en_US', true);
 
     // Social Image Dimensions (if banner.png, use standard 1200x630)
     if (ogImage.includes('banner.png')) {
       setMeta('og:image:width', '1200', true);
       setMeta('og:image:height', '630', true);
+      setMeta('og:image:type', 'image/png', true);
     }
     setMeta('og:image:alt', ogImageAlt, true);
 
+    // Article dates (for docs and blog-style pages)
+    if (publishedTime) setMeta('article:published_time', publishedTime, true);
+    if (modifiedTime) setMeta('article:modified_time', modifiedTime, true);
+
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:site', '@ColdSc0ut');
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
     setMeta('twitter:image', ogImage);
     setMeta('twitter:image:alt', ogImageAlt);
-  }, [title, description, canonical, ogImage, ogType, ogImageAlt, index, keywords]);
+
+  }, [title, description, canonical, ogImage, ogType, ogImageAlt, index, keywords, publishedTime, modifiedTime]);
 }

@@ -1,11 +1,16 @@
 /**
  * Backend API Client & Core Data Models.
- * 
+ *
  * Provides a type-safe interface for the AI Lead Generation backend.
- * Handles authentication header injection, session lifecycle management via 
- * axios interceptors, and error normalization.
+ * Handles authentication header injection using Supabase session tokens,
+ * session lifecycle management via axios interceptors, and error normalization.
+ *
+ * Token Priority:
+ * 1. Supabase session token (primary)
+ * 2. Legacy localStorage token (fallback for existing sessions)
  */
 import axios from 'axios';
+import { supabase } from './supabase';
 
 /**
  * Core Axios configuration.
@@ -21,16 +26,37 @@ export const client = axios.create({
   },
 });
 
-// Request interceptor: Injects JWT and X-API-Key for authenticated routes.
-client.interceptors.request.use((config) => {
-  const token = localStorage.getItem('llp_token');
+/**
+ * Request interceptor: Injects JWT from Supabase session or localStorage fallback.
+ * Also ensures X-API-Key is always present.
+ */
+client.interceptors.request.use(async (config) => {
+  let token: string | null = null;
+
+  // Try to get token from Supabase session first
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      token = session.access_token;
+    }
+  } catch (error) {
+    console.warn('Failed to get Supabase session:', error);
+  }
+
+  // Fallback to legacy localStorage token
+  if (!token) {
+    token = localStorage.getItem('llp_token');
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   // Ensure X-API-Key is always present even if headers are overridden
   if (API_KEY) {
     config.headers['X-API-Key'] = API_KEY;
   }
+
   return config;
 });
 
@@ -40,20 +66,29 @@ client.interceptors.request.use((config) => {
  */
 client.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
     // Handle credential failure specifically. We check the detail message
     // to distinguish between session expiry (JWT) and system config errors (API Key).
-    const isSessionError = err.response?.status === 401 || 
-      (err.response?.status === 403 && err.response?.data?.detail === "Could not validate credentials");
+    const isSessionError =
+      err.response?.status === 401 ||
+      (err.response?.status === 403 &&
+        err.response?.data?.detail === 'Could not validate credentials');
 
     if (isSessionError) {
       // Clear local storage immediately to prevent further unauthorized requests
       localStorage.removeItem('llp_token');
       localStorage.removeItem('llp_user');
-      
+
+      // Sign out from Supabase to clear session
+      try {
+        await supabase.auth.signOut();
+      } catch (signOutError) {
+        console.warn('Failed to sign out from Supabase:', signOutError);
+      }
+
       const path = window.location.pathname;
       // Signal session expiration if the user is in a protected area.
-      if (path !== '/login' && path !== '/') {
+      if (path !== '/login' && path !== '/' && path !== '/signup' && !path.startsWith('/auth/')) {
         window.dispatchEvent(new CustomEvent('auth-session-expired'));
       }
     }
@@ -64,7 +99,7 @@ client.interceptors.response.use(
 );
 
 /**
- * Fetches the authenticated user profile. 
+ * Fetches the authenticated user profile.
  * Used for session recovery and credential verification on app boot.
  */
 export const getMe = async () => {
@@ -72,14 +107,27 @@ export const getMe = async () => {
   return data;
 };
 
-
 // ── Types ──────────────────────────────────────────────────
 
 export type SystemStatus = 'RUN' | 'HOLD';
 export type JobStatus = 'RUN' | 'HOLD';
-export type LeadStatus = 'discovered' | 'qualified' | 'contacted' | 'replied' | 'closed' | 'rejected' | 'email_sent';
+export type LeadStatus =
+  | 'discovered'
+  | 'qualified'
+  | 'contacted'
+  | 'replied'
+  | 'closed'
+  | 'rejected'
+  | 'email_sent';
 export type IntentLabel = 'interested' | 'pricing_inquiry' | 'not_interested' | 'unsubscribe' | 'other';
-export type PipelineStage = 'discovery' | 'qualification' | 'personalization' | 'outreach' | 'report' | 'optimization' | 'all';
+export type PipelineStage =
+  | 'discovery'
+  | 'qualification'
+  | 'personalization'
+  | 'outreach'
+  | 'report'
+  | 'optimization'
+  | 'all';
 
 export interface HealthResponse {
   status: string;
@@ -283,7 +331,9 @@ export const getJobsConfig = () =>
  * Allows for dynamic adjustment of polling intervals and execution windows.
  */
 export const updateJobsConfig = (config: Record<string, unknown>) =>
-  client.patch<{ status: string; config: JobsConfig }>('/api/v1/pipeline/jobs_config', config).then((r) => r.data);
+  client
+    .patch<{ status: string; config: JobsConfig }>('/api/v1/pipeline/jobs_config', config)
+    .then((r) => r.data);
 
 // Leads
 /**

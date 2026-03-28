@@ -1,12 +1,17 @@
 """
-Domain validity and HTTP accessibility verification module.
+Domain Validity and HTTP Accessibility Verification Module.
 
-This module performs DNS resolution, HTTP health checks, and basic quality signals
-on target business domains. It is designed to be used in a concurrent environment
-to efficiently verify the reachability and responsiveness of multiple websites.
+Performs DNS resolution, HTTP reachability checks, and quality-signal extraction
+on target business domains.  Designed for high-concurrency use during the
+qualification pipeline stage.
 
-Author: [Your Name]
-Date: [Today's Date]
+SSL verification note (verify=False):
+  TLS certificate validation is intentionally disabled for the same architectural
+  reasons as ``app/modules/discovery/scraper.py`` — see that module for the full
+  rationale.  In short: many small-business websites have expired or self-signed
+  certificates, and enforcing verification would produce false negatives that
+  silently drop valid leads from the pipeline.  Only publicly readable HTML is
+  fetched; no sensitive data is transmitted to target sites.
 """
 
 import re

@@ -910,19 +910,56 @@ const LD_BREADCRUMB_DOCS = {
   ],
 };
 
+const LD_TECH_ARTICLE_DOCS = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  '@id': 'https://coldscout.colddsam.com/docs#article',
+  headline: 'Cold Scout Documentation — Setup, Deployment & API Guide',
+  description: 'Complete technical documentation for Cold Scout AI Lead Generation Platform. Covers system architecture, Google Maps API setup, Groq AI configuration, Supabase database, environment variables, Docker deployment, Render backend, and Vercel frontend.',
+  url: 'https://coldscout.colddsam.com/docs',
+  image: 'https://coldscout.colddsam.com/banner.png',
+  author: {
+    '@type': 'Organization',
+    name: 'Cold Scout',
+    url: 'https://coldscout.colddsam.com/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Cold Scout',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://coldscout.colddsam.com/web-app-manifest-512x512.png',
+    },
+  },
+  datePublished: '2024-01-01',
+  dateModified: '2026-03-29',
+  inLanguage: 'en-US',
+  keywords: 'Cold Scout documentation, AI lead generation setup, FastAPI deployment, Vercel, Render, Supabase, Groq API, Google Places API, Docker, self-hosting',
+  articleSection: 'Technical Documentation',
+  about: {
+    '@type': 'SoftwareApplication',
+    name: 'Cold Scout',
+    url: 'https://coldscout.colddsam.com/',
+  },
+};
+
 export default function Documentation() {
   useSEO({
-    title: 'Documentation — Cold Scout AI Lead Generation',
+    title: 'Documentation — Cold Scout AI Lead Generation Setup & API Guide',
     description:
-      'Full setup guide for Cold Scout: system architecture, API keys, environment variables, deployment to Render & Vercel, and production configuration.',
+      'Complete setup guide for Cold Scout: system architecture, Google Maps API, Groq AI, Supabase database, environment variables, Docker deployment to Render & Vercel.',
     canonical: 'https://coldscout.colddsam.com/docs',
     keywords:
-      'Cold Scout documentation, AI lead generation setup, FastAPI deployment, Vercel deployment, Render deployment, Supabase database, Groq API, Google Places API',
+      'Cold Scout documentation, AI lead generation setup, FastAPI deployment, Vercel deployment, Render deployment, Supabase database, Groq API, Google Places API, self-host lead generation, open source CRM setup',
+    ogType: 'article',
+    publishedTime: '2024-01-01',
+    modifiedTime: '2026-03-29',
   });
 
   return (
     <div className="bg-white text-black font-sans antialiased">
       <JsonLd data={LD_BREADCRUMB_DOCS} id="breadcrumb-docs" />
+      <JsonLd data={LD_TECH_ARTICLE_DOCS} id="tech-article-docs" />
       <PublicNavbar />
       <HeroSection />
       <TableOfContents />

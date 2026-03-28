@@ -55,8 +55,10 @@ Empowering high-performance B2B sales teams by providing a tirelessly working, 2
 3. **✉️ Hyper-Personalization**: Analyzes prospect pain points and industry standing to generate highly customized, enterprise-level outreach campaigns.
 4. **📊 Real-time Dashboard**: A premium React-based command center for managing campaigns, monitoring background automation tasks, and analyzing conversion metrics.
 5. **🤖 Smart Notifications**: Integrated Telegram & WhatsApp bots for real-time intelligent alerts regarding newly discovered leads, successful qualifications, and system health status.
-6. **🚀 Automated Monitoring**: Proactive operational monitoring utilizing GitHub Actions and continuous chron-job tracking to ensure flawless 24/7 uptime.
+6. **🚀 Automated Monitoring**: Proactive operational monitoring utilizing GitHub Actions and continuous cron-job tracking to ensure flawless 24/7 uptime.
 7. **🛡️ Scalable Backend**: Engineered on FastAPI and PostgreSQL with `async` database connectivity optimized for high-throughput, non-blocking data ingestion and web scraping.
+8. **🔐 Supabase Auth**: Enterprise-grade authentication supporting email/password and OAuth (Google, GitHub, Facebook, LinkedIn) via Supabase Auth with PKCE flow and ES256 JWT verification.
+9. **👥 Role-Based Access**: Two distinct user roles (`freelancer` and `client`) with plan-gated feature access for freelancers (Free / Pro / Enterprise tiers).
 
 ---
 

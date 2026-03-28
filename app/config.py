@@ -114,6 +114,13 @@ class Settings(BaseSettings):
     The anonymous key for Supabase.
     """
 
+    SUPABASE_JWT_SECRET: str = ""
+    """
+    The JWT secret for Supabase Auth token verification.
+    Required for backend to verify Supabase-issued JWTs.
+    Obtain from Supabase Dashboard → Settings → API → JWT Secret.
+    """
+
     REDIS_URL: str = ""  # Optional — only required when reactivating Celery
     """
     The URL of the Redis instance.
@@ -174,6 +181,15 @@ class Settings(BaseSettings):
     """
 
     # Communication Infrastructure (Brevo SMTP for Outreach)
+    BREVO_WEBHOOK_SECRET: str = ""
+    """
+    Optional shared secret for validating inbound Brevo webhook requests.
+    When set, the backend verifies the 'X-Brevo-Secret' header on every webhook
+    call to prevent spoofed event injection. Obtain or define this value in the
+    Brevo dashboard webhook configuration and mirror it here.
+    Leave empty to skip validation (not recommended for production).
+    """
+
     BREVO_SMTP_HOST: str = "smtp-relay.brevo.com"
     """
     The Brevo SMTP host.

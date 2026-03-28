@@ -1,13 +1,35 @@
 """
-Web scraping and data extraction module.
-Utilizes asynchronous HTTP requests and regular expressions to extract
-contact information from targeted business domains.
+Web Scraping and Contact Extraction Module.
+
+Fetches HTML from target business websites and extracts contact email
+addresses using regular-expression pattern matching.
+
+SSL verification note (verify=False):
+  This module deliberately disables TLS certificate verification when
+  connecting to target business websites. This is an intentional architectural
+  decision because:
+
+    1. Many small and mid-tier business websites operate with expired, self-signed,
+       or misconfigured SSL certificates.  Using verify=True would produce false
+       negatives — marking reachable sites as unreachable — and silently drop
+       valid leads from the pipeline.
+
+    2. The data fetched is publicly accessible HTML (no sensitive payload is
+       transmitted *to* the site).  The downside of a MITM attack in this context
+       is that an adversary could inject content into the HTML response.  Injected
+       content is mitigated further downstream by the prompt-injection sanitisation
+       layer in ``groq_client.py`` before any scraped values reach the LLM.
+
+  If stricter validation is ever required, set ``SCRAPER_VERIFY_SSL=true`` in
+  the environment and update this module accordingly.
 """
+
 import httpx
 from bs4 import BeautifulSoup
 import re
 from typing import Optional, List
 from loguru import logger
+
 
 async def scrape_contact_email(url: str) -> Optional[str]:
     """

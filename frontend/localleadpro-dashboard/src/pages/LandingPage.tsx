@@ -4,8 +4,9 @@
  * Marketing entry point featuring the value proposition, core features,
  * and pricing tiers for the AI Lead Generation system.
  */
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import {
   Search, Zap, Mail, BarChart2, ArrowRight, ChevronRight,
   Target, Shield
 } from 'lucide-react';
@@ -310,24 +311,47 @@ function PricingSection() {
 const LD_ORGANIZATION = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': 'https://coldscout.colddsam.com/#organization',
   name: 'Cold Scout',
-  url: 'https://coldscout.colddsam.com',
-  logo: 'https://coldscout.colddsam.com/web-app-manifest-512x512.png',
-  description: 'AI-powered lead generation platform that discovers, qualifies, and engages local business leads at scale.',
-  sameAs: ['https://github.com/colddsam/coldscout.git'],
-  contactPoint: {
-    '@type': 'ContactPoint',
-    email: 'colddsam@gmail.com',
-    contactType: 'customer support',
+  legalName: 'Cold Scout',
+  url: 'https://coldscout.colddsam.com/',
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://coldscout.colddsam.com/web-app-manifest-512x512.png',
+    width: 512,
+    height: 512,
   },
+  image: 'https://coldscout.colddsam.com/banner.png',
+  description: 'AI-powered lead generation platform that discovers, qualifies, and engages local business leads at scale.',
+  foundingDate: '2024',
+  email: 'admin@colddsam.com',
+  sameAs: ['https://github.com/colddsam/coldscout'],
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      email: 'admin@colddsam.com',
+      contactType: 'customer support',
+      availableLanguage: 'English',
+    },
+    {
+      '@type': 'ContactPoint',
+      email: 'colddsam@gmail.com',
+      contactType: 'sales',
+      availableLanguage: 'English',
+    },
+  ],
 };
 
 const LD_WEBSITE = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
+  '@id': 'https://coldscout.colddsam.com/#website',
   name: 'Cold Scout',
-  url: 'https://coldscout.colddsam.com',
+  alternateName: 'Cold Scout AI Lead Generation',
+  url: 'https://coldscout.colddsam.com/',
   description: 'AI-powered lead generation platform that discovers, qualifies, and engages local business leads at scale.',
+  publisher: { '@id': 'https://coldscout.colddsam.com/#organization' },
+  inLanguage: 'en-US',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
@@ -341,48 +365,200 @@ const LD_WEBSITE = {
 const LD_SOFTWARE = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
+  '@id': 'https://coldscout.colddsam.com/#software',
   name: 'Cold Scout',
   applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Web',
-  url: 'https://coldscout.colddsam.com',
-  description: 'AI-powered lead generation platform that automates outreach pipeline from search to inbox.',
+  applicationSubCategory: 'Lead Generation Software',
+  operatingSystem: 'Web, SaaS',
+  url: 'https://coldscout.colddsam.com/',
+  downloadUrl: 'https://github.com/colddsam/coldscout',
+  description: 'AI-powered lead generation platform that automates outreach pipeline — from Google Maps discovery to personalized email campaigns.',
+  featureList: [
+    'AI Lead Discovery via Google Maps',
+    'ML-based Lead Qualification and Intent Scoring',
+    'Personalized Email Generation with Groq AI',
+    'Automated Cold Outreach Pipeline',
+    'Real-time Pipeline Analytics Dashboard',
+    'GDPR and CAN-SPAM Compliant',
+    'MCP Server for AI Agents',
+    'Open Source Self-Hosting',
+  ],
+  screenshot: 'https://coldscout.colddsam.com/banner.png',
   offers: [
     {
       '@type': 'Offer',
+      name: 'Open Source (Self-hosted)',
       price: '0',
       priceCurrency: 'USD',
-      name: 'Open Source (Self-hosted)',
+      availability: 'https://schema.org/InStock',
+      description: 'Full platform access, unlimited leads, self-hosted with your own API keys',
     },
     {
       '@type': 'Offer',
+      name: 'Pro — Managed API',
       price: '30',
       priceCurrency: 'USD',
-      name: 'Pro — Hosted API',
-      billingIncrement: 1,
+      availability: 'https://schema.org/InStock',
+      description: 'Hosted API and MCP Server, 2000 leads/month, no deployment needed',
     },
     {
       '@type': 'Offer',
+      name: 'Enterprise',
       price: '100',
       priceCurrency: 'USD',
-      name: 'Enterprise',
-      billingIncrement: 1,
+      availability: 'https://schema.org/InStock',
+      description: 'Unlimited leads, dedicated instance, custom ICP models, white-label',
     },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    reviewCount: '12',
-  },
+  creator: { '@id': 'https://coldscout.colddsam.com/#organization' },
 };
+
+const LD_HOW_TO = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to Generate Qualified Leads with Cold Scout AI',
+  description: 'Use Cold Scout to automatically discover, qualify, and engage local business leads in four steps.',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: 'Configure Your Target',
+      text: 'Set your target industry, location, and ideal customer criteria in the pipeline configuration.',
+      url: 'https://coldscout.colddsam.com/docs#configuration',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: 'AI Lead Discovery',
+      text: 'Cold Scout AI scrapes Google Maps and enriches leads with business data, contact info, and social profiles.',
+      url: 'https://coldscout.colddsam.com/docs#discovery',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: 'Score and Qualify',
+      text: 'Machine learning models rank leads by purchase intent and ICP fit, ensuring you focus on hot prospects.',
+      url: 'https://coldscout.colddsam.com/docs#qualification',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 4,
+      name: 'Automated Personalized Outreach',
+      text: 'AI-generated personalized email campaigns automatically reach your best prospects with tracked follow-ups.',
+      url: 'https://coldscout.colddsam.com/docs#outreach',
+    },
+  ],
+  totalTime: 'PT5M',
+};
+
+const LD_FAQ_HOME = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is Cold Scout?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Cold Scout is an AI-powered lead generation platform that automatically discovers local businesses via Google Maps, qualifies them using Llama AI models, and sends personalized cold email campaigns. It automates the entire outreach pipeline from search to inbox.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How does Cold Scout find leads?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Cold Scout uses the Google Maps Places API and intelligent web scraping to discover local businesses matching your Ideal Customer Profile (ICP). It then enriches each lead with website data, contact information, social profiles, and tech stack details.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is Cold Scout free to use?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Cold Scout is fully open source under the MIT license. You can self-host the entire platform for free using your own API keys. We also offer a managed Pro plan at $30/month and Enterprise at $100/month for teams that prefer hosted infrastructure.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What AI does Cold Scout use for lead qualification?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Cold Scout uses Groq-powered Llama 3 models (Llama 3.3 70B and Llama 3.1 8B) for lead qualification, intent scoring, and personalized email generation. This provides fast, high-quality AI inference at low cost.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can AI agents like Claude or GPT-4 use Cold Scout?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Cold Scout provides a Model Context Protocol (MCP) server that enables AI agents to directly call lead generation endpoints. Pro and Enterprise plans include MCP server access.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is Cold Scout GDPR compliant?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Cold Scout is built with compliance in mind. It adheres to GDPR, CCPA, and CAN-SPAM regulations. All outreach emails include unsubscribe mechanisms, and the platform implements ethical scraping practices with rate limiting.',
+      },
+    },
+  ],
+};
+
+/* ── FAQ Section ── */
+
+function FaqSection() {
+  const faqs = [
+    { q: 'What is Cold Scout?', a: 'Cold Scout is an AI-powered lead generation platform that automatically discovers local businesses via Google Maps, qualifies them using Llama AI, and sends personalized cold email campaigns — automating your entire outreach pipeline.' },
+    { q: 'How does Cold Scout find leads?', a: 'It uses the Google Maps Places API and intelligent web scraping to discover businesses matching your Ideal Customer Profile (ICP), then enriches each lead with contact info, social profiles, and tech stack details.' },
+    { q: 'Is Cold Scout free?', a: 'Yes — fully open source under MIT license. Self-host for free with your own API keys. Managed Pro plan ($30/mo) and Enterprise ($100/mo) available for teams that prefer hosted infrastructure.' },
+    { q: 'What AI models power Cold Scout?', a: 'Groq-powered Llama 3.3 70B for qualification and email generation, Llama 3.1 8B for faster tasks. This provides high-quality AI inference at extremely low cost.' },
+    { q: 'Can AI agents use Cold Scout?', a: 'Yes. Cold Scout provides a Model Context Protocol (MCP) server so AI agents like Claude or GPT-4 can directly call lead generation endpoints. Included in Pro and Enterprise plans.' },
+    { q: 'Is Cold Scout GDPR compliant?', a: 'Yes. Built for compliance — GDPR, CCPA, and CAN-SPAM. All emails include unsubscribe links, and the platform uses ethical scraping with rate limiting.' },
+  ];
+
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  return (
+    <section id="faq" className="py-24 md:py-32 bg-accents-1 relative">
+      <div className="max-w-3xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">FAQ</p>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">
+            Frequently asked questions
+          </h2>
+        </div>
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <div key={i} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-vercel transition-all duration-200">
+              <button
+                onClick={() => setOpenIdx(openIdx === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 bg-white hover:bg-gray-50 transition-colors text-left"
+                aria-expanded={openIdx === i}
+              >
+                <span className="text-sm font-semibold text-black pr-4">{faq.q}</span>
+                <ChevronRight className={`w-4 h-4 text-secondary flex-shrink-0 transition-transform duration-200 ${openIdx === i ? 'rotate-90' : ''}`} />
+              </button>
+              <div className={`transition-all duration-300 overflow-hidden ${openIdx === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <p className="px-5 pb-5 text-sm text-secondary leading-relaxed border-t border-gray-100 pt-4">{faq.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function LandingPage() {
   useSEO({
-    title: 'Cold Scout — AI Lead Generation Platform',
+    title: 'Cold Scout — AI Lead Generation Platform | Automate B2B Outreach',
     description:
-      'Cold Scout uses AI to discover, enrich, and engage local business leads — automating your entire outreach pipeline from search to inbox. Try it free.',
+      'Cold Scout uses AI to discover, enrich, and engage local business leads — automating your entire outreach pipeline from search to inbox. Free open-source + managed plans from $30/month.',
     canonical: 'https://coldscout.colddsam.com/',
     keywords:
-      'AI lead generation, local business leads, cold outreach automation, lead qualification, email campaign, Google Maps scraping, sales pipeline, B2B leads, ICP scoring',
+      'AI lead generation, local business leads, cold outreach automation, lead qualification, email campaign automation, Google Maps scraping, sales pipeline, B2B leads, ICP scoring, automated prospecting, lead generation software, open source CRM',
   });
 
   return (
@@ -390,11 +566,14 @@ export default function LandingPage() {
       <JsonLd data={LD_ORGANIZATION} id="organization" />
       <JsonLd data={LD_WEBSITE} id="website" />
       <JsonLd data={LD_SOFTWARE} id="software" />
+      <JsonLd data={LD_HOW_TO} id="howto" />
+      <JsonLd data={LD_FAQ_HOME} id="faq-home" />
       <PublicNavbar />
       <HeroSection />
       <FeaturesSection />
       <WorkflowSection />
       <PricingSection />
+      <FaqSection />
       <PublicFooter />
     </div>
   );

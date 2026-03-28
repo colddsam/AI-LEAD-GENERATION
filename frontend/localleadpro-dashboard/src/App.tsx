@@ -1,9 +1,15 @@
 /**
  * Root Application Component.
- * 
+ *
  * Orchestrates the global providers (QueryClient, React Router, AuthContext)
- * and defines the primary routing architecture for the Local Lead Pro dashboard.
- * Includes both public-facing pages and protected dashboard routes.
+ * and defines the primary routing architecture for the Cold Scout dashboard.
+ * Includes public-facing pages, OAuth callback handling, and protected dashboard routes.
+ *
+ * Route Structure:
+ * - Public: Landing, Login, SignUp, Docs, Pricing, Legal pages
+ * - Auth: OAuth callback handler
+ * - Protected (Client): Welcome page
+ * - Protected (Freelancer): Full dashboard access
  */
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -12,6 +18,9 @@ import { Toaster } from 'react-hot-toast';
 import Shell from './components/layout/Shell';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import AuthCallback from './pages/AuthCallback';
+import Welcome from './pages/Welcome';
 import Documentation from './pages/Documentation';
 import Pricing from './pages/Pricing';
 import Overview from './pages/Overview';
@@ -26,11 +35,13 @@ import Settings from './pages/Settings';
 import Threads from './pages/Threads';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/useAuth';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import ProtectedRoute, { FreelancerRoute, ClientRoute } from './components/auth/ProtectedRoute';
 import SessionExpiredModal from './components/auth/SessionExpiredModal';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import DataDeletion from './pages/DataDeletion.tsx';
+import Support from './pages/Support';
+import RefundPolicy from './pages/RefundPolicy';
 
 /**
  * Shared QueryClient instance with optimized development defaults.
@@ -52,18 +63,26 @@ export default function App() {
         <AuthProvider>
           <SessionExpiredModal />
           <Routes>
-
-            {/* Public */}
+            {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/docs" element={<Documentation />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/delete-data" element={<DataDeletion />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
 
-            {/* Dashboard (inside ProtectedRoute + Shell layout) */}
-            <Route element={<ProtectedRoute />}>
+            {/* Protected: Client Welcome (clients only — freelancers redirected to /overview) */}
+            <Route element={<ClientRoute />}>
+              <Route path="/welcome" element={<Welcome />} />
+            </Route>
+
+            {/* Protected: Freelancer Dashboard (full access) */}
+            <Route element={<FreelancerRoute />}>
               <Route element={<Shell />}>
                 <Route path="/overview" element={<Overview />} />
                 <Route path="/pipeline" element={<Pipeline />} />
