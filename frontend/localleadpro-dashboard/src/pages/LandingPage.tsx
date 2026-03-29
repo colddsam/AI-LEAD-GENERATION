@@ -213,7 +213,7 @@ function PricingSection() {
     },
     {
       name: 'Pro',
-      price: '$30',
+      price: '₹100',
       period: '/month',
       desc: 'Hosted API & MCP Server — no deployment.',
       features: ['No deployment needed', 'MCP server access', '2,000 leads/month', 'AI qualification + emails', 'Email support (48h)'],
@@ -224,7 +224,7 @@ function PricingSection() {
     },
     {
       name: 'Enterprise',
-      price: '$100',
+      price: '₹2,000',
       period: '/month',
       desc: 'For agencies and freelancing firms.',
       features: ['Unlimited leads', 'Dedicated API instance', 'Custom ICP models', 'White-label templates', 'Priority support (4h)'],
@@ -308,60 +308,6 @@ function PricingSection() {
 
 /* ── Landing Page ── */
 
-const LD_ORGANIZATION = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  '@id': 'https://coldscout.colddsam.com/#organization',
-  name: 'Cold Scout',
-  legalName: 'Cold Scout',
-  url: 'https://coldscout.colddsam.com/',
-  logo: {
-    '@type': 'ImageObject',
-    url: 'https://coldscout.colddsam.com/web-app-manifest-512x512.png',
-    width: 512,
-    height: 512,
-  },
-  image: 'https://coldscout.colddsam.com/banner.png',
-  description: 'AI-powered lead generation platform that discovers, qualifies, and engages local business leads at scale.',
-  foundingDate: '2024',
-  email: 'admin@colddsam.com',
-  sameAs: ['https://github.com/colddsam/coldscout'],
-  contactPoint: [
-    {
-      '@type': 'ContactPoint',
-      email: 'admin@colddsam.com',
-      contactType: 'customer support',
-      availableLanguage: 'English',
-    },
-    {
-      '@type': 'ContactPoint',
-      email: 'colddsam@gmail.com',
-      contactType: 'sales',
-      availableLanguage: 'English',
-    },
-  ],
-};
-
-const LD_WEBSITE = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  '@id': 'https://coldscout.colddsam.com/#website',
-  name: 'Cold Scout',
-  alternateName: 'Cold Scout AI Lead Generation',
-  url: 'https://coldscout.colddsam.com/',
-  description: 'AI-powered lead generation platform that discovers, qualifies, and engages local business leads at scale.',
-  publisher: { '@id': 'https://coldscout.colddsam.com/#organization' },
-  inLanguage: 'en-US',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: 'https://coldscout.colddsam.com/docs?q={search_term_string}',
-    },
-    'query-input': 'required name=search_term_string',
-  },
-};
-
 const LD_SOFTWARE = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
@@ -373,6 +319,7 @@ const LD_SOFTWARE = {
   url: 'https://coldscout.colddsam.com/',
   downloadUrl: 'https://github.com/colddsam/coldscout',
   description: 'AI-powered lead generation platform that automates outreach pipeline — from Google Maps discovery to personalized email campaigns.',
+  softwareVersion: '1.0.0',
   featureList: [
     'AI Lead Discovery via Google Maps',
     'ML-based Lead Qualification and Intent Scoring',
@@ -389,23 +336,35 @@ const LD_SOFTWARE = {
       '@type': 'Offer',
       name: 'Open Source (Self-hosted)',
       price: '0',
-      priceCurrency: 'USD',
+      priceCurrency: 'INR',
       availability: 'https://schema.org/InStock',
       description: 'Full platform access, unlimited leads, self-hosted with your own API keys',
     },
     {
       '@type': 'Offer',
       name: 'Pro — Managed API',
-      price: '30',
-      priceCurrency: 'USD',
+      price: '100',
+      priceCurrency: 'INR',
+      priceSpecification: {
+        '@type': 'RecurringChargeSpecification',
+        billingDuration: 'P1M',
+        price: '100',
+        priceCurrency: 'INR',
+      },
       availability: 'https://schema.org/InStock',
       description: 'Hosted API and MCP Server, 2000 leads/month, no deployment needed',
     },
     {
       '@type': 'Offer',
       name: 'Enterprise',
-      price: '100',
-      priceCurrency: 'USD',
+      price: '2000',
+      priceCurrency: 'INR',
+      priceSpecification: {
+        '@type': 'RecurringChargeSpecification',
+        billingDuration: 'P1M',
+        price: '2000',
+        priceCurrency: 'INR',
+      },
       availability: 'https://schema.org/InStock',
       description: 'Unlimited leads, dedicated instance, custom ICP models, white-label',
     },
@@ -476,7 +435,7 @@ const LD_FAQ_HOME = {
       name: 'Is Cold Scout free to use?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. Cold Scout is fully open source under the MIT license. You can self-host the entire platform for free using your own API keys. We also offer a managed Pro plan at $30/month and Enterprise at $100/month for teams that prefer hosted infrastructure.',
+        text: 'Yes. Cold Scout is fully open source under the MIT license. You can self-host the entire platform for free using your own API keys. We also offer a managed Pro plan at ₹100/month and Enterprise at ₹2,000/month for teams that prefer hosted infrastructure.',
       },
     },
     {
@@ -512,7 +471,7 @@ function FaqSection() {
   const faqs = [
     { q: 'What is Cold Scout?', a: 'Cold Scout is an AI-powered lead generation platform that automatically discovers local businesses via Google Maps, qualifies them using Llama AI, and sends personalized cold email campaigns — automating your entire outreach pipeline.' },
     { q: 'How does Cold Scout find leads?', a: 'It uses the Google Maps Places API and intelligent web scraping to discover businesses matching your Ideal Customer Profile (ICP), then enriches each lead with contact info, social profiles, and tech stack details.' },
-    { q: 'Is Cold Scout free?', a: 'Yes — fully open source under MIT license. Self-host for free with your own API keys. Managed Pro plan ($30/mo) and Enterprise ($100/mo) available for teams that prefer hosted infrastructure.' },
+    { q: 'Is Cold Scout free?', a: 'Yes — fully open source under MIT license. Self-host for free with your own API keys. Managed Pro plan (₹100/mo) and Enterprise (₹2,000/mo) available for teams that prefer hosted infrastructure.' },
     { q: 'What AI models power Cold Scout?', a: 'Groq-powered Llama 3.3 70B for qualification and email generation, Llama 3.1 8B for faster tasks. This provides high-quality AI inference at extremely low cost.' },
     { q: 'Can AI agents use Cold Scout?', a: 'Yes. Cold Scout provides a Model Context Protocol (MCP) server so AI agents like Claude or GPT-4 can directly call lead generation endpoints. Included in Pro and Enterprise plans.' },
     { q: 'Is Cold Scout GDPR compliant?', a: 'Yes. Built for compliance — GDPR, CCPA, and CAN-SPAM. All emails include unsubscribe links, and the platform uses ethical scraping with rate limiting.' },
@@ -555,7 +514,7 @@ export default function LandingPage() {
   useSEO({
     title: 'Cold Scout — AI Lead Generation Platform | Automate B2B Outreach',
     description:
-      'Cold Scout uses AI to discover, enrich, and engage local business leads — automating your entire outreach pipeline from search to inbox. Free open-source + managed plans from $30/month.',
+      'Cold Scout uses AI to discover, enrich, and engage local business leads — automating your entire outreach pipeline from search to inbox. Free open-source + managed plans from ₹100/month.',
     canonical: 'https://coldscout.colddsam.com/',
     keywords:
       'AI lead generation, local business leads, cold outreach automation, lead qualification, email campaign automation, Google Maps scraping, sales pipeline, B2B leads, ICP scoring, automated prospecting, lead generation software, open source CRM',
@@ -563,17 +522,17 @@ export default function LandingPage() {
 
   return (
     <div className="bg-white text-black font-sans antialiased">
-      <JsonLd data={LD_ORGANIZATION} id="organization" />
-      <JsonLd data={LD_WEBSITE} id="website" />
       <JsonLd data={LD_SOFTWARE} id="software" />
       <JsonLd data={LD_HOW_TO} id="howto" />
       <JsonLd data={LD_FAQ_HOME} id="faq-home" />
       <PublicNavbar />
-      <HeroSection />
-      <FeaturesSection />
-      <WorkflowSection />
-      <PricingSection />
-      <FaqSection />
+      <main id="main-content">
+        <HeroSection />
+        <FeaturesSection />
+        <WorkflowSection />
+        <PricingSection />
+        <FaqSection />
+      </main>
       <PublicFooter />
     </div>
   );

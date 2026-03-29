@@ -49,7 +49,7 @@ class CreateOrderResponse(BaseModel):
     """Returned by POST /billing/create-order. Frontend passes these directly to Razorpay checkout."""
     order_id: str
     amount: int
-    """Amount in paise (INR smallest unit). E.g. 250000 = ₹2500."""
+    """Amount in paise (INR smallest unit). E.g. 10000 = ₹100."""
     currency: str
     key_id: str
     """Razorpay publishable key — safe to expose to the frontend."""

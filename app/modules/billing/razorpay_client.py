@@ -6,8 +6,8 @@ All SDK calls are offloaded to a thread pool via asyncio.to_thread so they
 do not block the FastAPI event loop.
 
 Plan amounts (in paise, INR smallest unit):
-  Pro:        ₹2,500  →  250_000 paise
-  Enterprise: ₹8,500  →  850_000 paise
+  Pro:        ₹100    →   10_000 paise
+  Enterprise: ₹2,000  →  200_000 paise
 """
 
 import asyncio
@@ -25,8 +25,8 @@ from app.config import get_settings
 # ── Plan pricing (paise) ───────────────────────────────────────────────────────
 
 PLAN_AMOUNTS: Dict[str, int] = {
-    "pro": 250_000,        # ₹2,500 × 100
-    "enterprise": 850_000, # ₹8,500 × 100
+    "pro": 10_000,          # ₹100   × 100
+    "enterprise": 200_000,  # ₹2,000 × 100
 }
 
 PLAN_CURRENCY = "INR"

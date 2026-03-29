@@ -102,8 +102,17 @@ export function useSEO({
     // Canonical
     if (canonical) setLink('canonical', canonical);
 
-    // Alternate hreflang (English)
-    if (canonical) setLink('alternate', canonical, { hreflang: 'en' });
+    // Alternate hreflang (English) — use specific selector to avoid overwriting x-default
+    if (canonical) {
+      let enLink = document.head.querySelector<HTMLLinkElement>('link[rel="alternate"][hreflang="en"]');
+      if (!enLink) {
+        enLink = document.createElement('link');
+        enLink.rel = 'alternate';
+        enLink.setAttribute('hreflang', 'en');
+        document.head.appendChild(enLink);
+      }
+      enLink.href = canonical;
+    }
 
     // Open Graph
     setMeta('og:type', ogType, true);
@@ -130,10 +139,11 @@ export function useSEO({
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:site', TWITTER_SITE);
+    setMeta('twitter:url', canonical ?? `${BASE_URL}/`);
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
     setMeta('twitter:image', ogImage);
     setMeta('twitter:image:alt', ogImageAlt);
 
-  }, [title, description, canonical, ogImage, ogType, ogImageAlt, index, keywords, publishedTime, modifiedTime]);
+  }, [title, description, canonical, ogImage, ogType, ogImageAlt, index, keywords, publishedTime, modifiedTime]); // eslint-disable-line react-hooks/exhaustive-deps
 }

@@ -45,14 +45,15 @@ https://github.com/colddsam/coldscout
 - **Backend**: FastAPI (Python), SQLAlchemy Async, PostgreSQL, APScheduler
 - **AI Models**: Groq (Llama 3.3 70B), Llama 3.1 8B
 - **Email**: Brevo (Sendinblue) SMTP
-- **Integrations**: Google Maps Places API, Meta Threads API, Stripe Payments
+- **Integrations**: Google Maps Places API, Meta Threads API, Razorpay Payments
 - **Auth**: Supabase Auth (email/password + OAuth: Google, GitHub, Facebook, LinkedIn)
 
 ## Pricing
 
 - **Open Source (Free)**: Self-hosted, full platform, unlimited leads (own API keys)
-- **Pro ($30/month)**: Managed API + MCP Server, 2,000 leads/month, hosted infrastructure
-- **Enterprise ($100/month)**: Unlimited leads, dedicated instance, custom ICP models, white-label
+- **Pro (₹100/month)**: Managed API + MCP Server, 2,000 leads/month, hosted infrastructure
+- **Enterprise (₹2,000/month)**: Unlimited leads, dedicated instance, custom ICP models, white-label
+- Note: Payments processed in INR via Razorpay. Regional pricing available (USD, EUR, GBP, etc.).
 
 ## Target Users
 
@@ -75,7 +76,8 @@ https://github.com/colddsam/coldscout
 ## Restricted Pages (Authentication required — do NOT crawl)
 
 - /overview, /pipeline, /scheduler, /leads, /campaigns
-- /inbox, /analytics, /settings, /threads
+- /inbox, /analytics, /settings, /threads, /billing
+- /login, /signup, /welcome
 - /api/* (all API endpoints require authentication)
 
 ## Contact
@@ -120,5 +122,5 @@ All public pages include Schema.org JSON-LD structured data covering:
 Cold Scout = open-source + SaaS AI tool for automated B2B lead generation,
 specifically targeting local businesses via Google Maps. It uses Llama AI models
 for qualification and email personalization. Free tier available via GitHub.
-Paid hosted plans at $30/month (Pro) and $100/month (Enterprise).
-Built with FastAPI backend and React frontend.
+Paid hosted plans at ₹100/month (Pro) and ₹2,000/month (Enterprise).
+Payments via Razorpay. Built with FastAPI backend and React frontend.

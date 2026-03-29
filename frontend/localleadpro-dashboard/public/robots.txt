@@ -24,6 +24,7 @@ Disallow: /inbox
 Disallow: /analytics
 Disallow: /settings
 Disallow: /threads
+Disallow: /billing
 Disallow: /login
 Disallow: /signup
 Disallow: /welcome
@@ -49,6 +50,7 @@ Disallow: /inbox
 Disallow: /analytics
 Disallow: /settings
 Disallow: /threads
+Disallow: /billing
 Disallow: /login
 Disallow: /signup
 Disallow: /welcome
@@ -74,6 +76,7 @@ Disallow: /inbox
 Disallow: /analytics
 Disallow: /settings
 Disallow: /threads
+Disallow: /billing
 Disallow: /login
 Disallow: /signup
 Disallow: /welcome
@@ -183,7 +186,7 @@ User-agent: BLEXBot
 Disallow: /
 
 User-agent: DataForSeoBot
-Crawl-delay: 10
+Disallow: /
 
 # ── Sitemaps ───────────────────────────────────────────────────────────────────
 Sitemap: https://coldscout.colddsam.com/sitemap.xml

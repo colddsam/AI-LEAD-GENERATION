@@ -31,14 +31,14 @@ interface CurrencyInfo {
 }
 
 const CURRENCIES: CurrencyInfo[] = [
-  { code: 'USD', symbol: '$', flag: '🇺🇸', pro: 30, enterprise: 100 },
-  { code: 'EUR', symbol: '€', flag: '🇪🇺', pro: 25, enterprise: 90 },
-  { code: 'GBP', symbol: '£', flag: '🇬🇧', pro: 25, enterprise: 80 },
-  { code: 'INR', symbol: '₹', flag: '🇮🇳', pro: 2500, enterprise: 8500 },
-  { code: 'CAD', symbol: 'C$', flag: '🇨🇦', pro: 40, enterprise: 135 },
-  { code: 'AUD', symbol: 'A$', flag: '🇦🇺', pro: 45, enterprise: 150 },
-  { code: 'JPY', symbol: '¥', flag: '🇯🇵', pro: 4500, enterprise: 15000 },
-  { code: 'BRL', symbol: 'R$', flag: '🇧🇷', pro: 150, enterprise: 500 },
+  { code: 'USD', symbol: '$',  flag: '🇺🇸', pro: 1,    enterprise: 24   },
+  { code: 'EUR', symbol: '€',  flag: '🇪🇺', pro: 1,    enterprise: 22   },
+  { code: 'GBP', symbol: '£',  flag: '🇬🇧', pro: 1,    enterprise: 19   },
+  { code: 'INR', symbol: '₹',  flag: '🇮🇳', pro: 100,  enterprise: 2000 },
+  { code: 'CAD', symbol: 'C$', flag: '🇨🇦', pro: 2,    enterprise: 33   },
+  { code: 'AUD', symbol: 'A$', flag: '🇦🇺', pro: 2,    enterprise: 36   },
+  { code: 'JPY', symbol: '¥',  flag: '🇯🇵', pro: 175,  enterprise: 3500 },
+  { code: 'BRL', symbol: 'R$', flag: '🇧🇷', pro: 6,    enterprise: 118  },
 ];
 
 function formatPrice(value: number, symbol: string): string {
@@ -400,11 +400,11 @@ function ComparisonTable() {
             </div>
             <div className="p-4 text-center border-l border-gray-100 bg-black/5">
               <p className="text-[10px] uppercase tracking-widest text-black font-semibold">Pro</p>
-              <p className="text-lg font-bold tracking-tighter mt-0.5">$30<span className="text-xs font-normal text-secondary">/mo</span></p>
+              <p className="text-lg font-bold tracking-tighter mt-0.5">₹100<span className="text-xs font-normal text-secondary">/mo</span></p>
             </div>
             <div className="p-4 text-center border-l border-gray-100">
               <p className="text-[10px] uppercase tracking-widest text-subtle font-semibold">Enterprise</p>
-              <p className="text-lg font-bold tracking-tighter mt-0.5">$100<span className="text-xs font-normal text-secondary">/mo</span></p>
+              <p className="text-lg font-bold tracking-tighter mt-0.5">₹2,000<span className="text-xs font-normal text-secondary">/mo</span></p>
             </div>
           </div>
 
@@ -558,9 +558,23 @@ const LD_FAQ_PRICING = {
   ],
 };
 
+const LD_WEBPAGE_PRICING = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': 'https://coldscout.colddsam.com/pricing#webpage',
+  name: 'Pricing — Cold Scout AI Lead Generation',
+  url: 'https://coldscout.colddsam.com/pricing',
+  description: 'Simple, transparent pricing for Cold Scout. Free open-source self-hosting, Pro managed API at ₹100/month, and Enterprise plans for agencies at ₹2,000/month.',
+  isPartOf: { '@id': 'https://coldscout.colddsam.com/#website' },
+  breadcrumb: { '@id': 'https://coldscout.colddsam.com/pricing#breadcrumb' },
+  dateModified: '2026-03-29',
+  inLanguage: 'en-US',
+};
+
 const LD_BREADCRUMB_PRICING = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
+  '@id': 'https://coldscout.colddsam.com/pricing#breadcrumb',
   itemListElement: [
     {
       '@type': 'ListItem',
@@ -583,7 +597,7 @@ export default function Pricing() {
   useSEO({
     title: 'Pricing — Cold Scout AI Lead Generation',
     description:
-      'Simple, transparent pricing for Cold Scout. Free open-source self-hosting, Pro managed API at $30/month, and Enterprise plans for agencies. No hidden fees.',
+      'Simple, transparent pricing for Cold Scout. Free open-source self-hosting, Pro managed API at ₹100/month, and Enterprise plans for agencies at ₹2,000/month. No hidden fees.',
     canonical: 'https://coldscout.colddsam.com/pricing',
     keywords:
       'Cold Scout pricing, AI lead generation pricing, lead generation SaaS cost, open source lead tool, managed API pricing, enterprise lead generation',
@@ -591,6 +605,7 @@ export default function Pricing() {
 
   return (
     <div className="bg-white text-black font-sans antialiased">
+      <JsonLd data={LD_WEBPAGE_PRICING} id="webpage-pricing" />
       <JsonLd data={LD_FAQ_PRICING} id="faq-pricing" />
       <JsonLd data={LD_BREADCRUMB_PRICING} id="breadcrumb-pricing" />
       <PublicNavbar />
