@@ -49,5 +49,5 @@ jobs:
           APP_URL: ${{ vars.APP_URL || secrets.APP_URL }}
           API_KEY: ${{ secrets.API_KEY || secrets.APP_SECRET_KEY }}
         run: |
-          python scripts/setup_cronjob.py
+          cd backend && python scripts/setup_cronjob.py
           touch .cron_setup_cached

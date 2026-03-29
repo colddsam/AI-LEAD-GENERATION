@@ -162,7 +162,7 @@ Provision the PostgreSQL deployment. Extract all URIs securely and enforce `+asy
 Provision a primary Web Service. Select the Docker runtime environment. Map the environment reference chart linearly to the Render deployment matrix.
 
 ### 3. Frontend Presentation Tier (Vercel)
-Provision the React dashboard (`frontend/localleadpro-dashboard`). Inject the required `VITE_PROXY_URL` and `VITE_API_KEY` to successfully authorize requests against the newly provisioned Render backend.
+Provision the React dashboard (`frontend/`). Inject the required `VITE_PROXY_URL` and `VITE_API_KEY` to successfully authorize requests against the newly provisioned Render backend.
 
 ---
 

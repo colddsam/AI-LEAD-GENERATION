@@ -114,6 +114,7 @@ To orchestrate the complete system on a local workstation, follow this precise p
 
 2. **Initialize the Python Virtual Environment:**
    ```bash
+   cd backend
    python -m venv venv
    # Windows:
    venv\Scripts\activate
@@ -133,19 +134,18 @@ To orchestrate the complete system on a local workstation, follow this precise p
    python scripts/create_tables.py
    python scripts/seed_admin.py
    ```
-   *(Securely store the generated administrative credentials required for dashboard access).*
 
 5. **Start the Development Server:**
    ```bash
    uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
    ```
-   *The Swagger API documentation will be available at: `http://localhost:8000/docs`*
+   *The API documentation will be available at: `http://localhost:8000/docs`*
 
 ### 2. Frontend Setup (React Dashboard)
 
 1. **Initialize a separate terminal session** and navigate to the frontend directory:
    ```bash
-   cd frontend/localleadpro-dashboard
+   cd frontend
    ```
 
 2. **Install Node Packages:**
@@ -154,7 +154,7 @@ To orchestrate the complete system on a local workstation, follow this precise p
    ```
 
 3. **Configure the Frontend Environment:**
-   Create a `.env` file within `frontend/localleadpro-dashboard/`:
+   Create a `.env.local` file within `frontend/`:
    ```env
    VITE_PROXY_URL=http://localhost:8000
    ```
