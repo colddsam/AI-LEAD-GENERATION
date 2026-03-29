@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { Session, User as SupabaseUser, AuthChangeEvent } from '@supabase/supabase-js';
 import {
@@ -71,6 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRole, setUserRole] = useState<UserRole>('freelancer');
   const [isLoading, setIsLoading] = useState(true);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
+  // Tracks the last access_token we synced against so we re-sync once per
+  // session (including after a token refresh) but never on every re-render.
+  const lastSyncedTokenRef = useRef<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -246,25 +249,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   /**
-   * Auto-sync user to backend when a Supabase session is active but no backend
-   * user is loaded. This handles:
+   * Auto-sync user to backend once per session token.
+   *
+   * Runs whenever a Supabase session is active, including:
    *   - Email/password login (never goes through AuthCallback)
-   *   - Sessions restored after localStorage was cleared
-   *   - Users whose role was changed in the backend
+   *   - Sessions restored from localStorage on app load
+   *   - Token refreshes (Supabase refreshes ~hourly) — keeps plan status fresh
+   *
+   * Using lastSyncedTokenRef prevents repeated calls on re-renders while still
+   * running on every genuinely new or refreshed token, so an expired plan is
+   * caught within at most one token refresh cycle (~1 hour) without a re-login.
    *
    * Skips the /auth/callback page because AuthCallback manages its own sync.
    */
   useEffect(() => {
     if (location.pathname === '/auth/callback') return;
-    if (!session || !supabaseUser || user || isLoading) return;
+    if (!session || !supabaseUser || isLoading) return;
+    if (lastSyncedTokenRef.current === session.access_token) return;
 
+    lastSyncedTokenRef.current = session.access_token;
     const pendingRole = (localStorage.getItem('llp_pending_role') || undefined) as UserRole | undefined;
     syncUserToBackend(pendingRole).then((backendUser) => {
       if (backendUser && pendingRole) {
         localStorage.removeItem('llp_pending_role');
       }
     });
-  }, [session, supabaseUser, user, isLoading, syncUserToBackend, location.pathname]);
+  }, [session, supabaseUser, isLoading, syncUserToBackend, location.pathname]);
 
   /**
    * Legacy login function for email/password authentication.
@@ -357,9 +367,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Plan gating only applies to freelancers.
   // Clients are always treated as having "access" — they are never shown the upgrade
   // dialog or skeleton, regardless of what plan value is stored on their account.
+  //
+  // For freelancers we also check plan_expires_at so that an expired plan is
+  // treated as free immediately on the frontend, even if stale localStorage data
+  // still shows plan='pro'. The daily backend scheduler is the authoritative
+  // source, but this client-side check closes the gap between expiry and the
+  // next scheduler run (up to 24 h) or the next syncUserToBackend call.
   const hasPaidPlan =
-    user?.role === 'client' ||          // clients: always true
-    !!(user?.plan && user.plan !== 'free'); // freelancers: true only on pro/enterprise
+    user?.role === 'client' ||
+    !!(
+      user?.plan &&
+      user.plan !== 'free' &&
+      (!user.plan_expires_at || new Date(user.plan_expires_at) > new Date())
+    );
 
   return (
     <AuthContext.Provider

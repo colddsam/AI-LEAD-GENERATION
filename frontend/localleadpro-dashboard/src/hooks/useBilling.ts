@@ -14,6 +14,7 @@ import {
   cancelSubscription,
   type BillingPlan,
 } from '../lib/api';
+import { useAuth } from './useAuth';
 
 // ── Razorpay script loader ─────────────────────────────────────────────────
 
@@ -79,6 +80,7 @@ interface CheckoutOptions {
  */
 export function useCheckout() {
   const queryClient = useQueryClient();
+  const { syncUserToBackend } = useAuth();
 
   const checkout = async ({ plan, userEmail, userName, onSuccess }: CheckoutOptions) => {
     // Step 1 — create server-side order
@@ -134,9 +136,13 @@ export function useCheckout() {
               plan,
             });
 
-            // Step 5 — refresh subscription cache
-            await queryClient.invalidateQueries({ queryKey: ['subscription'] });
-            await queryClient.invalidateQueries({ queryKey: ['billing-transactions'] });
+            // Step 5 — refresh subscription cache and auth user state so
+            // hasPaidPlan updates immediately without requiring a re-login
+            await Promise.all([
+              queryClient.invalidateQueries({ queryKey: ['subscription'] }),
+              queryClient.invalidateQueries({ queryKey: ['billing-transactions'] }),
+              syncUserToBackend(),
+            ]);
 
             toast.success(result.message || `${planLabel} activated!`);
             onSuccess?.(plan, result.plan_expires_at);
