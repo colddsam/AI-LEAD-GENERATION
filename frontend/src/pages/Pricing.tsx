@@ -137,7 +137,7 @@ function PricingHero({ currency, onCurrencyChange }: {
   onCurrencyChange: (c: CurrencyInfo) => void;
 }) {
   return (
-    <section className="relative pt-32 pb-10 overflow-hidden">
+    <section className="relative pt-32 pb-10">
       <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
       <motion.div
         variants={staggerContainer}
