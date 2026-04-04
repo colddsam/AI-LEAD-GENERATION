@@ -1,17 +1,12 @@
 /**
  * Main Application Layout Shell.
  *
- * Provides the consistent structural frame for the dashboard, including:
- * - Responsive Sidebar (collapsible on desktop, drawer on mobile)
- * - Persistent Topbar with system status and page controls
- * - Scrollable main content area with nested routing support via <Outlet />
- *
- * Plan gating:
- * - Freelancers with a paid plan (pro / enterprise) → full dashboard access
- * - Freelancers on the free plan → UpgradeModal on entry, then DashboardSkeleton
+ * Dashboard frame with animated page transitions, smooth sidebar
+ * collapse/expand, and plan gating for free-tier users.
  */
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { useSEO } from '../../hooks/useSEO';
@@ -22,20 +17,11 @@ import DashboardSkeleton from '../dashboard/DashboardSkeleton';
 export default function Shell() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const { hasPaidPlan, user } = useAuth();
-
-  // True after the user dismisses the modal — keeps skeleton visible for the session
   const [modalDismissed, setModalDismissed] = useState(false);
+  const location = useLocation();
 
-  // Derived: show upgrade modal for free-plan freelancers until dismissed
   const showUpgradeModal = !!(user && user.role === 'freelancer' && !hasPaidPlan && !modalDismissed);
-
-  const handleDismiss = () => {
-    setModalDismissed(true);
-  };
-
-  // Determine whether to show real content or skeleton
   const showSkeleton = user?.role === 'freelancer' && !hasPaidPlan;
 
   useSEO({
@@ -56,13 +42,26 @@ export default function Shell() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-accents-1">
-          {showSkeleton ? <DashboardSkeleton /> : <Outlet />}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-accents-1">
+          {showSkeleton ? (
+            <DashboardSkeleton />
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          )}
         </main>
       </div>
 
-      {/* Upgrade plan dialog — rendered outside the main flow to overlay everything */}
-      {showUpgradeModal && <UpgradeModal onDismiss={handleDismiss} />}
+      {showUpgradeModal && <UpgradeModal onDismiss={() => setModalDismissed(true)} />}
     </div>
   );
 }

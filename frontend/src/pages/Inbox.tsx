@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useInbox, useRespondToThread, useUpdateThreadIntent } from '../hooks/useInbox';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -7,6 +8,7 @@ import { PageLoader } from '../components/ui/Spinner';
 import PageHeader from '../components/layout/PageHeader';
 import { formatDate, cn } from '../lib/utils';
 import { INTENT_LABELS } from '../lib/constants';
+import { pageTransition, staggerContainer, fadeInUp, defaultViewport } from '../lib/motion';
 import type { InboxThread, IntentLabel } from '../lib/api';
 import { Send, CornerDownRight, Tag, RefreshCw } from 'lucide-react';
 
@@ -31,7 +33,7 @@ export default function Inbox() {
 
   if (error) {
     return (
-      <div className="space-y-6 animate-fade-in">
+      <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
         <PageHeader title="Inbox" subtitle="Reply inbox — inbox endpoint may not be available yet" />
         <Card>
           <div className="text-center py-12">
@@ -43,7 +45,7 @@ export default function Inbox() {
             </Button>
           </div>
         </Card>
-      </div>
+      </motion.div>
     );
   }
 
@@ -60,7 +62,7 @@ export default function Inbox() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader
         title="Reply Inbox"
         subtitle={`${threads?.length ?? 0} threads`}
@@ -72,6 +74,7 @@ export default function Inbox() {
       />
 
       {/* Intent Filter */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card padding={true}>
         <div className="flex gap-2 flex-wrap">
           <Button
@@ -93,10 +96,12 @@ export default function Inbox() {
           ))}
         </div>
       </Card>
+      </motion.div>
 
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-[400px]">
         {/* Thread List (1/3) */}
-        <div className="space-y-2 max-h-[600px] overflow-y-auto">
+        <motion.div className="space-y-2 max-h-[600px] overflow-y-auto" variants={staggerContainer} initial="hidden" animate="visible">
           {(!threads || threads.length === 0) ? (
             <Card>
               <p className="text-gray-400 font-mono text-sm text-center">No threads found</p>
@@ -123,7 +128,7 @@ export default function Inbox() {
               </button>
             ))
           )}
-        </div>
+        </motion.div>
 
         {/* Thread Detail (2/3) */}
         <div className="lg:col-span-2">
@@ -185,6 +190,7 @@ export default function Inbox() {
           )}
         </div>
       </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

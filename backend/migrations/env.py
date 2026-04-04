@@ -19,6 +19,7 @@ from app.models.threads import (
     ThreadsProfile, ThreadsPost, ThreadsEngagement,
     ThreadsSearchConfig, ThreadsAuth,
 )
+from app.models.profile import UserProfile, BusinessProfile, FreelancerProfile, PortfolioItem
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

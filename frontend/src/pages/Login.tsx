@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import type { UserRole, OAuthProvider } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
@@ -7,6 +8,7 @@ import Button from '../components/ui/Button';
 import { LogIn, Mail, Github, Chrome } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import Spinner from '../components/ui/Spinner';
+import { scaleIn, staggerContainer, staggerItem, fadeInUp } from '../lib/motion';
 
 /**
  * Social login provider configuration.
@@ -131,7 +133,8 @@ export default function Login() {
       {/* Decorative gradient orb */}
       <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full blur-3xl opacity-60" />
 
-      <Card className="w-full max-w-md z-10 relative" padding={false}>
+      <motion.div variants={scaleIn} initial="hidden" animate="visible" className="w-full max-w-md z-10 relative">
+      <Card className="w-full max-w-md" padding={false}>
         <div className="p-8">
           {/* Logo — links to landing page */}
           <div className="flex justify-center mb-6">
@@ -177,10 +180,10 @@ export default function Login() {
           )}
 
           {/* Social Login Buttons */}
-          <div className="space-y-2 mb-6">
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-2 mb-6">
             {socialProviders.map((provider) => (
+              <motion.div key={provider.id} variants={staggerItem}>
               <button
-                key={provider.id}
                 type="button"
                 onClick={() => handleSocialLogin(provider.id)}
                 disabled={socialLoading !== null}
@@ -193,8 +196,9 @@ export default function Login() {
                 )}
                 <span>Continue with {provider.name}</span>
               </button>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Divider */}
           <div className="relative mb-6">
@@ -207,6 +211,7 @@ export default function Login() {
           </div>
 
           {/* Email/Password Form */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Email</label>
@@ -244,6 +249,7 @@ export default function Login() {
               Sign In
             </Button>
           </form>
+          </motion.div>
         </div>
 
         <div className="border-t border-gray-100 bg-gray-50/50 p-4 text-center rounded-b-lg">
@@ -255,6 +261,7 @@ export default function Login() {
           </p>
         </div>
       </Card>
+      </motion.div>
     </div>
   );
 }

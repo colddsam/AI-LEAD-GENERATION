@@ -18,6 +18,8 @@ import {
   useCancelSubscription,
 } from '../hooks/useBilling';
 import type { BillingPlan } from '../lib/api';
+import { motion } from 'framer-motion';
+import { pageTransition, fadeInUp } from '../lib/motion';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -219,9 +221,9 @@ export default function Billing() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <motion.div className="max-w-4xl mx-auto px-4 py-8 space-y-8" initial="initial" animate="animate" variants={pageTransition}>
       {/* Header */}
-      <div>
+      <motion.div variants={fadeInUp} initial="hidden" animate="visible">
         <div className="flex items-center gap-3 mb-1">
           <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
             <CreditCard className="w-4.5 h-4.5 text-white" />
@@ -229,11 +231,11 @@ export default function Billing() {
           <h1 className="text-xl font-bold tracking-tight text-black">Billing</h1>
         </div>
         <p className="text-sm text-secondary ml-12">Manage your subscription and payment history.</p>
-      </div>
+      </motion.div>
 
       {/* Subscription Status Banner */}
       {subscription?.has_subscription && (
-        <div className={`rounded-xl border p-4 flex items-center justify-between ${
+        <motion.div variants={fadeInUp} initial="hidden" animate="visible" className={`rounded-xl border p-4 flex items-center justify-between ${
           subscription.status === 'active'
             ? 'bg-black text-white border-black'
             : subscription.status === 'cancelled'
@@ -273,7 +275,7 @@ export default function Billing() {
               </>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Plan Selection */}
@@ -379,6 +381,6 @@ export default function Billing() {
           isLoading={cancelMutation.isPending}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

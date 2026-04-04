@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
 import PublicFooter from '../components/layout/PublicFooter';
+import ScrollReveal from '../components/ui/ScrollReveal';
 import { useSEO } from '../hooks/useSEO';
 import Logo from '../components/ui/Logo';
+import {
+  fadeInUp,
+  staggerContainer,
+  staggerContainerSlow,
+  staggerItem,
+  defaultViewport,
+} from '../lib/motion';
 import {
   Sparkles,
   Target,
@@ -86,6 +95,18 @@ export default function Welcome() {
               <span className="text-sm text-gray-500">
                 {user?.full_name || user?.email}
               </span>
+              <Link
+                to="/profile"
+                className="text-sm text-gray-600 hover:text-black transition-colors"
+              >
+                Profile
+              </Link>
+              <Link
+                to="/billing"
+                className="text-sm text-gray-600 hover:text-black transition-colors"
+              >
+                Billing
+              </Link>
               <button
                 onClick={logout}
                 className="text-sm text-gray-600 hover:text-black transition-colors"
@@ -103,23 +124,23 @@ export default function Welcome() {
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600 mb-6">
+          <motion.div className="max-w-3xl" variants={staggerContainer} initial="hidden" animate="visible">
+            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600 mb-6">
               <CheckCircle className="w-4 h-4 text-green-600" />
               Account created successfully
-            </div>
+            </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black mb-6">
+            <motion.h1 variants={fadeInUp} className="text-4xl sm:text-5xl font-bold tracking-tight text-black mb-6">
               Welcome to Cold Scout,{' '}
               <span className="text-gray-400">{user?.full_name?.split(' ')[0] || 'there'}!</span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl">
+            <motion.p variants={fadeInUp} className="text-lg text-gray-600 mb-8 max-w-2xl">
               You're one step away from accessing AI-powered lead generation that delivers
               qualified prospects directly to your pipeline.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
               <a
                 href="https://calendly.com/coldscout"
                 target="_blank"
@@ -136,8 +157,8 @@ export default function Welcome() {
                 Learn More
                 <ArrowRight className="w-4 h-4" />
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -152,17 +173,17 @@ export default function Welcome() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" variants={staggerContainerSlow} initial="hidden" whileInView="visible" viewport={defaultViewport}>
             {features.map((feature, index) => (
-              <Card key={index} className="p-6">
+              <motion.div key={index} variants={staggerItem}><Card className="p-6">
                 <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-white mb-4">
                   {feature.icon}
                 </div>
                 <h3 className="font-semibold text-black mb-2">{feature.title}</h3>
                 <p className="text-sm text-gray-600">{feature.description}</p>
-              </Card>
+              </Card></motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -176,23 +197,24 @@ export default function Welcome() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8" variants={staggerContainerSlow} initial="hidden" whileInView="visible" viewport={defaultViewport}>
             {steps.map((step, index) => (
-              <div key={index} className="relative">
+              <motion.div key={index} variants={staggerItem} className="relative">
                 <div className="text-6xl font-bold text-gray-100 mb-4">{step.number}</div>
                 <h3 className="font-semibold text-black mb-2">{step.title}</h3>
                 <p className="text-sm text-gray-600">{step.description}</p>
                 {index < steps.length - 1 && (
                   <div className="hidden md:block absolute top-8 right-0 w-1/2 h-px bg-gray-200" />
                 )}
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-black text-white">
+        <ScrollReveal>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-6">
             <Clock className="w-12 h-12 text-gray-400" />
@@ -212,6 +234,7 @@ export default function Welcome() {
             Book Your Consultation
           </a>
         </div>
+        </ScrollReveal>
       </section>
 
       {/* Full footer matching the rest of the public site */}

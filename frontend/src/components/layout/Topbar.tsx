@@ -1,11 +1,11 @@
 /**
  * Persistent Header / Topbar Component.
- * 
- * Displays context-aware page titles, real-time system health metrics,
- * and the administrative "System Hold" safety toggle.
- * Integrates with the application state to show data freshness timestamps.
+ *
+ * Glass-panel effect with context-aware page titles, health status,
+ * and system toggle with animated micro-interactions.
  */
 import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useHealth, useSystemToggle } from '../../hooks/useConfig';
 import Badge from '../ui/Badge';
 import { useState } from 'react';
@@ -13,11 +13,9 @@ import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { NAV_ITEMS } from '../../lib/constants';
 import { timeAgo } from '../../lib/utils';
-
 import { Menu } from 'lucide-react';
 
 interface TopbarProps {
-  /** Callback triggered to reveal the mobile navigation sidebar */
   onMenuClick: () => void;
 }
 
@@ -31,9 +29,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   const pageTitle = currentNav?.label || 'Dashboard';
   const isRunning = health?.production_status === true;
 
-  const handleToggle = () => {
-    setShowConfirm(true);
-  };
+  const handleToggle = () => setShowConfirm(true);
 
   const confirmToggle = () => {
     systemToggle.mutate(isRunning ? 'hold' : 'resume');
@@ -42,33 +38,40 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between h-14 px-4 md:px-6 bg-white/80 backdrop-blur-md border-b border-accents-2 sticky top-0 z-30">
+      <header className="flex items-center justify-between h-14 px-4 md:px-6 glass-panel-strong sticky top-0 z-30 border-b border-accents-2">
         <div className="flex items-center gap-4">
-          <button
+          <motion.button
             onClick={onMenuClick}
             className="lg:hidden p-1.5 text-secondary hover:text-black transition-colors"
+            whileTap={{ scale: 0.9 }}
           >
             <Menu className="w-6 h-6" />
-          </button>
-          <h1 className="text-base md:text-lg font-semibold text-black tracking-tight whitespace-nowrap">{pageTitle}</h1>
+          </motion.button>
+          <motion.h1
+            key={pageTitle}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="text-base font-semibold text-black tracking-tight whitespace-nowrap"
+          >
+            {pageTitle}
+          </motion.h1>
         </div>
 
         <div className="flex items-center gap-3 md:gap-4">
-          {/* Last updated */}
-          <span className="hidden sm:inline text-[10px] md:text-xs font-mono text-subtle">
+          <span className="hidden sm:inline text-[10px] font-mono text-subtle">
             Updated {dataUpdatedAt ? timeAgo(new Date(dataUpdatedAt).toISOString()) : '—'}
           </span>
 
-          {/* Health */}
           {health && (
             <Badge
               label={health.status === 'healthy' ? 'Healthy' : 'Error'}
               variant={health.status === 'healthy' ? 'teal' : 'red'}
+              pulse={health.status === 'healthy'}
               className="hidden xs:flex"
             />
           )}
 
-          {/* System Toggle */}
           <Button
             variant={isRunning ? 'danger' : 'primary'}
             size="sm"
@@ -89,7 +92,9 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             : 'This will resume all automated pipeline operations. Are you sure?'}
         </p>
         <div className="flex gap-3 justify-end">
-          <Button variant="ghost" onClick={() => setShowConfirm(false)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setShowConfirm(false)}>
+            Cancel
+          </Button>
           <Button variant={isRunning ? 'danger' : 'primary'} onClick={confirmToggle}>
             {isRunning ? 'Hold System' : 'Resume System'}
           </Button>

@@ -517,3 +517,274 @@ export const getTransactions = () =>
  */
 export const cancelSubscription = (reason?: string) =>
   client.post<SubscriptionResponse>('/api/v1/billing/cancel', { reason }).then((r) => r.data);
+
+// ── Profile ──────────────────────────────────────────────────────────────────
+
+export type Gender = 'male' | 'female' | 'non_binary' | 'other' | 'prefer_not_to_say';
+export type Availability = 'available' | 'busy' | 'not_available' | 'open_to_offers';
+export type CompanySize = '1-10' | '11-50' | '51-200' | '201-500' | '501-1000' | '1000+';
+
+export interface UserProfile {
+  id: number;
+  user_id: number;
+  username: string;
+  phone?: string | null;
+  gender?: Gender | null;
+  date_of_birth?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  website?: string | null;
+  profile_photo_url?: string | null;
+  banner_url?: string | null;
+  is_public: boolean;
+  show_email: boolean;
+  show_phone: boolean;
+  show_location: boolean;
+  show_date_of_birth: boolean;
+  created_at: string;
+  updated_at: string;
+  // Joined user fields
+  email?: string | null;
+  full_name?: string | null;
+  role?: string | null;
+  plan?: string | null;
+  avatar_url?: string | null;
+}
+
+export interface UserProfileUpdate {
+  username?: string;
+  phone?: string;
+  gender?: Gender;
+  date_of_birth?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  profile_photo_url?: string;
+  banner_url?: string;
+  is_public?: boolean;
+  show_email?: boolean;
+  show_phone?: boolean;
+  show_location?: boolean;
+  show_date_of_birth?: boolean;
+}
+
+export interface UsernameCheckResponse {
+  available: boolean;
+  message: string;
+}
+
+export interface BusinessProfile {
+  id: number;
+  user_id: number;
+  company_name?: string | null;
+  brand_name?: string | null;
+  industry?: string | null;
+  company_size?: CompanySize | null;
+  founded_year?: number | null;
+  company_website?: string | null;
+  company_logo_url?: string | null;
+  company_description?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  postal_code?: string | null;
+  linkedin_url?: string | null;
+  twitter_url?: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BusinessProfileUpdate {
+  company_name?: string;
+  brand_name?: string;
+  industry?: string;
+  company_size?: CompanySize;
+  founded_year?: number;
+  company_website?: string;
+  company_logo_url?: string;
+  company_description?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postal_code?: string;
+  linkedin_url?: string;
+  twitter_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  is_public?: boolean;
+}
+
+export interface FreelancerProfile {
+  id: number;
+  user_id: number;
+  professional_title?: string | null;
+  skills?: string[] | null;
+  experience_years?: number | null;
+  hourly_rate?: string | null;
+  availability?: Availability | null;
+  languages?: string[] | null;
+  education?: string | null;
+  certifications?: string[] | null;
+  linkedin_url?: string | null;
+  github_url?: string | null;
+  twitter_url?: string | null;
+  dribbble_url?: string | null;
+  behance_url?: string | null;
+  personal_website?: string | null;
+  is_public: boolean;
+  show_rates: boolean;
+  show_availability: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FreelancerProfileUpdate {
+  professional_title?: string;
+  skills?: string[];
+  experience_years?: number;
+  hourly_rate?: string;
+  availability?: Availability;
+  languages?: string[];
+  education?: string;
+  certifications?: string[];
+  linkedin_url?: string;
+  github_url?: string;
+  twitter_url?: string;
+  dribbble_url?: string;
+  behance_url?: string;
+  personal_website?: string;
+  is_public?: boolean;
+  show_rates?: boolean;
+  show_availability?: boolean;
+}
+
+export interface PortfolioItem {
+  id: number;
+  user_id: number;
+  title: string;
+  description?: string | null;
+  project_url?: string | null;
+  image_url?: string | null;
+  tags?: string[] | null;
+  client_name?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  is_public: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PortfolioItemCreate {
+  title: string;
+  description?: string;
+  project_url?: string;
+  image_url?: string;
+  tags?: string[];
+  client_name?: string;
+  start_date?: string;
+  end_date?: string;
+  is_public?: boolean;
+  display_order?: number;
+}
+
+export interface PortfolioItemUpdate {
+  title?: string;
+  description?: string;
+  project_url?: string;
+  image_url?: string;
+  tags?: string[];
+  client_name?: string;
+  start_date?: string;
+  end_date?: string;
+  is_public?: boolean;
+  display_order?: number;
+}
+
+export interface PublicProfile {
+  username: string;
+  full_name?: string | null;
+  role?: string | null;
+  plan?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  website?: string | null;
+  profile_photo_url?: string | null;
+  banner_url?: string | null;
+  avatar_url?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  date_of_birth?: string | null;
+  gender?: string | null;
+  business?: BusinessProfile | null;
+  freelancer?: FreelancerProfile | null;
+  portfolio?: PortfolioItem[] | null;
+  member_since?: string | null;
+}
+
+export interface FileUploadResponse {
+  url: string;
+  message: string;
+}
+
+// Profile API functions
+
+export const checkUsername = (username: string) =>
+  client.get<UsernameCheckResponse>(`/api/v1/profile/check-username/${username}`).then((r) => r.data);
+
+export const getMyProfile = () =>
+  client.get<UserProfile>('/api/v1/profile/me').then((r) => r.data);
+
+export const setupProfile = (username: string) =>
+  client.post<UserProfile>('/api/v1/profile/me/setup', { username }).then((r) => r.data);
+
+export const updateMyProfile = (payload: UserProfileUpdate) =>
+  client.put<UserProfile>('/api/v1/profile/me', payload).then((r) => r.data);
+
+export const uploadProfilePhoto = (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return client.post<FileUploadResponse>('/api/v1/profile/me/upload-photo', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then((r) => r.data);
+};
+
+export const uploadProfileBanner = (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return client.post<FileUploadResponse>('/api/v1/profile/me/upload-banner', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then((r) => r.data);
+};
+
+export const getPublicProfile = (username: string) =>
+  client.get<PublicProfile>(`/api/v1/profile/u/${username}`).then((r) => r.data);
+
+export const getMyBusinessProfile = () =>
+  client.get<BusinessProfile>('/api/v1/profile/me/business').then((r) => r.data);
+
+export const updateMyBusinessProfile = (payload: BusinessProfileUpdate) =>
+  client.put<BusinessProfile>('/api/v1/profile/me/business', payload).then((r) => r.data);
+
+export const getMyFreelancerProfile = () =>
+  client.get<FreelancerProfile>('/api/v1/profile/me/freelancer').then((r) => r.data);
+
+export const updateMyFreelancerProfile = (payload: FreelancerProfileUpdate) =>
+  client.put<FreelancerProfile>('/api/v1/profile/me/freelancer', payload).then((r) => r.data);
+
+export const getMyPortfolio = () =>
+  client.get<PortfolioItem[]>('/api/v1/profile/me/portfolio').then((r) => r.data);
+
+export const createPortfolioItem = (payload: PortfolioItemCreate) =>
+  client.post<PortfolioItem>('/api/v1/profile/me/portfolio', payload).then((r) => r.data);
+
+export const updatePortfolioItem = (id: number, payload: PortfolioItemUpdate) =>
+  client.put<PortfolioItem>(`/api/v1/profile/me/portfolio/${id}`, payload).then((r) => r.data);
+
+export const deletePortfolioItem = (id: number) =>
+  client.delete(`/api/v1/profile/me/portfolio/${id}`).then((r) => r.data);

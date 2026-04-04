@@ -7,6 +7,7 @@
  */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Check, X, ChevronDown, ExternalLink,
   Github, Zap, Building2, Globe, Loader2
@@ -19,6 +20,10 @@ import PublicFooter from '../components/layout/PublicFooter';
 import { useAuth } from '../hooks/useAuth';
 import { useCheckout } from '../hooks/useBilling';
 import type { BillingPlan } from '../lib/api';
+import {
+  fadeIn, fadeInUp, staggerContainer, staggerItem,
+  accordionContent, hoverLift, defaultViewport,
+} from '../lib/motion';
 
 /* ═══════════════ Currency Data ═══════════════ */
 
@@ -68,7 +73,12 @@ function CurrencySelector({ selected, onChange }: {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-vercel-hover z-50 py-1 animate-fade-in">
+          <motion.div
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-vercel-hover z-50 py-1"
+          >
             {CURRENCIES.map((c) => (
               <button
                 key={c.code}
@@ -82,7 +92,7 @@ function CurrencySelector({ selected, onChange }: {
                 <span className="ml-auto text-xs text-secondary">{c.symbol}</span>
               </button>
             ))}
-          </div>
+          </motion.div>
         </>
       )}
     </div>
@@ -95,7 +105,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-vercel">
+    <motion.div variants={staggerItem} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-vercel">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-5 bg-white hover:bg-accents-1 transition-colors text-left"
@@ -103,10 +113,20 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         <span className="text-sm font-semibold text-black pr-4">{q}</span>
         <ChevronDown className={`w-4 h-4 text-secondary flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
-      <div className={`transition-all duration-300 overflow-hidden ${open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className="px-5 pb-5 text-sm text-secondary leading-relaxed border-t border-gray-100 pt-4">{a}</p>
-      </div>
-    </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            variants={accordionContent}
+            initial="collapsed"
+            animate="expanded"
+            exit="collapsed"
+            className="overflow-hidden"
+          >
+            <p className="px-5 pb-5 text-sm text-secondary leading-relaxed border-t border-gray-100 pt-4">{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -119,27 +139,32 @@ function PricingHero({ currency, onCurrencyChange }: {
   return (
     <section className="relative pt-32 pb-10 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 border border-gray-200 rounded-full px-4 py-1.5 mb-8 bg-white shadow-minimal animate-fade-in">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 max-w-6xl mx-auto px-6 text-center"
+      >
+        <motion.div variants={staggerItem} className="inline-flex items-center gap-2 border border-gray-200 rounded-full px-4 py-1.5 mb-8 bg-white shadow-minimal">
           <Zap className="w-3.5 h-3.5 text-black" />
           <span className="text-xs font-medium text-secondary">Pricing</span>
-        </div>
+        </motion.div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter text-black leading-[0.95] mb-6 animate-fade-in-up">
+        <motion.h1 variants={staggerItem} className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter text-black leading-[0.95] mb-6">
           Choose Your<br />
           <span className="text-gradient">Plan</span>
-        </h1>
+        </motion.h1>
 
-        <p className="text-lg md:text-xl text-secondary max-w-2xl mx-auto mb-8 animate-fade-in-up delay-200">
+        <motion.p variants={staggerItem} className="text-lg md:text-xl text-secondary max-w-2xl mx-auto mb-8">
           Open source forever. Pay only when you want our hosted infrastructure.
-        </p>
+        </motion.p>
 
-        <div className="flex items-center justify-center gap-3 animate-fade-in-up delay-300">
+        <motion.div variants={staggerItem} className="flex items-center justify-center gap-3">
           <Globe className="w-4 h-4 text-secondary" />
           <span className="text-sm text-secondary">Currency:</span>
           <CurrencySelector selected={currency} onChange={onCurrencyChange} />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
@@ -248,14 +273,22 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={defaultViewport}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+        >
           {plans.map((plan) => {
             const isLoading = checkoutLoading === plan.planKey;
 
             return (
-              <div
+              <motion.div
                 key={plan.name}
-                className={`relative rounded-xl border transition-all duration-300 overflow-hidden ${
+                variants={staggerItem}
+                whileHover={hoverLift}
+                className={`relative rounded-xl border overflow-hidden ${
                   plan.featured
                     ? 'border-black shadow-vercel-hover bg-black text-white scale-[1.02]'
                     : 'border-gray-200 bg-white hover:shadow-vercel hover:border-black'
@@ -338,10 +371,10 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
                     </Link>
                   )}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* INR note when non-INR currency selected */}
         {currency.code !== 'INR' && (
@@ -383,7 +416,13 @@ function ComparisonTable() {
   }
 
   return (
-    <section className="py-24 bg-accents-1">
+    <motion.section
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={defaultViewport}
+      className="py-24 bg-accents-1"
+    >
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-12">
           <p className="text-[10px] uppercase tracking-[0.2em] text-subtle font-semibold mb-3">Compare</p>
@@ -424,7 +463,7 @@ function ComparisonTable() {
           * Open Source unlimited leads require your own Google Places API keys and Groq credits.
         </p>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -462,11 +501,17 @@ function FaqSection() {
           <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black">Common Questions</h2>
         </div>
 
-        <div className="space-y-3">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={defaultViewport}
+          className="space-y-3"
+        >
           {faqs.map((faq) => (
             <FaqItem key={faq.q} q={faq.q} a={faq.a} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -476,7 +521,13 @@ function FaqSection() {
 
 function CtaBanner() {
   return (
-    <section className="py-24 bg-accents-1">
+    <motion.section
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={defaultViewport}
+      className="py-24 bg-accents-1"
+    >
       <div className="max-w-4xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-black mb-4">
           Start building today
@@ -504,7 +555,7 @@ function CtaBanner() {
           </Link>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -618,4 +669,3 @@ export default function Pricing() {
     </div>
   );
 }
-

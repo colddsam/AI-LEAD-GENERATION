@@ -5,6 +5,7 @@
  * Overview (stats + pipeline triggers), Profiles, Engagements, and Search Configs.
  */
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Card, { StatCard } from '../components/ui/Card';
 import DataTable, { type Column } from '../components/ui/DataTable';
 import Button from '../components/ui/Button';
@@ -16,6 +17,7 @@ import {
   CheckCircle, Radio, Eye, X, Power, PowerOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { pageTransition, staggerContainer, staggerItem, fadeInUp } from '../lib/motion';
 import {
   useThreadsStats,
   useThreadsProfiles,
@@ -87,8 +89,9 @@ function OverviewTab() {
   const enabled = stats?.threads_enabled ?? false;
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" variants={staggerContainer} initial="hidden" animate="visible">
       {/* System Status Banner */}
+      <motion.div variants={staggerItem}>
       <Card className={cn(
         'flex items-center gap-3',
         enabled ? 'border-black' : 'border-gray-300 bg-gray-50'
@@ -108,8 +111,10 @@ function OverviewTab() {
           </p>
         </div>
       </Card>
+      </motion.div>
 
       {/* KPI Cards */}
+      <motion.div variants={staggerItem}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Profiles"
@@ -134,8 +139,10 @@ function OverviewTab() {
           trend={stats?.rate_limiter?.can_reply ? 'Ready to reply' : 'Cap reached'}
         />
       </div>
+      </motion.div>
 
       {/* Pipeline Triggers */}
+      <motion.div variants={staggerItem}>
       <Card>
         <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-wider">Manual Pipeline Triggers</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -181,7 +188,8 @@ function OverviewTab() {
           </Button>
         </div>
       </Card>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -510,7 +518,7 @@ export default function Threads() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader
         title="Threads Pipeline"
         subtitle="Meta Threads lead discovery, qualification & engagement"
@@ -544,10 +552,12 @@ export default function Threads() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'overview' && <OverviewTab />}
-      {activeTab === 'profiles' && <ProfilesTab />}
-      {activeTab === 'engagements' && <EngagementsTab />}
-      {activeTab === 'configs' && <SearchConfigsTab />}
-    </div>
+      <motion.div key={activeTab} variants={fadeInUp} initial="hidden" animate="visible">
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'profiles' && <ProfilesTab />}
+        {activeTab === 'engagements' && <EngagementsTab />}
+        {activeTab === 'configs' && <SearchConfigsTab />}
+      </motion.div>
+    </motion.div>
   );
 }

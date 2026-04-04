@@ -1,39 +1,49 @@
 /**
  * Presentational Card Components.
- * 
- * Provides structural containers for dashboard modules and specific 'StatCard'
- * variants for high-level KPI visualization.
+ *
+ * Provides structural containers with hover micro-interactions and
+ * specialized StatCard variants for KPI visualization with animated counters.
  */
 import { cn } from '../../lib/utils';
+import { motion } from 'framer-motion';
+import AnimatedCounter from './AnimatedCounter';
 import type { ReactNode } from 'react';
 
 interface CardProps {
-  /** Inner content of the card */
   children: ReactNode;
-  /** Additional CSS classes */
   className?: string;
-  /** Enables the Vercel-style shadow hover effect */
   glow?: boolean;
-  /** Automatically applies standard padding */
   padding?: boolean;
+  interactive?: boolean;
 }
 
-/**
- * Foundational container component with consistent styling.
- * Uses Vercel-style shadow on hover and clean white background.
- */
-export default function Card({ children, className, glow = true, padding = true }: CardProps) {
+export default function Card({
+  children,
+  className,
+  glow = true,
+  padding = true,
+  interactive = false,
+}: CardProps) {
+  const Wrapper = interactive ? motion.div : 'div';
+  const motionProps = interactive
+    ? {
+        whileHover: { y: -2, boxShadow: '0 0 0 1px rgba(0,0,0,0.12), 0 12px 40px rgba(0,0,0,0.1)' },
+        transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+      }
+    : {};
+
   return (
-    <div
+    <Wrapper
       className={cn(
-        'rounded-lg bg-white border border-gray-200',
-        glow && 'hover:shadow-vercel transition-shadow duration-300',
+        'rounded-xl bg-white border border-gray-200',
+        glow && !interactive && 'hover:shadow-vercel transition-all duration-300',
         padding && 'p-5',
         className,
       )}
+      {...motionProps}
     >
       {children}
-    </div>
+    </Wrapper>
   );
 }
 
@@ -45,29 +55,42 @@ interface StatCardProps {
   className?: string;
 }
 
-/**
- * Specialized card designed for high-level dashboard metrics.
- * Displays a label, a primary value, and an optional icon or trend indicator.
- */
 export function StatCard({ label, value, icon, trend, className }: StatCardProps) {
+  const isNumber = typeof value === 'number';
+
   return (
-    <Card className={cn('relative overflow-hidden group hover:shadow-vercel-hover', className)}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-[10px] text-secondary uppercase tracking-widest font-semibold mb-2">{label}</p>
-          <p className="text-3xl font-bold text-black tracking-tighter">{value}</p>
-          {trend && (
-            <p className="text-xs text-coldscout-teal-dark mt-1 font-mono">{trend}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    >
+      <Card
+        className={cn('relative overflow-hidden group hover:shadow-vercel-hover', className)}
+      >
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] text-secondary uppercase tracking-[0.15em] font-semibold mb-2">
+              {label}
+            </p>
+            {isNumber ? (
+              <AnimatedCounter
+                value={value}
+                className="text-3xl font-bold text-black tracking-tighter font-mono"
+              />
+            ) : (
+              <p className="text-3xl font-bold text-black tracking-tighter">{value}</p>
+            )}
+            {trend && (
+              <p className="text-xs text-secondary mt-1.5 font-mono">{trend}</p>
+            )}
+          </div>
+          {icon && (
+            <div className="text-accents-3 group-hover:text-black transition-colors duration-300 mt-1 p-2.5 bg-accents-1 rounded-xl border border-transparent group-hover:border-accents-2">
+              <span className="w-8 h-8 flex items-center justify-center">{icon}</span>
+            </div>
           )}
         </div>
-        {icon && (
-          <div className="text-accents-3 group-hover:text-accents-8 transition-colors mt-1 p-2 bg-accents-1 rounded-lg border border-transparent group-hover:border-accents-2">
-            <span className="w-8 h-8 flex items-center justify-center">
-              {icon}
-            </span>
-          </div>
-        )}
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }

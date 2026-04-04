@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { pageTransition, staggerContainer, staggerItem } from '../lib/motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLead, useUpdateLead, useDeleteLead } from '../hooks/useLeads';
 import Card from '../components/ui/Card';
@@ -44,7 +46,7 @@ export default function LeadDetail() {
   const score = lead.ai_score || 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader
         title={lead.business_name}
         subtitle={`${lead.city || ''} ${lead.state ? '· ' + lead.state : ''} · ${lead.category || ''}`}
@@ -55,10 +57,11 @@ export default function LeadDetail() {
         }
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-6" variants={staggerContainer} initial="hidden" animate="visible">
         {/* Left Column (2/3) */}
         <div className="lg:col-span-2 space-y-4">
           {/* Score + Header */}
+          <motion.div variants={staggerItem}>
           <Card>
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               {/* Score Ring */}
@@ -93,8 +96,10 @@ export default function LeadDetail() {
               </div>
             </div>
           </Card>
+          </motion.div>
 
           {/* Business Info */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Business Info</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -128,8 +133,10 @@ export default function LeadDetail() {
               )}
             </div>
           </Card>
+          </motion.div>
 
           {/* AI Notes */}
+          <motion.div variants={staggerItem}>
           <Card>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest">AI Qualification Notes</h3>
@@ -160,8 +167,10 @@ export default function LeadDetail() {
               </p>
             )}
           </Card>
+          </motion.div>
 
           {/* Social & Competitor */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Social & Competitor Intel</h3>
             {lead.social_networks && lead.social_networks.length > 0 ? (
@@ -185,11 +194,13 @@ export default function LeadDetail() {
               <p className="text-sm text-gray-600">{lead.competitor_intel}</p>
             )}
           </Card>
+          </motion.div>
         </div>
 
         {/* Right Column (1/3) */}
         <div className="space-y-4">
           {/* Status */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Status</h3>
             <div className="mb-3">{statusBadge(lead.status)}</div>
@@ -206,8 +217,10 @@ export default function LeadDetail() {
               Update Status
             </Button>
           </Card>
+          </motion.div>
 
           {/* Sequence Stage */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Outreach Stage</h3>
             <div className="flex gap-1 mb-2">
@@ -225,8 +238,10 @@ export default function LeadDetail() {
               Stage {lead.follow_up_stage ?? lead.sequence_stage ?? 0} of 3
             </p>
           </Card>
+          </motion.div>
 
           {/* Metadata */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Metadata</h3>
             <div className="space-y-2 text-xs">
@@ -244,8 +259,10 @@ export default function LeadDetail() {
               </div>
             </div>
           </Card>
+          </motion.div>
 
           {/* Danger Zone */}
+          <motion.div variants={staggerItem}>
           <Card className="border border-black">
             <h3 className="text-xs font-medium text-black uppercase tracking-widest mb-3">Danger Zone</h3>
             <Button
@@ -258,8 +275,9 @@ export default function LeadDetail() {
               Delete Lead
             </Button>
           </Card>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Delete Modal */}
       <Modal open={showDelete} onClose={() => setShowDelete(false)} title="Delete Lead">
@@ -285,6 +303,6 @@ export default function LeadDetail() {
           </Button>
         </div>
       </Modal>
-    </div>
+    </motion.div>
   );
 }

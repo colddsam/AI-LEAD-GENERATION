@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
 import { CreditCard, XCircle, CheckCircle, AlertTriangle, Mail, ReceiptText } from 'lucide-react';
 import PublicNavbar from '../components/layout/PublicNavbar';
 import PublicFooter from '../components/layout/PublicFooter';
+import { fadeInUp, staggerContainer, staggerItem, defaultViewport } from '../lib/motion';
 
 const LD_BREADCRUMB = {
   '@context': 'https://schema.org',
@@ -55,7 +57,7 @@ export default function RefundPolicy() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10">
 
         {/* Page Header */}
-        <div className="text-center mb-16 animate-fade-in-up">
+        <motion.div className="text-center mb-16" variants={fadeInUp} initial="hidden" animate="visible">
           <div className="inline-flex items-center justify-center p-3 bg-black rounded-2xl mb-6 shadow-[0_0_20px_rgba(0,0,0,0.1)] animate-float">
             <ReceiptText className="w-8 h-8 text-white" />
           </div>
@@ -64,12 +66,12 @@ export default function RefundPolicy() {
             We believe in transparency. This policy explains how cancellations work, when refunds apply, and how to submit a request — with no fine print.
           </p>
           <p className="text-xs text-[#999999] mt-4">Last updated: March 2026</p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-8">
+        <motion.div className="space-y-8" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={defaultViewport}>
 
           {/* Subscription Cancellation */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-100">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <XCircle className="w-5 h-5 text-black" />
@@ -87,10 +89,10 @@ export default function RefundPolicy() {
                 <li>Reactivating your subscription before the end of the billing period will immediately cancel the pending cancellation.</li>
               </ul>
             </div>
-          </section>
+          </motion.section>
 
           {/* Refund Eligibility */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-200">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-black" />
@@ -124,10 +126,10 @@ export default function RefundPolicy() {
                 </div>
               ))}
             </div>
-          </section>
+          </motion.section>
 
           {/* No-Refund Scenarios */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <AlertTriangle className="w-5 h-5 text-black" />
@@ -148,10 +150,10 @@ export default function RefundPolicy() {
             <div className="mt-6 inline-flex items-center px-3 py-1 bg-black text-white rounded-md text-sm font-medium border border-black">
               All refund decisions are made at Cold Scout's sole discretion.
             </div>
-          </section>
+          </motion.section>
 
           {/* How to Request */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <Mail className="w-5 h-5 text-black" />
@@ -181,10 +183,10 @@ export default function RefundPolicy() {
               </div>
               <CreditCard className="w-5 h-5 text-[#999999] shrink-0" />
             </div>
-          </section>
+          </motion.section>
 
           {/* Billing Disputes */}
-          <section className="bg-[#fafafa] rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-[#fafafa] rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <AlertTriangle className="w-5 h-5 text-[#666666]" />
@@ -202,9 +204,9 @@ export default function RefundPolicy() {
                 If you believe a charge is fraudulent or unauthorized, please contact us immediately at <a href="mailto:admin@colddsam.com" className="text-black hover:underline font-medium">admin@colddsam.com</a> — we will investigate and take action promptly.
               </p>
             </div>
-          </section>
+          </motion.section>
 
-        </div>
+        </motion.div>
       </main>
 
       <PublicFooter />

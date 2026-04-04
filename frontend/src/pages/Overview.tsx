@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Target, Send, Activity, Database, Clock } from 'lucide-react';
 import { cn } from '../lib/utils';
 import type { Lead } from '../lib/api';
+import { motion } from 'framer-motion';
+import { pageTransition, staggerContainer, staggerItem, fadeInUp, defaultViewport } from '../lib/motion';
 
 /**
  * System Overview Dashboard.
@@ -34,19 +36,19 @@ export default function Overview() {
   const totalLeads = leads?.total ?? 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" variants={pageTransition} initial="initial" animate="animate">
       <PageHeader title="System Overview" subtitle="Real-time operational dashboard" />
 
       {/* Stat Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Leads" value={totalLeads} icon={<Users className="w-8 h-8" />} />
-        <StatCard label="Scheduler" value={pipeline?.scheduler_running ? 'Active' : 'Stopped'} icon={<Clock className="w-8 h-8" />} />
-        <StatCard label="Active Jobs" value={pipeline?.jobs?.length ?? 0} icon={<Activity className="w-8 h-8" />} />
-        <StatCard label="Last Pipeline" value={pipeline?.last_run?.status ?? '—'} icon={<Target className="w-8 h-8" />} />
-      </div>
+      <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" variants={staggerContainer} initial="hidden" animate="visible">
+        <motion.div variants={staggerItem}><StatCard label="Total Leads" value={totalLeads} icon={<Users className="w-8 h-8" />} /></motion.div>
+        <motion.div variants={staggerItem}><StatCard label="Scheduler" value={pipeline?.scheduler_running ? 'Active' : 'Stopped'} icon={<Clock className="w-8 h-8" />} /></motion.div>
+        <motion.div variants={staggerItem}><StatCard label="Active Jobs" value={pipeline?.jobs?.length ?? 0} icon={<Activity className="w-8 h-8" />} /></motion.div>
+        <motion.div variants={staggerItem}><StatCard label="Last Pipeline" value={pipeline?.last_run?.status ?? '—'} icon={<Target className="w-8 h-8" />} /></motion.div>
+      </motion.div>
 
       {/* Pipeline Status + System Health */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-4" variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
         {/* Pipeline Status */}
         <Card>
           <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Pipeline Status</h3>
@@ -105,9 +107,10 @@ export default function Overview() {
             </div>
           </div>
         </Card>
-      </div>
+      </motion.div>
 
       {/* Recent Leads */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest">Recent Leads</h3>
@@ -127,9 +130,10 @@ export default function Overview() {
           emptyMessage="No leads discovered yet"
         />
       </Card>
+      </motion.div>
 
       {/* Jobs + Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-4" variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
         {/* Job Status */}
         <Card>
           <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-4">Job Status</h3>
@@ -182,7 +186,7 @@ export default function Overview() {
             </Button>
           </div>
         </Card>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

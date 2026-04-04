@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+import { pageTransition, fadeInUp, scaleIn, defaultViewport } from '../lib/motion';
 import { useCampaigns, useCampaignStats } from '../hooks/useCampaigns';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
@@ -108,13 +110,13 @@ export default function Campaigns() {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader
         title="Campaigns"
         subtitle={`${campaigns?.length ?? 0} campaigns tracked`}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-6" variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
         {/* Campaign Table (2/3 or full) */}
         <div className={selected ? 'lg:col-span-2' : 'lg:col-span-3'}>
           <Card padding={false}>
@@ -129,7 +131,7 @@ export default function Campaigns() {
 
         {/* Detail Panel (1/3) */}
         {selected && (
-          <div>
+          <motion.div variants={scaleIn} initial="hidden" animate="visible">
             <Card>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest">Campaign Details</h3>
@@ -139,9 +141,9 @@ export default function Campaigns() {
               </div>
               <CampaignDetailPanel campaign={selected} />
             </Card>
-          </div>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

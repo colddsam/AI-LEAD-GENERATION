@@ -9,6 +9,8 @@ import PageHeader from '../components/layout/PageHeader';
 import Badge from '../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { Shield, Save, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { pageTransition, staggerContainer, staggerItem } from '../lib/motion';
 
 /**
  * The Settings page provides global system administration capabilities.
@@ -111,12 +113,12 @@ export default function Settings() {
   const isRunning = health?.production_status === true;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader title="Settings" subtitle="System configuration and administration" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-6" variants={staggerContainer} initial="hidden" animate="visible">
         {/* Main Config Editor (2/3) */}
-        <div className="lg:col-span-2 space-y-4">
+        <motion.div className="lg:col-span-2 space-y-4" variants={staggerItem}>
           <Card>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest">Jobs Configuration</h3>
@@ -148,11 +150,12 @@ export default function Settings() {
               height={500}
             />
           </Card>
-        </div>
+        </motion.div>
 
         {/* Sidebar Settings (1/3) */}
         <div className="space-y-4">
           {/* System Toggle */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Production Status</h3>
             <div className="flex items-center justify-between py-2">
@@ -169,8 +172,10 @@ export default function Settings() {
               />
             </div>
           </Card>
+          </motion.div>
 
           {/* Health Info */}
+          <motion.div variants={staggerItem}>
           <Card>
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">System Info</h3>
             <div className="space-y-3 text-xs">
@@ -188,8 +193,10 @@ export default function Settings() {
               </div>
             </div>
           </Card>
+          </motion.div>
 
           {/* Security */}
+          <motion.div variants={staggerItem}>
           <Card>
             <div className="flex items-center gap-2 mb-3">
               <Shield className="w-4 h-4 text-gray-500" />
@@ -209,8 +216,9 @@ export default function Settings() {
               </p>
             </div>
           </Card>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

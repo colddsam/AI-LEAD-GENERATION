@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import PublicNavbar from '../components/layout/PublicNavbar';
 import PublicFooter from '../components/layout/PublicFooter';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
+import { fadeInUp, staggerContainer, staggerItem, defaultViewport } from '../lib/motion';
 import { Shield, Mail, Database } from 'lucide-react';
 
 const LD_BREADCRUMB = {
@@ -50,19 +52,19 @@ export default function Privacy() {
       <PublicNavbar />
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10">
-        <div className="text-center mb-16 animate-fade-in-up">
+        <motion.div className="text-center mb-16" variants={fadeInUp} initial="hidden" animate="visible">
           <div className="inline-flex items-center justify-center p-3 bg-black rounded-2xl mb-6 shadow-[0_0_20px_rgba(0,0,0,0.1)] animate-float">
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gradient">Privacy Policy</h1>
           <p className="text-[#666666] text-lg max-w-2xl mx-auto">
-            We value your privacy and are committed to protecting your personal data. 
+            We value your privacy and are committed to protecting your personal data.
             This policy outlines how we handle your information securely.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-8">
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-100">
+        <motion.div className="space-y-8" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={defaultViewport}>
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <Database className="w-5 h-5 text-black" />
@@ -77,9 +79,9 @@ export default function Privacy() {
                 <li><strong>Lead Data:</strong> The data you process through our system specifically for the purpose of your business operations.</li>
               </ul>
             </div>
-          </section>
+          </motion.section>
 
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-200">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <Shield className="w-5 h-5 text-black" />
@@ -97,9 +99,9 @@ export default function Privacy() {
               </ul>
               <p className="mt-4">We explicitly <strong>do not sell</strong> your personal data or your lead data to third parties.</p>
             </div>
-          </section>
+          </motion.section>
 
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <Mail className="w-5 h-5 text-black" />
@@ -117,11 +119,11 @@ export default function Privacy() {
                 </div>
               </div>
             </div>
-          </section>
-        </div>
+          </motion.section>
+        </motion.div>
 
       </main>
-      
+
       <PublicFooter />    </div>
   );
 }

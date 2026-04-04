@@ -10,6 +10,8 @@ import { formatDate } from '../lib/utils';
 import { PIPELINE_STAGES } from '../lib/constants';
 import { Search, CheckCircle, Sparkles, Send, BarChart2, TrendingUp, Play, Zap } from 'lucide-react';
 import type { PipelineStage } from '../lib/api';
+import { motion } from 'framer-motion';
+import { pageTransition, staggerContainer, staggerItem, fadeInUp, defaultViewport } from '../lib/motion';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Search, CheckCircle, Sparkles, Send, BarChart2, TrendingUp,
@@ -46,10 +48,11 @@ export default function Pipeline() {
   const isRunning = pipeline?.last_run?.status === 'running';
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" variants={pageTransition} initial="initial" animate="animate">
       <PageHeader title="Pipeline Control" subtitle="Trigger and monitor the AI lead generation pipeline" />
 
       {/* Status Banner */}
+      <motion.div variants={fadeInUp} initial="hidden" animate="visible">
       <div className={`rounded-lg p-6 border ${isRunning ? 'bg-emerald-50 border-emerald-200' : 'bg-gray-50 border-gray-200'}`}>
         <div className="flex items-center gap-4">
           {isRunning ? (
@@ -71,15 +74,17 @@ export default function Pipeline() {
           )}
         </div>
       </div>
+      </motion.div>
 
       {/* Stage Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" variants={staggerContainer} initial="hidden" animate="visible">
         {PIPELINE_STAGES.map((stage) => {
           const Icon = ICON_MAP[stage.icon] || Zap;
           const isActive = pipeline?.last_run?.stage === stage.id;
 
           return (
-            <Card key={stage.id} className={isActive ? 'border-black' : ''}>
+            <motion.div key={stage.id} variants={staggerItem}>
+            <Card className={isActive ? 'border-black' : ''}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-md ${isActive ? 'bg-black' : 'bg-gray-100'}`}>
@@ -101,9 +106,10 @@ export default function Pipeline() {
                 Run Stage
               </Button>
             </Card>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Run Full Pipeline CTA */}
       <Button
@@ -117,6 +123,7 @@ export default function Pipeline() {
       </Button>
 
       {/* Live Log */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card>
         <h3 className="text-xs font-medium text-gray-500 uppercase tracking-widest mb-3">Pipeline Log</h3>
         <div className="bg-gray-50 border border-gray-200 rounded-md p-4 max-h-64 overflow-y-auto font-mono text-xs space-y-1">
@@ -129,6 +136,7 @@ export default function Pipeline() {
           )}
         </div>
       </Card>
+      </motion.div>
 
       {/* Confirm Modal */}
       <Modal open={showConfirm} onClose={() => setShowConfirm(false)} title="Run Full Pipeline">
@@ -141,6 +149,6 @@ export default function Pipeline() {
           <Button onClick={confirmRun}>Confirm Run</Button>
         </div>
       </Modal>
-    </div>
+    </motion.div>
   );
 }

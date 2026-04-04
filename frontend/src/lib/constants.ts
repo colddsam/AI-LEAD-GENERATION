@@ -55,14 +55,15 @@ export const PIPELINE_STAGES = [
 export const LEAD_STATUSES: LeadStatus[] = ['discovered', 'qualified', 'contacted', 'replied', 'closed', 'rejected', 'email_sent'];
 
 export const NAV_ITEMS = [
-  { path: '/overview', label: 'Overview', icon: 'LayoutDashboard' },
-  { path: '/pipeline', label: 'Pipeline', icon: 'GitBranch' },
-  { path: '/scheduler', label: 'Scheduler', icon: 'Clock' },
-  { path: '/leads', label: 'Leads CRM', icon: 'Users' },
-  { path: '/threads', label: 'Threads', icon: 'AtSign' },
-  { path: '/campaigns', label: 'Campaigns', icon: 'Send' },
-  { path: '/inbox', label: 'Smart Inbox', icon: 'Inbox' },
-  { path: '/analytics', label: 'Analytics', icon: 'BarChart2' },
-  { path: '/billing', label: 'Billing', icon: 'CreditCard' },
-  { path: '/settings', label: 'Settings', icon: 'Settings' },
+  { path: '/overview', label: 'Overview', icon: 'LayoutDashboard', roles: ['freelancer'] },
+  { path: '/pipeline', label: 'Pipeline', icon: 'GitBranch', roles: ['freelancer'] },
+  { path: '/scheduler', label: 'Scheduler', icon: 'Clock', roles: ['freelancer'] },
+  { path: '/leads', label: 'Leads CRM', icon: 'Users', roles: ['freelancer'] },
+  { path: '/threads', label: 'Threads', icon: 'AtSign', roles: ['freelancer'] },
+  { path: '/campaigns', label: 'Campaigns', icon: 'Send', roles: ['freelancer'] },
+  { path: '/inbox', label: 'Smart Inbox', icon: 'Inbox', roles: ['freelancer'] },
+  { path: '/analytics', label: 'Analytics', icon: 'BarChart2', roles: ['freelancer'] },
+  { path: '/billing', label: 'Billing', icon: 'CreditCard', roles: ['freelancer'] },
+  { path: '/profile', label: 'Profile', icon: 'User', roles: ['freelancer', 'client'] },
+  { path: '/settings', label: 'Settings', icon: 'Settings', roles: ['freelancer'] },
 ] as const;

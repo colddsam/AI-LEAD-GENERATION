@@ -116,6 +116,13 @@ class Settings(BaseSettings):
     The anonymous key for Supabase.
     """
 
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    """
+    The service role key for Supabase (bypasses RLS for server-side operations).
+    Obtain from Supabase Dashboard → Settings → API → service_role key.
+    Keep this secret — never expose to the frontend.
+    """
+
     SUPABASE_JWT_SECRET: str = ""
     """
     The JWT secret for Supabase Auth token verification.

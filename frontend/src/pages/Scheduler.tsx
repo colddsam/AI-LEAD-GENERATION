@@ -5,6 +5,8 @@ import Button from '../components/ui/Button';
 import { useConfigJobs, useUpdateConfig } from '../hooks/useConfig';
 import { PIPELINE_STAGES } from '../lib/constants';
 import { Play, Pause, Save } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { pageTransition, staggerContainer, staggerItem, scaleIn } from '../lib/motion';
 
 /**
  * The Scheduler page provides fine-grained control over the pipeline jobs.
@@ -36,10 +38,12 @@ export default function Scheduler() {
   const hasChanges = Object.keys(localConfig).length > 0;
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" variants={pageTransition} initial="initial" animate="animate">
       <PageHeader title="Job Scheduler" subtitle="Manage pipeline execution schedules" />
 
+      <AnimatePresence>
       {hasChanges && (
+        <motion.div variants={scaleIn} initial="hidden" animate="visible" exit="hidden">
         <Card className="bg-amber-50 border-amber-200" padding={true}>
           <div className="flex items-center justify-between">
             <span className="text-sm text-amber-700">You have unsaved schedule changes.</span>
@@ -49,15 +53,18 @@ export default function Scheduler() {
             }}>Save Configuration</Button>
           </div>
         </Card>
+        </motion.div>
       )}
+      </AnimatePresence>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <motion.div className="grid grid-cols-1 xl:grid-cols-2 gap-6" variants={staggerContainer} initial="hidden" animate="visible">
         {PIPELINE_STAGES.map((stage) => {
           const jobConfig = mergedConfig[stage.id] || { status: 'HOLD', schedule: '0 0 * * *' };
           const isRunning = jobConfig.status === 'RUN';
 
           return (
-            <Card key={stage.id} padding={true}>
+            <motion.div key={stage.id} variants={staggerItem}>
+            <Card padding={true}>
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 capitalize">{stage.label} Worker</h3>
@@ -96,9 +103,10 @@ export default function Scheduler() {
                 </p>
               </div>
             </Card>
+            </motion.div>
           );
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
 import { Scale, Target, AlertTriangle, Shield } from 'lucide-react';
 import PublicNavbar from '../components/layout/PublicNavbar';
 import PublicFooter from '../components/layout/PublicFooter';
+import { fadeInUp, staggerContainer, staggerItem, defaultViewport } from '../lib/motion';
 
 const LD_BREADCRUMB = {
   '@context': 'https://schema.org',
@@ -50,7 +52,7 @@ export default function Terms() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10">
-        <div className="text-center mb-16 animate-fade-in-up">
+        <motion.div className="text-center mb-16" variants={fadeInUp} initial="hidden" animate="visible">
           <div className="inline-flex items-center justify-center p-3 bg-black rounded-2xl mb-6 shadow-[0_0_20px_rgba(0,0,0,0.1)] animate-float">
             <Scale className="w-8 h-8 text-white" />
           </div>
@@ -58,10 +60,10 @@ export default function Terms() {
           <p className="text-[#666666] text-lg max-w-2xl mx-auto">
             Please read these rules carefully. They govern your use of the Cold Scout platform and services.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid gap-8">
-          <div className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow animate-fade-in-up delay-100">
+        <motion.div className="grid gap-8" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={defaultViewport}>
+          <motion.div className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-4">
               <Target className="w-6 h-6 text-black" />
               <h2 className="text-2xl font-bold">1. Usage Rules</h2>
@@ -74,9 +76,9 @@ export default function Terms() {
               <li>You must provide accurate and complete setup information.</li>
               <li>You are responsible for safeguarding your account credentials.</li>
             </ul>
-          </div>
+          </motion.div>
 
-          <div className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow animate-fade-in-up delay-200">
+          <motion.div className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-6 h-6 text-black" />
               <h2 className="text-2xl font-bold">2. No Abuse</h2>
@@ -93,10 +95,10 @@ export default function Terms() {
             <div className="mt-4 inline-flex items-center px-3 py-1 bg-black text-white rounded-md text-sm font-medium border border-black">
               Violators will face immediate termination without a refund.
             </div>
-          </div>
+          </motion.div>
 
 
-          <div className="bg-[#fafafa] rounded-2xl p-8 border border-[#eaeaea] card-glow animate-fade-in-up delay-300">
+          <motion.div className="bg-[#fafafa] rounded-2xl p-8 border border-[#eaeaea] card-glow" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-4">
               <AlertTriangle className="w-6 h-6 text-[#666666]" />
               <h2 className="text-2xl font-bold">3. Disclaimer</h2>
@@ -104,8 +106,8 @@ export default function Terms() {
             <p className="text-[#666666] mt-2 leading-relaxed text-sm">
               COLD SCOUT IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. WE DO NOT GUARANTEE THAT THE SERVICE WILL BE UNINTERRUPTED, COMPLETELY SECURE, OR FREE FROM ERRORS. IN NO EVENT SHALL COLD SCOUT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES RESULTING FROM YOUR USE OF THE PLATFORM.
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
 
       <PublicFooter />

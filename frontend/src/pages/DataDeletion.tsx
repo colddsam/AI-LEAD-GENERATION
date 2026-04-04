@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
 import { Trash2, Mail, CheckCircle2 } from 'lucide-react';
 import PublicNavbar from '../components/layout/PublicNavbar';
 import PublicFooter from '../components/layout/PublicFooter';
+import { fadeInUp, staggerContainer, staggerItem, defaultViewport } from '../lib/motion';
 
 /**
  * Breadcrumb schema for data deletion page.
@@ -51,20 +53,22 @@ export default function DataDeletion() {
       <PublicNavbar />
 
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-24 relative z-10 flex flex-col items-center">
-        
-        <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mb-8 border border-black shadow-[0_0_40px_rgba(0,0,0,0.1)] animate-float">
-            <Trash2 className="w-10 h-10 text-white" />
-        </div>
-        
-        <div className="text-center mb-12 animate-fade-in-up delay-100">
+      <motion.main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-24 relative z-10 flex flex-col items-center" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={defaultViewport}>
+
+        <motion.div variants={fadeInUp}>
+          <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mb-8 border border-black shadow-[0_0_40px_rgba(0,0,0,0.1)] animate-float">
+              <Trash2 className="w-10 h-10 text-white" />
+          </div>
+        </motion.div>
+
+        <motion.div className="text-center mb-12" variants={staggerItem}>
           <h1 className="text-4xl font-bold tracking-tight mb-4">Request Data Deletion</h1>
           <p className="text-[#666666] text-lg max-w-xl mx-auto">
             We believe you should have complete control over your data. If you wish to permanently delete your account and all associated data, follow the instructions below.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="w-full bg-white rounded-2xl border border-[#eaeaea] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden animate-fade-in-up delay-200">
+        <motion.div className="w-full bg-white rounded-2xl border border-[#eaeaea] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden" variants={staggerItem}>
           <div className="p-8 border-b border-[#eaeaea]">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
               <Mail className="w-5 h-5 text-black" />
@@ -73,7 +77,7 @@ export default function DataDeletion() {
             <p className="text-[#666666] mb-6">
               To securely request the deletion of your account, teams, and generated leads, please send an email to our support team from the email address associated with your Cold Scout account.
             </p>
-            
+
             <div className="bg-[#fafafa] border border-[#eaeaea] rounded-xl p-6 flex flex-col items-center hover:bg-white hover:shadow-minimal transition-all">
               <span className="text-sm font-bold text-[#999999] uppercase tracking-wider mb-2">Send an email to</span>
               <a href="mailto:admin@colddsam.com?subject=Data Deletion Request" className="text-2xl font-bold text-black hover:underline transition-colors">
@@ -81,7 +85,7 @@ export default function DataDeletion() {
               </a>
             </div>
           </div>
-          
+
           <div className="p-8 bg-[#fafafa]">
             <h3 className="text-sm font-bold uppercase tracking-wider text-[#999999] mb-4">What happens next?</h3>
             <ul className="space-y-4">
@@ -99,10 +103,10 @@ export default function DataDeletion() {
               </li>
             </ul>
           </div>
-        </div>
+        </motion.div>
 
 
-      </main>
+      </motion.main>
 
       <PublicFooter />
     </div>

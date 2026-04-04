@@ -36,13 +36,15 @@ import Threads from './pages/Threads';
 import Billing from './pages/Billing';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/useAuth';
-import { FreelancerRoute, ClientRoute } from './components/auth/ProtectedRoute';
+import ProtectedRoute, { FreelancerRoute, ClientRoute } from './components/auth/ProtectedRoute';
 import SessionExpiredModal from './components/auth/SessionExpiredModal';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import DataDeletion from './pages/DataDeletion.tsx';
 import Support from './pages/Support';
 import RefundPolicy from './pages/RefundPolicy';
+import Profile from './pages/Profile';
+import PublicProfile from './pages/PublicProfile';
 
 /**
  * Shared QueryClient instance with optimized development defaults.
@@ -76,6 +78,7 @@ export default function App() {
             <Route path="/delete-data" element={<DataDeletion />} />
             <Route path="/support" element={<Support />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/u/:username" element={<PublicProfile />} />
 
             {/* Protected: Client Welcome (clients only — freelancers redirected to /overview) */}
             <Route element={<ClientRoute />}>
@@ -94,8 +97,15 @@ export default function App() {
                 <Route path="/campaigns" element={<Campaigns />} />
                 <Route path="/inbox" element={<Inbox />} />
                 <Route path="/analytics" element={<Analytics />} />
-                <Route path="/settings" element={<Settings />} />
+              </Route>
+            </Route>
+
+            {/* Protected: Shared pages (both clients and freelancers) */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<Shell />}>
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/billing" element={<Billing />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>
 

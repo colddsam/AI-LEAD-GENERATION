@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import type { UserRole, OAuthProvider } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
@@ -7,6 +8,7 @@ import Button from '../components/ui/Button';
 import { UserPlus, Mail, User, Github, Chrome, Check } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import Spinner from '../components/ui/Spinner';
+import { scaleIn, staggerContainer, staggerItem, fadeInUp } from '../lib/motion';
 
 /**
  * Social login provider configuration.
@@ -137,7 +139,8 @@ export default function SignUp() {
         <div className="absolute inset-0 bg-grid opacity-40" />
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full blur-3xl opacity-60" />
 
-        <Card className="w-full max-w-md z-10 relative" padding={false}>
+        <motion.div variants={scaleIn} initial="hidden" animate="visible" className="w-full max-w-md z-10 relative">
+        <Card className="w-full max-w-md" padding={false}>
           <div className="p-8 text-center">
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
               <Check className="w-8 h-8 text-green-600" />
@@ -155,6 +158,7 @@ export default function SignUp() {
             </Link>
           </div>
         </Card>
+        </motion.div>
       </div>
     );
   }
@@ -167,7 +171,8 @@ export default function SignUp() {
       {/* Decorative gradient orb */}
       <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-full blur-3xl opacity-60" />
 
-      <Card className="w-full max-w-md z-10 relative" padding={false}>
+      <motion.div variants={scaleIn} initial="hidden" animate="visible" className="w-full max-w-md z-10 relative">
+      <Card className="w-full max-w-md" padding={false}>
         <div className="p-8">
           {/* Logo — links to landing page */}
           <div className="flex justify-center mb-6">
@@ -213,10 +218,10 @@ export default function SignUp() {
           )}
 
           {/* Social Sign Up Buttons */}
-          <div className="space-y-2 mb-6">
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-2 mb-6">
             {socialProviders.map((provider) => (
+              <motion.div key={provider.id} variants={staggerItem}>
               <button
-                key={provider.id}
                 type="button"
                 onClick={() => handleSocialSignUp(provider.id)}
                 disabled={socialLoading !== null}
@@ -229,8 +234,9 @@ export default function SignUp() {
                 )}
                 <span>Sign up with {provider.name}</span>
               </button>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Divider */}
           <div className="relative mb-6">
@@ -243,6 +249,7 @@ export default function SignUp() {
           </div>
 
           {/* Email/Password Form */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Full Name</label>
@@ -306,6 +313,7 @@ export default function SignUp() {
               Create Account
             </Button>
           </form>
+          </motion.div>
 
           <p className="mt-4 text-xs text-center text-gray-400">
             By signing up, you agree to our{' '}
@@ -328,6 +336,7 @@ export default function SignUp() {
           </p>
         </div>
       </Card>
+      </motion.div>
     </div>
   );
 }

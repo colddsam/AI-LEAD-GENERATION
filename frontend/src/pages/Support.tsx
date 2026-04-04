@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/seo/JsonLd';
 import { Headphones, Mail, Clock, BookOpen, Zap, AlertCircle, MessageSquare } from 'lucide-react';
 import PublicNavbar from '../components/layout/PublicNavbar';
 import PublicFooter from '../components/layout/PublicFooter';
+import { fadeInUp, staggerContainer, staggerItem, defaultViewport } from '../lib/motion';
 
 const LD_BREADCRUMB = {
   '@context': 'https://schema.org',
@@ -55,7 +57,7 @@ export default function Support() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10">
 
         {/* Page Header */}
-        <div className="text-center mb-16 animate-fade-in-up">
+        <motion.div className="text-center mb-16" variants={fadeInUp} initial="hidden" animate="visible">
           <div className="inline-flex items-center justify-center p-3 bg-black rounded-2xl mb-6 shadow-[0_0_20px_rgba(0,0,0,0.1)] animate-float">
             <Headphones className="w-8 h-8 text-white" />
           </div>
@@ -63,12 +65,12 @@ export default function Support() {
           <p className="text-[#666666] text-lg max-w-2xl mx-auto">
             We're here to help. Whether you have a technical issue, billing question, or just need some guidance — our support team has you covered.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-8">
+        <motion.div className="space-y-8" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={defaultViewport}>
 
           {/* Contact Us */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-100">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <Mail className="w-5 h-5 text-black" />
@@ -96,10 +98,10 @@ export default function Support() {
                 <p className="text-xs text-[#999999] mt-1">Subscriptions, invoices, refunds</p>
               </div>
             </div>
-          </section>
+          </motion.section>
 
           {/* Response Times */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-200">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <Clock className="w-5 h-5 text-black" />
@@ -131,10 +133,10 @@ export default function Support() {
             <p className="text-xs text-[#999999] mt-4">
               Response times are measured during business hours (Mon–Fri). Weekend tickets are handled on the next business day.
             </p>
-          </section>
+          </motion.section>
 
           {/* What We Can Help With */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <MessageSquare className="w-5 h-5 text-black" />
@@ -160,10 +162,10 @@ export default function Support() {
                 </li>
               ))}
             </ul>
-          </section>
+          </motion.section>
 
           {/* Self-Service Resources */}
-          <section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-white rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <BookOpen className="w-5 h-5 text-black" />
@@ -202,10 +204,10 @@ export default function Support() {
                 Refund Policy
               </a>
             </div>
-          </section>
+          </motion.section>
 
           {/* Escalation */}
-          <section className="bg-[#fafafa] rounded-2xl p-8 border border-[#eaeaea] card-glow text-left animate-fade-in-up delay-300">
+          <motion.section className="bg-[#fafafa] rounded-2xl p-8 border border-[#eaeaea] card-glow text-left" variants={staggerItem}>
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-black/5 rounded-lg">
                 <AlertCircle className="w-5 h-5 text-[#666666]" />
@@ -220,9 +222,9 @@ export default function Support() {
                 We take every support request seriously. Our goal is to ensure every Cold Scout user has a productive and frustration-free experience with the platform.
               </p>
             </div>
-          </section>
+          </motion.section>
 
-        </div>
+        </motion.div>
       </main>
 
       <PublicFooter />

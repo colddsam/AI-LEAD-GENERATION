@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { pageTransition, fadeInUp, defaultViewport } from '../lib/motion';
 import { useLeads } from '../hooks/useLeads';
 import Card from '../components/ui/Card';
 import DataTable, { type Column } from '../components/ui/DataTable';
@@ -92,7 +94,7 @@ export default function Leads() {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader
         title="Leads CRM"
         subtitle={`${data?.total ?? 0} total leads`}
@@ -104,6 +106,7 @@ export default function Leads() {
       />
 
       {/* Filters */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card padding={true}>
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 items-stretch sm:items-center">
           <div className="relative flex-1 min-w-[180px]">
@@ -139,8 +142,10 @@ export default function Leads() {
           </select>
         </div>
       </Card>
+      </motion.div>
 
       {/* Table */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card padding={false}>
         <DataTable
           columns={columns}
@@ -150,10 +155,11 @@ export default function Leads() {
           emptyMessage="No leads found matching your filters"
         />
       </Card>
+      </motion.div>
 
       {/* Pagination */}
       {data && data.pages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport} className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-[10px] md:text-xs font-mono text-secondary/60 order-2 sm:order-1">
             Showing {((page - 1) * limit) + 1}–{Math.min(page * limit, data.total)} of {data.total} leads
           </span>
@@ -181,9 +187,8 @@ export default function Leads() {
               <span className="hidden xs:inline">Next</span> <ChevronRight />
             </Button>
           </div>
-        </div>
-      )
-    }
-    </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }

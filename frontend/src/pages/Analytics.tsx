@@ -14,6 +14,8 @@ import { downloadReport } from '../lib/api';
 import { downloadBlob } from '../lib/utils';
 import toast from 'react-hot-toast';
 import DataTable, { type Column } from '../components/ui/DataTable';
+import { motion } from 'framer-motion';
+import { pageTransition, staggerContainer, staggerItem, fadeInUp, defaultViewport } from '../lib/motion';
 
 /**
  * The Analytics page visualizes historical performance data.
@@ -109,20 +111,23 @@ export default function Analytics() {
   if (isLoading) return <PageLoader />;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div className="space-y-6" initial="initial" animate="animate" variants={pageTransition}>
       <PageHeader
         title="Analytics"
         subtitle={`${reports?.length ?? 0} daily reports`}
       />
 
       {/* Funnel */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card>
         <h3 className="text-xs font-semibold text-secondary uppercase tracking-widest mb-4">Lead Funnel (Last 7 Days)</h3>
         <FunnelChart stages={chartData.funnel} />
       </Card>
+      </motion.div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-6" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={defaultViewport}>
+        <motion.div variants={staggerItem}>
         <Card>
           <h3 className="text-xs font-semibold text-secondary uppercase tracking-widest mb-4">Lead Discovery & Emails</h3>
           <LineChart
@@ -134,7 +139,9 @@ export default function Analytics() {
             ]}
           />
         </Card>
+        </motion.div>
 
+        <motion.div variants={staggerItem}>
         <Card>
           <h3 className="text-xs font-semibold text-secondary uppercase tracking-widest mb-4">Qualification & Outreach</h3>
           <BarChart
@@ -145,16 +152,19 @@ export default function Analytics() {
             ]}
           />
         </Card>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Reports Table */}
+      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={defaultViewport}>
       <Card>
         <h3 className="text-xs font-semibold text-secondary uppercase tracking-widest mb-4">Daily Reports</h3>
-        <DataTable 
-          columns={columns} 
-          data={reports ?? []} 
+        <DataTable
+          columns={columns}
+          data={reports ?? []}
         />
       </Card>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
