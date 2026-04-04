@@ -241,6 +241,18 @@ function SetupModal({ onComplete }: { onComplete: () => void }) {
   const [availability, setAvailability] = useState<{ available: boolean; message: string } | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  const handleUsernameChange = (val: string) => {
+    const newUsername = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    setUsername(newUsername);
+    if (newUsername.length < 3) {
+      setAvailability(null);
+      setChecking(false);
+      clearTimeout(debounceRef.current);
+    } else {
+      setChecking(true);
+    }
+  };
+
   const setup = useMutation({
     mutationFn: () => setupProfile(username),
     onSuccess: () => {
@@ -251,11 +263,8 @@ function SetupModal({ onComplete }: { onComplete: () => void }) {
   });
 
   useEffect(() => {
-    if (username.length < 3) {
-      setAvailability(null);
-      return;
-    }
-    setChecking(true);
+    if (username.length < 3) return;
+
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       try {
@@ -277,7 +286,7 @@ function SetupModal({ onComplete }: { onComplete: () => void }) {
             <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+              onChange={(e) => handleUsernameChange(e.target.value)}
               placeholder="your_username"
               maxLength={50}
               className="w-full rounded-lg border border-gray-200 bg-white pl-9 pr-10 py-2.5 text-sm text-black
@@ -799,7 +808,7 @@ function FreelancerTab({
     personal_website: data?.personal_website || '',
   });
 
-  const set = (key: string) => (val: any) => setForm((p) => ({ ...p, [key]: val }));
+  const set = (key: string) => (val: string | string[] | number | boolean | null) => setForm((p) => ({ ...p, [key]: val }));
 
   const handleSave = () => {
     const payload: FreelancerProfileUpdate = {
@@ -996,7 +1005,7 @@ function PortfolioItemModal({
     is_public: item?.is_public ?? true,
   });
 
-  const set = (key: string) => (val: any) => setForm((p) => ({ ...p, [key]: val }));
+  const set = (key: string) => (val: string | string[] | number | boolean | null) => setForm((p) => ({ ...p, [key]: val }));
 
   const mutation = useMutation({
     mutationFn: () => {

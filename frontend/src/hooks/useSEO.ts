@@ -145,5 +145,5 @@ export function useSEO({
     setMeta('twitter:image', ogImage);
     setMeta('twitter:image:alt', ogImageAlt);
 
-  }, [title, description, canonical, ogImage, ogType, ogImageAlt, index, keywords, publishedTime, modifiedTime]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [title, description, canonical, ogImage, ogType, ogImageAlt, index, keywords, publishedTime, modifiedTime]);
 }
