@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Zap, Mail, BarChart2, ArrowRight, ChevronRight,
-  Target, Shield, Download,
+  Target, Shield,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';

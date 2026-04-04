@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Check, X, ChevronDown, ExternalLink, Download,
-  Github, Zap, Building2, Globe, Loader2
+  Zap, Building2, Globe, Loader2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useSEO } from '../hooks/useSEO';
