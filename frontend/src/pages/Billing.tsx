@@ -72,7 +72,7 @@ interface PlanCardProps {
 
 function PlanCard({ plan, isCurrentPlan, onUpgrade, isLoading }: PlanCardProps) {
   const config = {
-    free:       { label: 'Open Source', price: '₹0',       icon: CheckCircle2, desc: 'Self-hosted from GitHub',              color: 'gray' },
+    free:       { label: 'Open Source', price: '₹0',       icon: CheckCircle2, desc: 'Download & self-host from GitHub Releases', color: 'gray' },
     pro:        { label: 'Pro',         price: '₹100/mo',   icon: Zap,          desc: 'Managed API + MCP Server (2,000 leads)', color: 'black' },
     enterprise: { label: 'Enterprise',  price: '₹2,000/mo', icon: Building2,    desc: 'Dedicated instance + custom models',     color: 'black' },
   }[plan];

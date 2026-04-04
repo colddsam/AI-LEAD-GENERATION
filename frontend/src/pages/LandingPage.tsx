@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Zap, Mail, BarChart2, ArrowRight, ChevronRight,
-  Target, Shield,
+  Target, Shield, Download,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSEO } from '../hooks/useSEO';
@@ -256,10 +256,10 @@ function PricingSection() {
       name: 'Open Source',
       price: 'Free',
       period: '',
-      desc: 'Self-hosted from GitHub with your own API keys.',
-      features: ['Full platform access', 'All 5 pipeline stages', 'Unlimited leads (your keys)', 'Community support'],
-      cta: 'View on GitHub',
-      href: 'https://github.com/colddsam/coldscout.git',
+      desc: 'Download & self-host with your own API keys.',
+      features: ['Full platform access', 'All 5 pipeline stages', 'Unlimited leads (your keys)', 'Web dashboard included'],
+      cta: 'Download Free',
+      href: 'https://github.com/colddsam/coldscout/releases?q=oss-v&expanded=true',
       external: true,
       featured: false,
     },
@@ -450,7 +450,7 @@ const LD_SOFTWARE = {
   applicationSubCategory: 'Lead Generation Software',
   operatingSystem: 'Web, SaaS',
   url: 'https://coldscout.colddsam.com/',
-  downloadUrl: 'https://github.com/colddsam/coldscout',
+  downloadUrl: 'https://github.com/colddsam/coldscout/releases?q=oss-v&expanded=true',
   description: 'AI-powered lead generation platform that automates outreach pipeline — from Google Maps discovery to personalized email campaigns.',
   softwareVersion: '1.0.0',
   featureList: [

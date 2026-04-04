@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowRight, Check, X, ChevronDown, ExternalLink,
+  ArrowRight, Check, X, ChevronDown, ExternalLink, Download,
   Github, Zap, Building2, Globe, Loader2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -205,21 +205,21 @@ function PricingCards({ currency }: { currency: CurrencyInfo }) {
   const plans = [
     {
       name: 'Open Source',
-      icon: Github,
+      icon: Download,
       price: 'Free',
       period: '',
-      tagline: 'Self-hosted from GitHub',
-      desc: 'Clone, deploy, and run the full platform on your own infrastructure with your own API keys.',
+      tagline: 'Download & self-host',
+      desc: 'Download the release package, add your own API keys, and run the full pipeline on your own infrastructure.',
       features: [
         'Full platform access',
         'All 5 pipeline stages',
         'Unlimited leads (your API keys)',
+        'Web dashboard included',
         'Community support (GitHub Issues)',
-        'Complete documentation',
-        'Self-managed infrastructure',
+        'Docker & pip install ready',
       ],
-      cta: 'View on GitHub',
-      ctaLink: 'https://github.com/colddsam/coldscout.git',
+      cta: 'Download Free Package',
+      ctaLink: 'https://github.com/colddsam/coldscout/releases?q=oss-v&expanded=true',
       external: true,
       featured: false,
       planKey: null,
@@ -394,7 +394,7 @@ function ComparisonTable() {
     { feature: 'Full Platform Access', os: true, pro: true, ent: true },
     { feature: 'All 5 Pipeline Stages', os: true, pro: true, ent: true },
     { feature: 'Documentation Access', os: true, pro: true, ent: true },
-    { feature: 'Self-hosted Deployment', os: true, pro: false, ent: false },
+    { feature: 'Downloadable Package', os: true, pro: false, ent: false },
     { feature: 'Hosted API Access', os: false, pro: true, ent: true },
     { feature: 'MCP Server Access', os: false, pro: true, ent: true },
     { feature: 'Monthly Lead Limit', os: 'Unlimited*', pro: '2,000', ent: 'Unlimited' },
@@ -473,7 +473,7 @@ function FaqSection() {
   const faqs = [
     {
       q: 'Is the platform truly free to self-host?',
-      a: 'Absolutely. The entire Cold Scout codebase is open source under the MIT license. Clone the GitHub repository, set up your own API keys (Google Places, Groq, Brevo, etc.), and deploy on your own infrastructure at zero cost. You only pay for the third-party API usage on your own accounts.',
+      a: 'Absolutely. Download the Cold Scout OSS package from our GitHub Releases page, set up your own API keys (Google Places, Groq, Brevo — all have free tiers), and run it on your own machine or server. You only pay for third-party API usage on your own accounts. The package includes a web dashboard, Docker support, and full documentation.',
     },
     {
       q: 'What do I get with the Pro plan that I can\'t do myself?',
@@ -539,13 +539,13 @@ function CtaBanner() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
-            href="https://github.com/colddsam/coldscout.git"
+            href="https://github.com/colddsam/coldscout/releases?q=oss-v&expanded=true"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg text-sm font-medium border border-gray-200 hover:border-black hover:shadow-vercel transition-all"
           >
-            <Github className="w-4 h-4" />
-            Clone Repository
+            <Download className="w-4 h-4" />
+            Download Free Package
           </a>
           <Link
             to="/login"
@@ -571,7 +571,7 @@ const LD_FAQ_PRICING = {
       name: 'Is the platform truly free to self-host?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Absolutely. The entire Cold Scout codebase is open source under the MIT license. Clone the GitHub repository, set up your own API keys (Google Places, Groq, Brevo, etc.), and deploy on your own infrastructure at zero cost.',
+        text: 'Absolutely. Download the Cold Scout OSS package from our GitHub Releases page, set up your own API keys (Google Places, Groq, Brevo — all have free tiers), and run it on your own machine. You only pay for third-party API usage on your own accounts.',
       },
     },
     {

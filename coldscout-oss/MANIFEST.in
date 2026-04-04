@@ -1,0 +1,10 @@
+include VERSION
+include CHANGELOG.md
+include README.md
+include requirements.txt
+include .env.example
+include Dockerfile
+include docker-compose.yml
+recursive-include app/modules/personalization/templates *
+recursive-include app/templates *
+recursive-include app/static *

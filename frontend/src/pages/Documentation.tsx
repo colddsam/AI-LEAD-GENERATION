@@ -342,8 +342,8 @@ function SetupSection() {
             </div>
 
             <div className="space-y-4">
-              <CollapsibleSection title="1. Clone the Repository" defaultOpen>
-                <CodeBlock code={`git clone https://github.com/colddsam/coldscout.git\ncd coldscout`} />
+              <CollapsibleSection title="1. Download / Clone the Repository" defaultOpen>
+                <CodeBlock code={`# Option A: Download the free self-hosted package from GitHub Releases\n# https://github.com/colddsam/coldscout/releases?q=oss-v\n\n# Option B: Clone the full repository\ngit clone https://github.com/colddsam/coldscout.git\ncd coldscout/coldscout-oss`} />
               </CollapsibleSection>
 
               <CollapsibleSection title="2. Create Python Virtual Environment">

@@ -1,0 +1,36 @@
+# Core
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.0
+pydantic-settings==2.6.0
+
+# Database (SQLite — no external DB needed)
+sqlalchemy==2.0.36
+aiosqlite==0.20.0
+
+# Scheduler
+apscheduler==3.10.4
+
+# HTTP & Scraping
+httpx==0.27.2
+beautifulsoup4==4.12.3
+dnspython==2.7.0
+
+# AI
+groq==0.11.0
+
+# Email
+aiosmtplib==3.0.1
+jinja2==3.1.4
+
+# PDF
+reportlab==4.2.5
+
+# Excel / Reports
+openpyxl==3.1.5
+
+# Utilities
+loguru==0.7.2
+python-dotenv==1.0.1
+tenacity==9.0.0
+bleach==6.1.0
